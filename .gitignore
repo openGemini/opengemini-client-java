@@ -1,24 +1,22 @@
-# Compiled class file
-*.class
+# file system
+.DS_Store
 
-# Log file
-*.log
+# ide
+.idea/**
 
-# BlueJ files
-*.ctxt
+# Project exclude paths
+**.log
+**/target
+**/.classpath
+**/.project
+**/.factorypath
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# gradle
+.gradle/**
+**/build/**
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# mvn shade plugin
+dependency-reduced-pom.xml
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# log file
+logs/
