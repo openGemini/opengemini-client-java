@@ -17,5 +17,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: unit tests
+      - name: setup OpenGemini
+        uses: shoothzj/setup-opengemini-action@main
+      - name: unit tests:
         run: mvn -B clean test
