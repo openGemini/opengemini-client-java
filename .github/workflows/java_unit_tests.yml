@@ -19,5 +19,5 @@ jobs:
           distribution: 'temurin'
       - name: setup OpenGemini
         uses: shoothzj/setup-opengemini-action@main
-      - name: unit tests:
+      - name: unit tests
         run: mvn -B clean test
