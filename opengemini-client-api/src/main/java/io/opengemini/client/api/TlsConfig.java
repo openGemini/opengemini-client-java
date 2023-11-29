@@ -1,6 +1,5 @@
 package io.opengemini.client.api;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TlsConfig {
-
     public String keyStorePath;
 
     @ToString.Exclude

@@ -1,6 +1,5 @@
 package io.opengemini.client.api;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

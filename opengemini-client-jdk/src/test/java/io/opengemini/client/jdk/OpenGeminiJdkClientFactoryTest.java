@@ -1,7 +1,10 @@
-package io.opengemini.client.api;
+package io.opengemini.client.jdk;
 
-import io.opengemini.client.jdk.Configuration;
-import io.opengemini.client.jdk.OpenGeminiJdkClientFactory;
+import io.opengemini.client.api.Address;
+import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.AuthType;
+import io.opengemini.client.api.BatchConfig;
+import io.opengemini.client.api.OpenGeminiException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
