@@ -1,4 +1,4 @@
-package io.opengemini.client.jdk;
+package io.opengemini.client.asynchttpclient;
 
 import io.opengemini.client.api.BaseConfiguration;
 
