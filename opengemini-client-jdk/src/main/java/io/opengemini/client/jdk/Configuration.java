@@ -28,5 +28,5 @@ public class Configuration {
     @ToString.Exclude
     public String trustStorePassword;
 
-    public boolean disableSslVerify;
+    public boolean tlsVerificationDisabled;
 }
