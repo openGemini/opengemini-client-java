@@ -1,5 +1,6 @@
 package io.opengemini.client.api;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class AuthConfig {
     /**
      * AuthType type of identity authentication.
