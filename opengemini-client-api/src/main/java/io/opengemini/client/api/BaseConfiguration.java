@@ -1,13 +1,19 @@
 package io.opengemini.client.api;
 
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
 @Setter
 @Getter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseConfiguration {
     List<Address> addresses;
 
@@ -15,15 +21,11 @@ public class BaseConfiguration {
 
     BatchConfig batchConfig;
 
-    public String keyStorePath;
+    TlsConfig tlsConfig;
 
-    @ToString.Exclude
-    public String keyStorePassword;
+    public int timeout = 30;
 
-    public String trustStorePath;
+    public int connectTimeout = 10;
 
-    @ToString.Exclude
-    public String trustStorePassword;
-
-    public boolean tlsVerificationDisabled;
+    public boolean tlsEnabled;
 }
