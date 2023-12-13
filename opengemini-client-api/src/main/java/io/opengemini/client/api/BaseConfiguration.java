@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Duration;
 import java.util.List;
 
 @Setter
@@ -22,15 +22,11 @@ public class BaseConfiguration {
 
     BatchConfig batchConfig;
 
-    public String keyStorePath;
+    boolean tlsEnabled;
 
-    @ToString.Exclude
-    public String keyStorePassword;
+    TlsConfig tlsConfig;
 
-    public String trustStorePath;
+    Duration timeout;
 
-    @ToString.Exclude
-    public String trustStorePassword;
-
-    public boolean tlsVerificationDisabled;
+    Duration connectTimeout;
 }
