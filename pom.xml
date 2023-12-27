@@ -27,6 +27,7 @@
         <lombok.version>1.18.30</lombok.version>
         <log4j.version>2.20.0</log4j.version>
         <okhttp.version>4.12.0</okhttp.version>
+        <jackson.version>2.13.4.1</jackson.version>
         <puppycrawl.version>10.12.3</puppycrawl.version>
         <reactor-netty.version>1.1.10</reactor-netty.version>
         <slf4j.version>2.0.7</slf4j.version>
@@ -74,6 +75,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
