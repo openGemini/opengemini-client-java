@@ -22,4 +22,10 @@ public class TlsConfig {
     public String trustStorePassword;
 
     public boolean tlsVerificationDisabled;
+
+    public boolean tlsHostnameVerificationDisabled;
+
+    public String[] tlsVersions;
+
+    public String[] tlsCipherSuites;
 }
