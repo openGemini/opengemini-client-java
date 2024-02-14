@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JacksonService {
@@ -38,7 +39,7 @@ public class JacksonService {
 
     public static <T> List<T> toList(String json, TypeReference<List<T>> typeRef) throws JsonProcessingException {
         if (json == null || json.isEmpty()) {
-            return List.of();
+            return new ArrayList<>();
         }
         return MAPPER.readValue(json, typeRef);
     }

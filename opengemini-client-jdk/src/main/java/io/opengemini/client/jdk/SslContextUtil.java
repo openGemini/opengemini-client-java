@@ -1,4 +1,6 @@
-package io.opengemini.client.api;
+package io.opengemini.client.jdk;
+
+import io.opengemini.client.api.InsecureTrustManager;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
