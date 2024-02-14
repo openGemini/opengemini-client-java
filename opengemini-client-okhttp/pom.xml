@@ -18,6 +18,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>${okhttp.version}</version>

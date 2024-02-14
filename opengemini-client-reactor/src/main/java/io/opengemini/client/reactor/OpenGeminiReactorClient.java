@@ -8,11 +8,14 @@ import reactor.netty.http.client.HttpClientSecurityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OpenGeminiReactorClient {
     private final HttpClient client;
 
     private final List<String> serverUrls = new ArrayList<>();
+
+    private final AtomicInteger prevIndex = new AtomicInteger(-1);
 
     public OpenGeminiReactorClient(Configuration conf) {
         HttpClient client = HttpClient.create();

@@ -22,6 +22,11 @@
             <artifactId>opengemini-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

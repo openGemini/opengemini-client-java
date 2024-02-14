@@ -7,7 +7,7 @@ import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.SslContextUtil;
 import io.opengemini.client.api.TlsConfig;
-import io.opengemini.client.jdk.common.OpenGeminiCommon;
+import io.opengemini.client.common.JacksonService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +29,7 @@ public class OpenGeminiJdkClient {
 
     private final HttpClient client;
 
-    private final AtomicInteger prevIndex = new AtomicInteger(0);
+    private final AtomicInteger prevIndex = new AtomicInteger(-1);
 
     public OpenGeminiJdkClient(Configuration conf) {
         this.conf = conf;
@@ -85,7 +85,7 @@ public class OpenGeminiJdkClient {
             CompletableFuture<QueryResult> failedFuture = new CompletableFuture<>();
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 try {
-                    QueryResult body = OpenGeminiCommon.converJson2Bean(response.body(), QueryResult.class);
+                    QueryResult body = JacksonService.toObject(response.body(), QueryResult.class);
                     failedFuture.complete(body);
                 } catch (JsonProcessingException e) {
                     failedFuture.completeExceptionally(e);

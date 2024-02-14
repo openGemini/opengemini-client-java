@@ -24,6 +24,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty-http</artifactId>
             <version>${reactor-netty.version}</version>
