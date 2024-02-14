@@ -10,10 +10,11 @@
     <packaging>pom</packaging>
     <modules>
         <module>opengemini-client-api</module>
+        <module>opengemini-client-asynchttpclient</module>
+        <module>opengemini-client-common</module>
         <module>opengemini-client-jdk</module>
         <module>opengemini-client-okhttp</module>
         <module>opengemini-client-reactor</module>
-        <module>opengemini-client-asynchttpclient</module>
     </modules>
 
     <properties>
