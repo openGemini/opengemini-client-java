@@ -29,9 +29,9 @@ class OpenGeminiJdkClientTest {
                 addresses(Collections.singletonList(new Address("127.0.0.1", 28086))).
                 build();
 
-        OpenGeminiJdkClient openGeminiJdkClientConfused = new OpenGeminiJdkClient(configuration);
+        OpenGeminiJdkClient wrongClient = new OpenGeminiJdkClient(configuration);
         Query showDatabasesQuery = new Query("show databases");
-        CompletableFuture<QueryResult> rstFuture = openGeminiJdkClientConfused.query(showDatabasesQuery);
+        CompletableFuture<QueryResult> rstFuture = wrongClient.query(showDatabasesQuery);
         Assertions.assertThrows(ExecutionException.class, rstFuture::get);
     }
 

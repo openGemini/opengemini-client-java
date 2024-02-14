@@ -11,4 +11,12 @@
 
     <artifactId>opengemini-client-common</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

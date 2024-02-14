@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 class OpenGeminiReactorClientFactoryTest {
 
@@ -46,7 +46,7 @@ class OpenGeminiReactorClientFactoryTest {
 
     @Test
     public void testGetClientWithEmptyToken() {
-        configuration.setAddresses(List.of(new Address()));
+        configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(AuthType.TOKEN);
         authConfig.setToken("");
         configuration.setAuthConfig(authConfig);
@@ -59,7 +59,7 @@ class OpenGeminiReactorClientFactoryTest {
 
     @Test
     public void testGetClientWithEmptyUserName() {
-        configuration.setAddresses(List.of(new Address()));
+        configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(AuthType.PASSWORD);
         authConfig.setPassword("pass");
         authConfig.setUsername("");
@@ -73,7 +73,7 @@ class OpenGeminiReactorClientFactoryTest {
 
     @Test
     public void testGetClientWithNullPassword() {
-        configuration.setAddresses(List.of(new Address()));
+        configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(AuthType.PASSWORD);
         authConfig.setPassword(null);
         authConfig.setUsername("user");
@@ -87,7 +87,7 @@ class OpenGeminiReactorClientFactoryTest {
 
     @Test
     public void testGetClientWithInvalidBatchInterval() {
-        configuration.setAddresses(List.of(new Address()));
+        configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(null);
         batchConfig.setBatchInterval(-1);
         configuration.setBatchConfig(batchConfig);
@@ -100,7 +100,7 @@ class OpenGeminiReactorClientFactoryTest {
 
     @Test
     public void testGetClientWithInvalidBatchSize() {
-        configuration.setAddresses(List.of(new Address()));
+        configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(null);
         batchConfig.setBatchInterval(1);
         batchConfig.setBatchSize(-1);
