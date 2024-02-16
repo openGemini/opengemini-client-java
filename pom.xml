@@ -6,7 +6,7 @@
 
     <groupId>io.opengemini</groupId>
     <artifactId>opengemini-client-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>pom</packaging>
     <modules>
         <module>opengemini-client-api</module>
@@ -37,12 +37,14 @@
         <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
         <!-- plugin -->
+        <central-publishing-maven-plugin.version>0.3.0</central-publishing-maven-plugin.version>
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
         <maven-enforce-plugin-maven.version>3.8.0</maven-enforce-plugin-maven.version>
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <maven-release-plugin-scm-provider-gitexe.version>2.0.1</maven-release-plugin-scm-provider-gitexe.version>
@@ -211,20 +213,19 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${nexus-staging-plugin.version}</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
         </plugins>
@@ -251,6 +252,13 @@
             <email>shoothzj@gmail.com</email>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:openGemini/opengemini-client-java.git</connection>
+        <developerConnection>scm:git:git@github.com:openGemini/opengemini-client-java.git</developerConnection>
+        <url>git@github.com:openGemini/opengemini-client-java.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <profiles>
         <profile>
