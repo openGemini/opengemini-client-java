@@ -13,8 +13,10 @@
         <module>opengemini-client-asynchttpclient</module>
         <module>opengemini-client-common</module>
         <module>opengemini-client-jdk</module>
+        <module>opengemini-client-kotlin</module>
         <module>opengemini-client-okhttp</module>
         <module>opengemini-client-reactor</module>
+        <module>opengemini-client-scala</module>
     </modules>
 
     <properties>
@@ -25,12 +27,14 @@
         <!-- dependency -->
         <async-http-client.version>3.0.0.Beta3</async-http-client.version>
         <junit.version>5.10.2</junit.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <lombok.version>1.18.30</lombok.version>
         <log4j.version>2.20.0</log4j.version>
         <okhttp.version>4.12.0</okhttp.version>
         <jackson.version>2.16.1</jackson.version>
         <puppycrawl.version>10.12.3</puppycrawl.version>
         <reactor-netty.version>1.1.10</reactor-netty.version>
+        <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
         <!-- plugin -->
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
@@ -45,6 +49,7 @@
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
         <nexus-staging-plugin.version>1.6.13</nexus-staging-plugin.version>
+        <scala-maven-plugin.version>4.8.1</scala-maven-plugin.version>
         <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
     </properties>
 
