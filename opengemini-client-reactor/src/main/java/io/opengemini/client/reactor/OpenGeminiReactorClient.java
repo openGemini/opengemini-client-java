@@ -1,6 +1,7 @@
 package io.opengemini.client.reactor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContext;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Query;
@@ -20,6 +21,9 @@ public class OpenGeminiReactorClient extends BaseClient {
     public OpenGeminiReactorClient(Configuration conf) {
         super(conf);
         HttpClient client = HttpClient.create();
+        client = client.responseTimeout(conf.getTimeout());
+        int connectionTimeoutMs = (int) conf.getConnectTimeout().toMillis();
+        client = client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMs);
 
         if (conf.isTlsEnabled()) {
             TlsConfig tlsConfig = conf.getTlsConfig();

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -17,17 +18,21 @@ class OpenGeminiJdkClientTest {
 
     @BeforeEach
     void setUp() {
-        Configuration configuration = Configuration.builder().
-                addresses(Collections.singletonList(new Address("127.0.0.1", 8086))).
-                build();
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(5))
+                .build();
         this.openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
     }
 
     @Test
     void queryWithWrongAddress() throws Exception {
-        Configuration configuration = Configuration.builder().
-                addresses(Collections.singletonList(new Address("127.0.0.1", 28086))).
-                build();
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(5))
+                .build();
 
         OpenGeminiJdkClient wrongClient = new OpenGeminiJdkClient(configuration);
         Query showDatabasesQuery = new Query("show databases");

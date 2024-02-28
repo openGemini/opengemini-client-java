@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Collections;
 
 class OpengeminiReactorClientTest {
@@ -15,17 +16,21 @@ class OpengeminiReactorClientTest {
 
     @BeforeEach
     void setUp() {
-        Configuration configuration = Configuration.builder().
-                addresses(Collections.singletonList(new Address("127.0.0.1", 8086))).
-                build();
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(5))
+                .build();
         this.reactorClient = new OpenGeminiReactorClient(configuration);
     }
 
     @Test
     void queryWithWrongAddress() {
-        Configuration configuration = Configuration.builder().
-                addresses(Collections.singletonList(new Address("127.0.0.1", 28086))).
-                build();
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(5))
+                .build();
 
         OpenGeminiReactorClient wrongClient = new OpenGeminiReactorClient(configuration);
         Query showDatabasesQuery = new Query("show databases");
