@@ -27,6 +27,7 @@ public class OpenGeminiJdkClient extends BaseClient {
         super(conf);
         this.conf = conf;
         HttpClient.Builder builder = HttpClient.newBuilder()
+                .connectTimeout(conf.getConnectTimeout())
                 .version(HttpClient.Version.HTTP_1_1);
         if (conf.isTlsEnabled()) {
             TlsConfig tlsConfig = conf.getTlsConfig();
@@ -66,6 +67,7 @@ public class OpenGeminiJdkClient extends BaseClient {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(buildUri(url))
                 .GET()
+                .timeout(this.conf.getTimeout())
                 .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
