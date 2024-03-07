@@ -7,7 +7,6 @@ import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.JacksonService;
-import io.opengemini.client.common.UrlConst;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -42,7 +41,7 @@ public class OpenGeminiJdkClient extends BaseClient {
     }
 
     public CompletableFuture<QueryResult> query(Query query) {
-        String queryUrl = UrlConst.QUERY + "?q=" + encode(query.getCommand()) + "&db=" + query.getDatabase();
+        String queryUrl = getQueryUrl(query);
         return get(queryUrl, QueryResult.class);
     }
 
