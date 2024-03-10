@@ -7,6 +7,7 @@ import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.common.UrlConst;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -40,13 +41,45 @@ public class OpenGeminiJdkClient extends BaseClient {
         this.client = builder.build();
     }
 
-    public CompletableFuture<QueryResult> query(Query query) {
+    public CompletableFuture<QueryResult> createDatabase(String database) {
+        String command = "CREATE DATABASE \"%s\"".formatted(database);
+        Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return get(queryUrl, QueryResult.class);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
     }
 
-    public <T> CompletableFuture<T> get(String url, Class<T> type) {
-        CompletableFuture<HttpResponse<String>> future = get(url);
+    public CompletableFuture<QueryResult> dropDatabase(String database) {
+        String command = "DROP DATABASE \"%s\"".formatted(database);
+        Query query = new Query(command);
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
+    }
+
+    public CompletableFuture<QueryResult> query(Query query) {
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class);
+    }
+
+    public CompletableFuture<QueryResult> queryPost(Query query) {
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
+    }
+
+    public <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {
+        return httpExcute(url, type, UrlConst.GET);
+    }
+
+    public <T> CompletableFuture<T> httpExcute(String url, Class<T> type, String method) {
+        CompletableFuture<HttpResponse<String>> future;
+        if (UrlConst.GET.equals(method)) {
+            future = get(url);
+        } else if (UrlConst.POST.equals(method)) {
+            future = post(url);
+        } else {
+            Exception e = new RuntimeException("not support method:" + method);
+            return CompletableFuture.failedFuture(e);
+        }
+
         return future.thenCompose(response -> {
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 try {
@@ -66,6 +99,15 @@ public class OpenGeminiJdkClient extends BaseClient {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(buildUri(url))
                 .GET()
+                .timeout(this.conf.getTimeout())
+                .build();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public CompletableFuture<HttpResponse<String>> post(String url) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(buildUri(url))
+                .POST(HttpRequest.BodyPublishers.noBody())
                 .timeout(this.conf.getTimeout())
                 .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());

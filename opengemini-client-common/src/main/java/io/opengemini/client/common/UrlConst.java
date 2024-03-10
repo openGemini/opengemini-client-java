@@ -1,6 +1,10 @@
 package io.opengemini.client.common;
 
 public class UrlConst {
+    public static final String POST = "POST";
+
+    public static final String GET = "GET";
+
     public static final String PING = "/ping";
 
     public static final String QUERY = "/query";

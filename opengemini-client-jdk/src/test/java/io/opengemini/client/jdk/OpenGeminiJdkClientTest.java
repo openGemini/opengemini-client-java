@@ -3,12 +3,14 @@ package io.opengemini.client.jdk;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.Series;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -27,7 +29,7 @@ class OpenGeminiJdkClientTest {
     }
 
     @Test
-    void queryWithWrongAddress() throws Exception {
+    void queryWithWrongAddress() {
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
                 .connectTimeout(Duration.ofSeconds(3))
@@ -35,16 +37,73 @@ class OpenGeminiJdkClientTest {
                 .build();
 
         OpenGeminiJdkClient wrongClient = new OpenGeminiJdkClient(configuration);
-        Query showDatabasesQuery = new Query("show databases");
+        Query showDatabasesQuery = new Query("SHOW DATABASES");
         CompletableFuture<QueryResult> rstFuture = wrongClient.query(showDatabasesQuery);
         Assertions.assertThrows(ExecutionException.class, rstFuture::get);
     }
 
     @Test
     void testShowDatabases() throws Exception {
-        Query showDatabasesQuery = new Query("show databases");
+        Query showDatabasesQuery = new Query("SHOW DATABASES");
         CompletableFuture<QueryResult> rstFuture = openGeminiJdkClient.query(showDatabasesQuery);
         QueryResult rst = rstFuture.get();
         Assertions.assertEquals(1, rst.getResults().size());
+    }
+
+    @Test
+    void testDatabaseErr() throws Exception {
+        String databaseTestName = "testDatabase_err name";
+        CompletableFuture<QueryResult> createdb = openGeminiJdkClient.createDatabase(databaseTestName);
+        QueryResult createDbRsp = createdb.get();
+        Assertions.assertEquals(1, createDbRsp.getResults().size());
+    }
+
+    @Test
+    void testDatabase() throws Exception {
+        String databaseTestName = "testDatabase_0001";
+        CompletableFuture<QueryResult> createdb = openGeminiJdkClient.createDatabase(databaseTestName);
+        QueryResult createDbRsp = createdb.get();
+        Assertions.assertEquals(1, createDbRsp.getResults().size());
+
+        Query showDatabasesQuery = new Query("SHOW DATABASES");
+        CompletableFuture<QueryResult> rstFuture = openGeminiJdkClient.query(showDatabasesQuery);
+        QueryResult rst = rstFuture.get();
+        Assertions.assertEquals(1, rst.getResults().size());
+        Series series = rst.getResults().get(0).getSeries().get(0);
+        Assertions.assertTrue(series.getValues().contains(List.of(databaseTestName)));
+
+        CompletableFuture<QueryResult> dropdb = openGeminiJdkClient.dropDatabase(databaseTestName);
+        QueryResult dropDbRsp = dropdb.get();
+        Assertions.assertEquals(1, dropDbRsp.getResults().size());
+    }
+
+    @Test
+    void testShowField() throws Exception {
+        String databaseTestName = "database_test_0001";
+        CompletableFuture<QueryResult> createdb = openGeminiJdkClient.createDatabase(databaseTestName);
+        createdb.get();
+
+        String measureTestName = "measure_test";
+        String rpTestName = "";
+        Query createMeasurementQuery = new Query(("CREATE MEASUREMENT %s (tag1 TAG,tag2 TAG,tag3 TAG, "
+                + "field1 INT64 FIELD, field2 BOOL, field3 STRING, field4 FLOAT64)")
+                .formatted(measureTestName), databaseTestName, rpTestName);
+        CompletableFuture<QueryResult> rstFuture = openGeminiJdkClient.queryPost(createMeasurementQuery);
+        QueryResult rst = rstFuture.get();
+        Assertions.assertEquals(1, rst.getResults().size());
+
+        Query showFieldQuery = new Query("SHOW TAG KEYS FROM %s limit 3 OFFSET 0".formatted(measureTestName),
+                databaseTestName, rpTestName);
+        CompletableFuture<QueryResult> showRstFuture = openGeminiJdkClient.query(showFieldQuery);
+        QueryResult showRst = showRstFuture.get();
+        Assertions.assertEquals(1, showRst.getResults().size());
+        Series series = showRst.getResults().get(0).getSeries().get(0);
+        Assertions.assertEquals(series.getName(), measureTestName);
+        Assertions.assertEquals(series.getColumns(), Collections.singletonList("tagKey"));
+        Assertions.assertEquals(series.getValues(), List.of(
+                List.of("tag1"), List.of("tag2"), List.of("tag3")));
+
+        CompletableFuture<QueryResult> dropdb = openGeminiJdkClient.dropDatabase(databaseTestName);
+        dropdb.get();
     }
 }
