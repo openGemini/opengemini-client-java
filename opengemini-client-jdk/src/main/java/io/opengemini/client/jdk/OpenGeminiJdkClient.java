@@ -15,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiJdkClient extends BaseClient {
@@ -41,18 +42,27 @@ public class OpenGeminiJdkClient extends BaseClient {
         this.client = builder.build();
     }
 
-    public CompletableFuture<QueryResult> createDatabase(String database) {
+    public CompletableFuture<Void> createDatabase(String database) {
         String command = "CREATE DATABASE \"%s\"".formatted(database);
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
-    public CompletableFuture<QueryResult> dropDatabase(String database) {
+    public CompletableFuture<Void> dropDatabase(String database) {
         String command = "DROP DATABASE \"%s\"".formatted(database);
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+    }
+
+    public CompletableFuture<List<String>> showDatabases() {
+        String command = "SHOW DATABASES";
+        Query query = new Query(command);
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST)
+                .thenApply(rsp -> rsp.getResults().get(0).getSeries().get(0).getValues().stream()
+                        .map(x -> String.valueOf(x.get(0))).toList());
     }
 
     public CompletableFuture<QueryResult> query(Query query) {
@@ -60,16 +70,11 @@ public class OpenGeminiJdkClient extends BaseClient {
         return httpExcute(queryUrl, QueryResult.class);
     }
 
-    public CompletableFuture<QueryResult> queryPost(Query query) {
-        String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST);
-    }
-
-    public <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {
+    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {
         return httpExcute(url, type, UrlConst.GET);
     }
 
-    public <T> CompletableFuture<T> httpExcute(String url, Class<T> type, String method) {
+    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type, String method) {
         CompletableFuture<HttpResponse<String>> future;
         if (UrlConst.GET.equals(method)) {
             future = get(url);
