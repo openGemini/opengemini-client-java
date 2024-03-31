@@ -30,6 +30,7 @@
         <kotlin.version>1.9.22</kotlin.version>
         <lombok.version>1.18.30</lombok.version>
         <log4j.version>2.20.0</log4j.version>
+        <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
         <okhttp.version>4.12.0</okhttp.version>
         <jackson.version>2.16.1</jackson.version>
         <puppycrawl.version>10.12.3</puppycrawl.version>
@@ -47,7 +48,6 @@
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-        <maven-release-plugin-scm-provider-gitexe.version>2.0.1</maven-release-plugin-scm-provider-gitexe.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
         <nexus-staging-plugin.version>1.6.13</nexus-staging-plugin.version>
@@ -184,7 +184,7 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>${maven-release-plugin-scm-provider-gitexe.version}</version>
+                        <version>${maven-scm-provider-gitexe.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
