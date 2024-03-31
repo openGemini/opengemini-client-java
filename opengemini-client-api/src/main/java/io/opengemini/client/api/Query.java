@@ -25,5 +25,5 @@ public class Query {
 
     public Query(String command){
         this.command = command;
-    };
+    }
 }
