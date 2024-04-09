@@ -60,7 +60,7 @@ public class OpenGeminiJdkClient extends BaseClient {
         String command = "SHOW DATABASES";
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST)
+        return httpExcute(queryUrl, QueryResult.class)
                 .thenApply(rsp -> rsp.getResults().get(0).getSeries().get(0).getValues().stream()
                         .map(x -> String.valueOf(x.get(0))).toList());
     }
@@ -75,11 +75,16 @@ public class OpenGeminiJdkClient extends BaseClient {
     }
 
     private <T> CompletableFuture<T> httpExcute(String url, Class<T> type, String method) {
+        return httpExcute(url, type, method, HttpRequest.BodyPublishers.noBody());
+    }
+
+    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type,
+                                                String method, HttpRequest.BodyPublisher bodyPublisher) {
         CompletableFuture<HttpResponse<String>> future;
         if (UrlConst.GET.equals(method)) {
             future = get(url);
         } else if (UrlConst.POST.equals(method)) {
-            future = post(url);
+            future = post(url, bodyPublisher);
         } else {
             Exception e = new RuntimeException("not support method:" + method);
             return CompletableFuture.failedFuture(e);
@@ -109,10 +114,10 @@ public class OpenGeminiJdkClient extends BaseClient {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public CompletableFuture<HttpResponse<String>> post(String url) {
+    public CompletableFuture<HttpResponse<String>> post(String url, HttpRequest.BodyPublisher bodyPublisher) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(buildUri(url))
-                .POST(HttpRequest.BodyPublishers.noBody())
+                .POST(bodyPublisher)
                 .timeout(this.conf.getTimeout())
                 .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
