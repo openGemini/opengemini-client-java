@@ -41,6 +41,11 @@ public class BaseClient {
         }
     }
 
+    protected String getWriteUrl(String database) {
+        String writeUrl = UrlConst.WRITE + "?db=" + database;
+        return writeUrl;
+    }
+
     protected String getQueryUrl(Query query) {
         String queryUrl = UrlConst.QUERY + "?q=" + encode(query.getCommand());
 
