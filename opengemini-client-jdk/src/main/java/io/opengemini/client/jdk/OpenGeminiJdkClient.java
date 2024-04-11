@@ -2,6 +2,7 @@ package io.opengemini.client.jdk;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
@@ -68,6 +69,13 @@ public class OpenGeminiJdkClient extends BaseClient {
     public CompletableFuture<QueryResult> query(Query query) {
         String queryUrl = getQueryUrl(query);
         return httpExcute(queryUrl, QueryResult.class);
+    }
+
+    public CompletableFuture<Void> write(String database, Point point) {
+        String writeUrl = getWriteUrl(database);
+        String body = point.toString();
+
+        return httpExcute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
     }
 
     private <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {

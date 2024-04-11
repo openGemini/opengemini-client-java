@@ -1,15 +1,18 @@
 package io.opengemini.client.jdk;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.Series;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -84,5 +87,41 @@ class OpenGeminiJdkClientTest {
 
         CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(databaseTestName);
         dropdb.get();
+    }
+
+    @SneakyThrows
+    @Test
+    void testWritePoint() {
+        String databaseName = "write_test_database_0001";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        createdb.get();
+
+        Point testPoint = new Point();
+        String measurementName = "write_test_measurement_0001";
+        testPoint.setMeasurement(measurementName);
+        HashMap<String, String> tags = new HashMap<>();
+        tags.put("tag", "test");
+        testPoint.setTags(tags);
+        HashMap<String, Object> fields = new HashMap<>();
+        fields.put("fields", "test");
+        testPoint.setFields(fields);
+
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName, testPoint);
+        writeRsp.get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
+        CompletableFuture<QueryResult> rst = openGeminiJdkClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(databaseName);
+        dropdb.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        System.out.println(x);
+        Assertions.assertEquals(x.getValues().size(), 1);
+        Assertions.assertTrue(x.getValues().get(0).contains("test"));
+        Assertions.assertTrue(x.getColumns().get(1).contains("fields"));
+        Assertions.assertTrue(x.getColumns().get(2).contains("tag"));
     }
 }
