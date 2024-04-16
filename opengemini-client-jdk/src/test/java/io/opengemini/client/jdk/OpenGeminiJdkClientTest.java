@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +107,7 @@ class OpenGeminiJdkClientTest {
     @SneakyThrows
     @Test
     void testWritePoint() {
-        String databaseName = "write_test_database_0001";
+        String databaseName = "write_database_0001";
         CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
         createdb.get();
 
@@ -131,7 +132,6 @@ class OpenGeminiJdkClientTest {
         Assertions.assertTrue(x.getColumns().contains("field0"));
         Assertions.assertTrue(x.getColumns().contains("tag0"));
     }
-
 
     @SneakyThrows
     @Test
@@ -162,5 +162,36 @@ class OpenGeminiJdkClientTest {
         Assertions.assertTrue(x.getColumns().contains("tag0"));
         Assertions.assertTrue(x.getColumns().contains("field29"));
         Assertions.assertTrue(x.getColumns().contains("tag29"));
+    }
+
+    @SneakyThrows
+    @Test
+    void testWriteBatchPoints() {
+        String databaseName = "writePointBatch_database_0001";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        createdb.get();
+
+        String measurementName = "writePointBatch_measurement_0001";
+        Point testPoint1 = generalTestPoint(measurementName, 1, 1);
+        Point testPoint2 = generalTestPoint(measurementName, 2, 1);
+        Point testPoint3 = generalTestPoint(measurementName, 3, 1);
+
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.writeBatch(
+                databaseName, Arrays.asList(testPoint1, testPoint2, testPoint3));
+        writeRsp.get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
+        CompletableFuture<QueryResult> rst = openGeminiJdkClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(databaseName);
+        dropdb.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        System.out.println(x);
+        Assertions.assertEquals(x.getValues().size(), 3);
+        Assertions.assertTrue(x.getColumns().contains("field0"));
+        Assertions.assertTrue(x.getColumns().contains("tag0"));
     }
 }
