@@ -89,6 +89,20 @@ class OpenGeminiJdkClientTest {
         dropdb.get();
     }
 
+    private Point generalTestPoint(String measurementName, int valueIndex, int fieldCount) {
+        Point testPoint = new Point();
+        testPoint.setMeasurement(measurementName);
+        HashMap<String, String> tags = new HashMap<>();
+        HashMap<String, Object> fields = new HashMap<>();
+        for (int i = 0; i < fieldCount; i++) {
+            tags.put("tag" + i, "value" + valueIndex);
+            fields.put("field" + i, "value" + valueIndex);
+        }
+        testPoint.setTags(tags);
+        testPoint.setFields(fields);
+        return testPoint;
+    }
+
     @SneakyThrows
     @Test
     void testWritePoint() {
@@ -96,15 +110,8 @@ class OpenGeminiJdkClientTest {
         CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
         createdb.get();
 
-        Point testPoint = new Point();
-        String measurementName = "write_test_measurement_0001";
-        testPoint.setMeasurement(measurementName);
-        HashMap<String, String> tags = new HashMap<>();
-        tags.put("tag", "test");
-        testPoint.setTags(tags);
-        HashMap<String, Object> fields = new HashMap<>();
-        fields.put("fields", "test");
-        testPoint.setFields(fields);
+        String measurementName = "write_measurement_0001";
+        Point testPoint = generalTestPoint(measurementName, 1, 1);
 
         CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName, testPoint);
         writeRsp.get();
@@ -120,8 +127,40 @@ class OpenGeminiJdkClientTest {
         Series x = queryResult.getResults().get(0).getSeries().get(0);
         System.out.println(x);
         Assertions.assertEquals(x.getValues().size(), 1);
-        Assertions.assertTrue(x.getValues().get(0).contains("test"));
-        Assertions.assertTrue(x.getColumns().get(1).contains("fields"));
-        Assertions.assertTrue(x.getColumns().get(2).contains("tag"));
+        Assertions.assertTrue(x.getValues().get(0).contains("value1"));
+        Assertions.assertTrue(x.getColumns().contains("field0"));
+        Assertions.assertTrue(x.getColumns().contains("tag0"));
+    }
+
+
+    @SneakyThrows
+    @Test
+    void testWritePointMoreFields() {
+        String databaseName = "write_database_0002";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        createdb.get();
+
+        String measurementName = "write_measurement_0002";
+        Point testPoint = generalTestPoint(measurementName, 1, 30);
+
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName, testPoint);
+        writeRsp.get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
+        CompletableFuture<QueryResult> rst = openGeminiJdkClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(databaseName);
+        dropdb.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        System.out.println(x);
+        Assertions.assertEquals(x.getValues().size(), 1);
+        Assertions.assertTrue(x.getValues().get(0).contains("value1"));
+        Assertions.assertTrue(x.getColumns().contains("field0"));
+        Assertions.assertTrue(x.getColumns().contains("tag0"));
+        Assertions.assertTrue(x.getColumns().contains("field29"));
+        Assertions.assertTrue(x.getColumns().contains("tag29"));
     }
 }
