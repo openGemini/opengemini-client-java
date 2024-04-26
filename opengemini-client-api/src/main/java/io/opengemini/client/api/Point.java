@@ -25,10 +25,12 @@ public class Point {
         sb.append(" ");
         boolean firstField = true;
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
-            if (!firstField) {
-                sb.append(",");
+            if (firstField) {
                 firstField = false;
+            } else {
+                sb.append(",");
             }
+
             sb.append(entry.getKey()).append("=");
             if (entry.getValue() instanceof String) {
                 sb.append("\"").append(entry.getValue()).append("\"");
