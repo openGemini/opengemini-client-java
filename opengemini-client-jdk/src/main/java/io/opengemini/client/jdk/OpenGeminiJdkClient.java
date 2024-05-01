@@ -17,6 +17,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiJdkClient extends BaseClient {
@@ -76,6 +77,14 @@ public class OpenGeminiJdkClient extends BaseClient {
         String body = point.toString();
 
         return httpExcute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
+    }
+
+    public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
+        String writeUrl = getWriteUrl(database);
+        StringJoiner sj = new StringJoiner("\n");
+        points.forEach(point -> sj.add(point.toString()));
+
+        return httpExcute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(sj.toString()));
     }
 
     private <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {
