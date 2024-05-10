@@ -28,8 +28,7 @@ public class BaseClient {
     }
 
     protected String nextUrlPrefix() {
-        int idx = prevIndex.addAndGet(1);
-        idx = idx % this.serverUrls.size();
+        int idx = Math.abs(prevIndex.incrementAndGet() % serverUrls.size());
         return serverUrls.get(idx);
     }
 
