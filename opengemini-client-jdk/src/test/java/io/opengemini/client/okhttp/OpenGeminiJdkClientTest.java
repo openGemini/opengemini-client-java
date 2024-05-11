@@ -1,4 +1,4 @@
-package io.opengemini.client.jdk;
+package io.opengemini.client.okhttp;
 
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.Point;

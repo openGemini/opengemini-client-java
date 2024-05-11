@@ -1,4 +1,4 @@
-package io.opengemini.client.jdk;
+package io.opengemini.client.okhttp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.opengemini.client.api.OpenGeminiException;
