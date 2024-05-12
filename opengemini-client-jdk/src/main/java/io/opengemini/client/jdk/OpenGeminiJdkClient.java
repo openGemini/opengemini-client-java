@@ -39,7 +39,7 @@ public class OpenGeminiJdkClient extends BaseClient {
                     tlsConfig.getKeyStorePassword(),
                     tlsConfig.getTrustStorePath(),
                     tlsConfig.getTrustStorePassword(),
-                    tlsConfig.isTlsVerificationDisabled()));
+                    tlsConfig.isTlsVerifyDisabled()));
         }
         this.client = builder.build();
     }
