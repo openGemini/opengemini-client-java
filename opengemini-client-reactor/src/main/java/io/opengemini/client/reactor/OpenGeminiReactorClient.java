@@ -32,10 +32,10 @@ public class OpenGeminiReactorClient extends BaseClient {
                         tlsConfig.getKeyStorePassword(),
                         tlsConfig.getTrustStorePath(),
                         tlsConfig.getTrustStorePassword(),
-                        tlsConfig.isTlsVerificationDisabled(),
+                        tlsConfig.isTlsVerifyDisabled(),
                         tlsConfig.getTlsVersions(),
                         tlsConfig.getTlsCipherSuites());
-                if (tlsConfig.isTlsHostnameVerificationDisabled()) {
+                if (tlsConfig.isTlsHostnameVerifyDisabled()) {
                     spec.sslContext(context)
                             .handlerConfigurator(HttpClientSecurityUtils.HOSTNAME_VERIFICATION_CONFIGURER);
                 } else {

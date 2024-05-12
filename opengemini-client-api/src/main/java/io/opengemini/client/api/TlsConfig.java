@@ -21,9 +21,9 @@ public class TlsConfig {
     @ToString.Exclude
     public String trustStorePassword;
 
-    public boolean tlsVerificationDisabled;
+    public boolean tlsVerifyDisabled;
 
-    public boolean tlsHostnameVerificationDisabled;
+    public boolean tlsHostnameVerifyDisabled;
 
     public String[] tlsVersions;
 
