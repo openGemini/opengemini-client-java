@@ -1,9 +1,12 @@
 package io.opengemini.client.jdk;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.RetentionPolicy;
+import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.api.Series;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -193,5 +197,71 @@ class OpenGeminiJdkClientTest {
         Assertions.assertEquals(x.getValues().size(), 3);
         Assertions.assertTrue(x.getColumns().contains("field0"));
         Assertions.assertTrue(x.getColumns().contains("tag0"));
+    }
+
+    @SneakyThrows
+    @Test
+    void testRetentionPolicyNormal() {
+        String testRpNameBase = "testRpName";
+        ArrayList<RpConfig> rps = new ArrayList<>();
+        rps.add(new RpConfig(testRpNameBase + 0, "3d", "", ""));
+        rps.add(new RpConfig(testRpNameBase + 1, "3d", "1h", ""));
+        rps.add(new RpConfig(testRpNameBase + 2, "3d", "1h", "7h"));
+        rps.add(new RpConfig(testRpNameBase + 3, "365d", "", ""));
+
+        String database = "testRpDatabase0001";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(database);
+        createdb.get();
+
+        for (int i = 0; i < rps.size(); i++) {
+            boolean isDefaultRp = Boolean.FALSE;
+            if (i == 4) {
+                isDefaultRp = Boolean.TRUE;
+            }
+            CompletableFuture<Void> createRsp = openGeminiJdkClient.createRetentionPolicy(
+                    database, rps.get(i), isDefaultRp);
+            createRsp.get();
+            Thread.sleep(2000);
+
+            CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiJdkClient.showRetentionPolicies(database);
+            List<RetentionPolicy> rsp = showRpRsp.get();
+            CompletableFuture<Void> dropRsp = openGeminiJdkClient.dropRetentionPolicy(database, rps.get(i).getName());
+            dropRsp.get();
+            String testRpName = testRpNameBase + i;
+            Assertions.assertTrue(rsp.stream().anyMatch(x -> x.getName().equals(testRpName)));
+        }
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(database);
+        dropdb.get();
+    }
+
+    @SneakyThrows
+    @Test
+    void testRetentionPolicyError() {
+        String testRpName = "testRpName";
+        RpConfig rp = new RpConfig(testRpName + 0, "d3d", "", "");
+
+        String database = "testRpDatabase0002";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(database);
+        createdb.get();
+
+        CompletableFuture<Void> createRsp = openGeminiJdkClient.createRetentionPolicy(
+                database, rp, Boolean.FALSE);
+
+        ExecutionException e = Assertions.assertThrows(ExecutionException.class, () -> createRsp.get());
+        Assertions.assertInstanceOf(OpenGeminiException.class, e.getCause());
+        Assertions.assertTrue(e.getCause().getMessage().contains(
+                "syntax error: unexpected IDENT, expecting DURATIONVAL"));
+
+        Thread.sleep(2000);
+
+        CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiJdkClient.showRetentionPolicies(database);
+        List<RetentionPolicy> rsp = showRpRsp.get();
+        CompletableFuture<Void> dropRsp = openGeminiJdkClient.dropRetentionPolicy(database, rp.getName());
+        dropRsp.get();
+        Assertions.assertFalse(rsp.contains(testRpName + 0));
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(database);
+        dropdb.get();
     }
 }

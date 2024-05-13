@@ -5,6 +5,8 @@ import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.RetentionPolicy;
+import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.JacksonService;
@@ -16,6 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
@@ -65,6 +68,73 @@ public class OpenGeminiJdkClient extends BaseClient {
         return httpExcute(queryUrl, QueryResult.class)
                 .thenApply(rsp -> rsp.getResults().get(0).getSeries().get(0).getValues().stream()
                         .map(x -> String.valueOf(x.get(0))).toList());
+    }
+
+    public CompletableFuture<Void> createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault) {
+        StringBuilder command = new StringBuilder("CREATE RETENTION POLICY ");
+        command.append(rpConfig.getName());
+        command.append(" ON ");
+        command.append(database);
+        command.append(" DURATION ");
+        command.append(rpConfig.getDuration());
+        command.append(" REPLICATION 1");
+
+        if (rpConfig.getShardGroupDuration() != null && !rpConfig.getShardGroupDuration().isBlank()) {
+            command.append(" SHARD DURATION ");
+            command.append(rpConfig.getShardGroupDuration());
+        }
+
+        if (rpConfig.getIndexDuration() != null && !rpConfig.getIndexDuration().isBlank()) {
+            command.append(" INDEX DURATION ");
+            command.append(rpConfig.getIndexDuration());
+        }
+
+        if (isDefault) {
+            command.append(" DEFAULT ");
+        }
+        Query query = new Query(command.toString());
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+    }
+
+    private List<RetentionPolicy> converseRps(List<List<Object>> queryRpValues) {
+        ArrayList<RetentionPolicy> retentionPolicies = new ArrayList<>();
+        queryRpValues.forEach(x -> retentionPolicies.add(converseRp(x)));
+        return retentionPolicies;
+    }
+
+    private RetentionPolicy converseRp(List<Object> queryRpValue) {
+        RetentionPolicy rst = new RetentionPolicy();
+        rst.setName((String) queryRpValue.get(0));
+        rst.setDuration((String) queryRpValue.get(1));
+        rst.setShardGroupDuration((String) queryRpValue.get(2));
+        rst.setHotDuration((String) queryRpValue.get(3));
+        rst.setWarmDuration((String) queryRpValue.get(4));
+        rst.setIndexDuration((String) queryRpValue.get(5));
+        rst.setReplicaNum((Integer) queryRpValue.get(6));
+        rst.setDefault((Boolean) queryRpValue.get(7));
+        return rst;
+    }
+
+    public CompletableFuture<List<RetentionPolicy>> showRetentionPolicies(String database) {
+        String command = "SHOW RETENTION POLICIES";
+        if (database == null || database.isBlank()) {
+            return null;
+        }
+
+        Query query = new Query(command);
+        query.setDatabase(database);
+
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class)
+                .thenApply(rsp -> converseRps(rsp.getResults().get(0).getSeries().get(0).getValues()));
+    }
+
+    public CompletableFuture<Void> dropRetentionPolicy(String database, String retentionPolicy) {
+        String command = "DROP RETENTION POLICY %s ON \"%s\"".formatted(retentionPolicy, database);
+        Query query = new Query(command);
+        String queryUrl = getQueryUrl(query);
+        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
     public CompletableFuture<QueryResult> query(Query query) {
