@@ -1,13 +1,13 @@
-name: line lint
+name: typo check
 on:
   pull_request:
     branches:
       - main
 jobs:
-  line_lint:
-    name: line lint
+  typo_check:
+    name: typo check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: linelint
-        uses: fernandrone/linelint@master
+      - name: Check typos
+        uses: crate-ci/typos@master

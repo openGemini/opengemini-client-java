@@ -51,21 +51,21 @@ public class OpenGeminiJdkClient extends BaseClient {
         String command = "CREATE DATABASE \"%s\"".formatted(database);
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
     public CompletableFuture<Void> dropDatabase(String database) {
         String command = "DROP DATABASE \"%s\"".formatted(database);
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
     public CompletableFuture<List<String>> showDatabases() {
         String command = "SHOW DATABASES";
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class)
+        return httpExecute(queryUrl, QueryResult.class)
                 .thenApply(rsp -> rsp.getResults().get(0).getSeries().get(0).getValues().stream()
                         .map(x -> String.valueOf(x.get(0))).toList());
     }
@@ -94,7 +94,7 @@ public class OpenGeminiJdkClient extends BaseClient {
         }
         Query query = new Query(command.toString());
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
     private List<RetentionPolicy> converseRps(List<List<Object>> queryRpValues) {
@@ -126,7 +126,7 @@ public class OpenGeminiJdkClient extends BaseClient {
         query.setDatabase(database);
 
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class)
+        return httpExecute(queryUrl, QueryResult.class)
                 .thenApply(rsp -> converseRps(rsp.getResults().get(0).getSeries().get(0).getValues()));
     }
 
@@ -134,19 +134,19 @@ public class OpenGeminiJdkClient extends BaseClient {
         String command = "DROP RETENTION POLICY %s ON \"%s\"".formatted(retentionPolicy, database);
         Query query = new Query(command);
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
+        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
     }
 
     public CompletableFuture<QueryResult> query(Query query) {
         String queryUrl = getQueryUrl(query);
-        return httpExcute(queryUrl, QueryResult.class);
+        return httpExecute(queryUrl, QueryResult.class);
     }
 
     public CompletableFuture<Void> write(String database, Point point) {
         String writeUrl = getWriteUrl(database);
         String body = point.toString();
 
-        return httpExcute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
+        return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
     }
 
     public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
@@ -154,19 +154,19 @@ public class OpenGeminiJdkClient extends BaseClient {
         StringJoiner sj = new StringJoiner("\n");
         points.forEach(point -> sj.add(point.toString()));
 
-        return httpExcute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(sj.toString()));
+        return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(sj.toString()));
     }
 
-    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type) {
-        return httpExcute(url, type, UrlConst.GET);
+    private <T> CompletableFuture<T> httpExecute(String url, Class<T> type) {
+        return httpExecute(url, type, UrlConst.GET);
     }
 
-    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type, String method) {
-        return httpExcute(url, type, method, HttpRequest.BodyPublishers.noBody());
+    private <T> CompletableFuture<T> httpExecute(String url, Class<T> type, String method) {
+        return httpExecute(url, type, method, HttpRequest.BodyPublishers.noBody());
     }
 
-    private <T> CompletableFuture<T> httpExcute(String url, Class<T> type,
-                                                String method, HttpRequest.BodyPublisher bodyPublisher) {
+    private <T> CompletableFuture<T> httpExecute(String url, Class<T> type,
+                                                 String method, HttpRequest.BodyPublisher bodyPublisher) {
         CompletableFuture<HttpResponse<String>> future;
         if (UrlConst.GET.equals(method)) {
             future = get(url);
