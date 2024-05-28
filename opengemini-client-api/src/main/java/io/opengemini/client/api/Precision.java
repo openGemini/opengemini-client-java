@@ -1,25 +1,29 @@
 package io.opengemini.client.api;
 
+import lombok.Getter;
+
+import java.util.concurrent.TimeUnit;
+
+@Getter
 public enum Precision {
-    PRECISIONNANOSECOND("PrecisionNanoSecond"),
+    PRECISIONNANOSECOND("PrecisionNanoSecond", TimeUnit.NANOSECONDS),
 
-    PRECISIONMICROSECOND("PrecisionMicrosecond"),
+    PRECISIONMICROSECOND("PrecisionMicrosecond", TimeUnit.MICROSECONDS),
 
-    PRECISIONMILLISECOND("PrecisionMillisecond"),
+    PRECISIONMILLISECOND("PrecisionMillisecond", TimeUnit.MILLISECONDS),
 
-    PRECISIONSECOND("PrecisionSecond"),
+    PRECISIONSECOND("PrecisionSecond", TimeUnit.SECONDS),
 
-    PRECISIONMINUTE("PrecisionMinute"),
+    PRECISIONMINUTE("PrecisionMinute", TimeUnit.MINUTES),
 
-    PRECISIONHOUR("PrecisionHour");
+    PRECISIONHOUR("PrecisionHour", TimeUnit.HOURS);
 
     private final String description;
 
-    Precision(String description) {
-        this.description = description;
-    }
+    private final TimeUnit timeUnit;
 
-    public String getDescription() {
-        return description;
+    Precision(String description, TimeUnit timeUnit) {
+        this.description = description;
+        this.timeUnit = timeUnit;
     }
 }

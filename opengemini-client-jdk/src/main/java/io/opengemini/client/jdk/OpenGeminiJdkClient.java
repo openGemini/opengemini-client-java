@@ -144,7 +144,7 @@ public class OpenGeminiJdkClient extends BaseClient {
 
     public CompletableFuture<Void> write(String database, Point point) {
         String writeUrl = getWriteUrl(database);
-        String body = point.toString();
+        String body = point.lineProtocol();
 
         return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
     }
@@ -152,7 +152,7 @@ public class OpenGeminiJdkClient extends BaseClient {
     public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
         String writeUrl = getWriteUrl(database);
         StringJoiner sj = new StringJoiner("\n");
-        points.forEach(point -> sj.add(point.toString()));
+        points.forEach(point -> sj.add(point.lineProtocol()));
 
         return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(sj.toString()));
     }
