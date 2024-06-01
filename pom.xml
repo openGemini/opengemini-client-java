@@ -31,8 +31,10 @@
         <lombok.version>1.18.30</lombok.version>
         <log4j.version>2.20.0</log4j.version>
         <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
+        <mockito.version>4.5.1</mockito.version>
         <okhttp.version>4.12.0</okhttp.version>
         <jackson.version>2.16.1</jackson.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
         <puppycrawl.version>10.12.3</puppycrawl.version>
         <reactor-netty.version>1.1.10</reactor-netty.version>
         <scala.version>3.4.0</scala.version>
@@ -64,6 +66,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -80,14 +92,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
