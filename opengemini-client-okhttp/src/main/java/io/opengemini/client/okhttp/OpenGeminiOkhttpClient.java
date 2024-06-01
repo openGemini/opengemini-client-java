@@ -85,6 +85,11 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
         }
     }
 
+    /**
+     * Execute a POST query call with OkHttpClient.
+     *
+     * @param query the query to execute.
+     */
     @Override
     protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
@@ -92,6 +97,11 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
         return execute(request, QueryResult.class);
     }
 
+    /**
+     * Execute a POST query call with OkHttpClient.
+     *
+     * @param query the query to execute.
+     */
     @Override
     protected CompletableFuture<QueryResult> executePostQuery(Query query) {
         String queryUrl = getQueryUrl(query);
@@ -101,6 +111,12 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
         return execute(request, QueryResult.class);
     }
 
+    /**
+     * Execute a write call with OkHttpClient.
+     *
+     * @param database     the name of the database.
+     * @param lineProtocol the line protocol string to write.
+     */
     @Override
     protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
         String writeUrl = getWriteUrl(database);
