@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BaseClient {
+public abstract class BaseClient {
     private final List<String> serverUrls = new ArrayList<>();
 
     private final AtomicInteger prevIndex = new AtomicInteger(-1);
@@ -41,8 +41,7 @@ public class BaseClient {
     }
 
     protected String getWriteUrl(String database) {
-        String writeUrl = UrlConst.WRITE + "?db=" + database;
-        return writeUrl;
+        return UrlConst.WRITE + "?db=" + database;
     }
 
     protected String getQueryUrl(Query query) {
