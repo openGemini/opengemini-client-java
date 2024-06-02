@@ -110,7 +110,7 @@ public class Point {
     private static void appendWithEscape(StringBuilder sb, String origin, char[] escapeChars) {
         for (char c : origin.toCharArray()) {
             if (shouldEscape(c, escapeChars)) {
-                sb.append("\\");
+                sb.append('\\');
             }
             sb.append(c);
         }
