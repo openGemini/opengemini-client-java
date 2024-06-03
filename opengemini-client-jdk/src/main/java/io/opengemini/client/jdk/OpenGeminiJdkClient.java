@@ -2,16 +2,11 @@ package io.opengemini.client.jdk;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.RetentionPolicy;
-import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.api.TlsConfig;
-import io.opengemini.client.common.BaseClient;
-import io.opengemini.client.common.CommandFactory;
+import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.JacksonService;
-import io.opengemini.client.common.ResultMapper;
 import io.opengemini.client.common.UrlConst;
 
 import java.net.URI;
@@ -20,11 +15,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
-public class OpenGeminiJdkClient extends BaseClient {
+public class OpenGeminiJdkClient extends BaseAsyncClient {
 
     private final Configuration conf;
 
@@ -48,72 +41,22 @@ public class OpenGeminiJdkClient extends BaseClient {
         this.client = builder.build();
     }
 
-    public CompletableFuture<Void> createDatabase(String database) {
-        String command = CommandFactory.createDatabase(database);
-        Query query = new Query(command);
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
-    }
-
-    public CompletableFuture<Void> dropDatabase(String database) {
-        String command = CommandFactory.dropDatabase(database);
-        Query query = new Query(command);
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
-    }
-
-    public CompletableFuture<List<String>> showDatabases() {
-        String command = CommandFactory.showDatabases();
-        Query query = new Query(command);
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class).thenApply(ResultMapper::toDatabases);
-    }
-
-    public CompletableFuture<Void> createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault) {
-        String command = CommandFactory.createRetentionPolicy(database, rpConfig, isDefault);
-        Query query = new Query(command);
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
-    }
-
-    public CompletableFuture<List<RetentionPolicy>> showRetentionPolicies(String database) {
-        if (database == null || database.isBlank()) {
-            return null;
-        }
-
-        String command = CommandFactory.showRetentionPolicies(database);
-        Query query = new Query(command);
-        query.setDatabase(database);
-
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class).thenApply(ResultMapper::toRetentionPolicies);
-    }
-
-    public CompletableFuture<Void> dropRetentionPolicy(String database, String retentionPolicy) {
-        String command = CommandFactory.dropRetentionPolicy(database, retentionPolicy);
-        Query query = new Query(command);
-        String queryUrl = getQueryUrl(query);
-        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST).thenApply(rsp -> null);
-    }
-
-    public CompletableFuture<QueryResult> query(Query query) {
+    @Override
+    protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return httpExecute(queryUrl, QueryResult.class);
     }
 
-    public CompletableFuture<Void> write(String database, Point point) {
-        String writeUrl = getWriteUrl(database);
-        String body = point.lineProtocol();
-
-        return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(body));
+    @Override
+    protected CompletableFuture<QueryResult> executePostQuery(Query query) {
+        String queryUrl = getQueryUrl(query);
+        return httpExecute(queryUrl, QueryResult.class, UrlConst.POST);
     }
 
-    public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
+    @Override
+    protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
         String writeUrl = getWriteUrl(database);
-        StringJoiner sj = new StringJoiner("\n");
-        points.forEach(point -> sj.add(point.lineProtocol()));
-
-        return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(sj.toString()));
+        return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(lineProtocol));
     }
 
     private <T> CompletableFuture<T> httpExecute(String url, Class<T> type) {
@@ -177,5 +120,10 @@ public class OpenGeminiJdkClient extends BaseClient {
     protected String encode(String str) {
         // jdk17 has a better way than jdk8
         return URLEncoder.encode(str, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public void close() {
+        // no need to close
     }
 }
