@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseAsyncClient;
+import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -126,8 +128,22 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
         return execute(request, Void.class);
     }
 
+    /**
+     * Execute a ping call with OkHttpClient.
+     */
+    @Override
+    protected CompletableFuture<Pong> executePing() {
+        String pingUrl = getPingUrl();
+        Request request = new Request.Builder().url(nextUrlPrefix() + pingUrl).get().build();
+        return composeExtractHeader(execute(request), HeaderConst.VERSION).thenApply(Pong::new);
+    }
+
     private <T> CompletableFuture<T> execute(Request request, Class<T> type) {
-        CompletableFuture<T> future = new CompletableFuture<>();
+        return composeExtractBody(execute(request), type);
+    }
+
+    private CompletableFuture<Response> execute(Request request) {
+        CompletableFuture<Response> future = new CompletableFuture<>();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
@@ -136,16 +152,21 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                int statusCode = response.code();
-                ResponseBody responseBody = response.body();
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                future.complete(response);
+            }
+        });
+        return future;
+    }
 
-                String responseBodyString;
-                if (responseBody != null) {
-                    responseBodyString = responseBody.string();
-                } else {
-                    responseBodyString = null;
-                }
+    private static <T> CompletableFuture<T> composeExtractBody(CompletableFuture<Response> responseFuture,
+                                                               Class<T> type) {
+        return responseFuture.thenCompose(response -> {
+            CompletableFuture<T> future = new CompletableFuture<>();
+
+            try {
+                int statusCode = response.code();
+                String responseBodyString = getResponseBodyString(response);
 
                 if (response.isSuccessful()) {
                     try {
@@ -155,12 +176,49 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
                         future.completeExceptionally(e);
                     }
                 } else {
-                    String httpErrorMsg = responseBodyString == null ? "empty body" : responseBodyString;
-                    future.completeExceptionally(new OpenGeminiException("http error: " + httpErrorMsg, statusCode));
+                    completeUnsuccessfulResponse(future, responseBodyString, statusCode);
                 }
+            } catch (IOException e) {
+                future.completeExceptionally(e);
             }
+            return future;
         });
-        return future;
+    }
+
+    private static CompletableFuture<String> composeExtractHeader(CompletableFuture<Response> responseFuture,
+                                                                  String headerName) {
+        return responseFuture.thenCompose(response -> {
+            CompletableFuture<String> future = new CompletableFuture<>();
+
+            try {
+                int statusCode = response.code();
+                String responseBodyString = getResponseBodyString(response);
+
+                if (response.isSuccessful()) {
+                    future.complete(response.header(headerName));
+                } else {
+                    completeUnsuccessfulResponse(future, responseBodyString, statusCode);
+                }
+            } catch (IOException e) {
+                future.completeExceptionally(e);
+            }
+            return future;
+        });
+    }
+
+    private static String getResponseBodyString(Response response) throws IOException {
+        ResponseBody responseBody = response.body();
+        if (responseBody != null) {
+            return responseBody.string();
+        } else {
+            return null;
+        }
+    }
+
+    private static <T> void completeUnsuccessfulResponse(CompletableFuture<T> future, String responseBodyString,
+                                                         int statusCode) {
+        String httpErrorMsg = responseBodyString == null ? "empty body" : responseBodyString;
+        future.completeExceptionally(new OpenGeminiException("http error: " + httpErrorMsg, statusCode));
     }
 
     @Override

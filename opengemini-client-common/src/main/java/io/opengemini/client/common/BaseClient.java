@@ -44,6 +44,10 @@ public abstract class BaseClient {
         return UrlConst.WRITE + "?db=" + database;
     }
 
+    protected String getPingUrl() {
+        return UrlConst.PING;
+    }
+
     protected String getQueryUrl(Query query) {
         String queryUrl = UrlConst.QUERY + "?q=" + encode(query.getCommand());
 

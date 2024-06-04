@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseAsyncClient;
+import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import io.opengemini.client.common.UrlConst;
 
@@ -94,6 +96,16 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
     protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
         String writeUrl = getWriteUrl(database);
         return httpExecute(writeUrl, Void.class, UrlConst.POST, HttpRequest.BodyPublishers.ofString(lineProtocol));
+    }
+
+    /**
+     * Execute a ping call with java HttpClient.
+     */
+    @Override
+    protected CompletableFuture<Pong> executePing() {
+        String pingUrl = getPingUrl();
+        return get(pingUrl).thenApply(response -> response.headers().firstValue(HeaderConst.VERSION).orElse(null))
+                .thenApply(Pong::new);
     }
 
     private <T> CompletableFuture<T> httpExecute(String url, Class<T> type) {

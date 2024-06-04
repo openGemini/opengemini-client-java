@@ -6,9 +6,11 @@ import io.netty.handler.codec.http.HttpStatusClass;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.common.BaseAsyncClient;
+import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
@@ -87,6 +89,18 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
                 .execute()
                 .toCompletableFuture();
         return compose(responseFuture, Void.class);
+    }
+
+    /**
+     * Execute a ping call with AsyncHttpClient.
+     */
+    @Override
+    protected CompletableFuture<Pong> executePing() {
+        String pingUrl = getPingUrl();
+        return asyncHttpClient.prepareGet(nextUrlPrefix() + pingUrl)
+                .execute()
+                .toCompletableFuture()
+                .thenApply(response -> new Pong(response.getHeader(HeaderConst.VERSION)));
     }
 
     private <T> CompletableFuture<T> compose(CompletableFuture<Response> responseFuture, Class<T> type) {
