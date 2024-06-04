@@ -41,18 +41,34 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
         this.client = builder.build();
     }
 
+    /**
+     * Execute a GET query call with java HttpClient.
+     *
+     * @param query the query to execute.
+     */
     @Override
     protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return httpExecute(queryUrl, QueryResult.class);
     }
 
+    /**
+     * Execute a POST query call with java HttpClient.
+     *
+     * @param query the query to execute.
+     */
     @Override
     protected CompletableFuture<QueryResult> executePostQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return httpExecute(queryUrl, QueryResult.class, UrlConst.POST);
     }
 
+    /**
+     * Execute a write call with java HttpClient.
+     *
+     * @param database     the name of the database.
+     * @param lineProtocol the line protocol string to write.
+     */
     @Override
     protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
         String writeUrl = getWriteUrl(database);

@@ -19,6 +19,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         super(conf);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> createDatabase(String database) {
         String command = CommandFactory.createDatabase(database);
@@ -26,6 +29,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executePostQuery(query).thenApply(rsp -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> dropDatabase(String database) {
         String command = CommandFactory.dropDatabase(database);
@@ -33,6 +39,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executePostQuery(query).thenApply(rsp -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<List<String>> showDatabases() {
         String command = CommandFactory.showDatabases();
@@ -40,6 +49,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executeQuery(query).thenApply(ResultMapper::toDatabases);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault) {
         String command = CommandFactory.createRetentionPolicy(database, rpConfig, isDefault);
@@ -47,6 +59,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executePostQuery(query).thenApply(rsp -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<List<RetentionPolicy>> showRetentionPolicies(String database) {
         if (StringUtils.isBlank(database)) {
@@ -59,6 +74,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executeQuery(query).thenApply(ResultMapper::toRetentionPolicies);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> dropRetentionPolicy(String database, String retentionPolicy) {
         String command = CommandFactory.dropRetentionPolicy(database, retentionPolicy);
@@ -66,17 +84,26 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executePostQuery(query).thenApply(rsp -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<QueryResult> query(Query query) {
         return executeQuery(query);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> write(String database, Point point) {
         String body = point.lineProtocol();
         return executeWrite(database, body);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
         StringJoiner sj = new StringJoiner("\n");

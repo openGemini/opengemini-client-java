@@ -24,6 +24,13 @@ public class Point {
     Map<String, String> tags;
     Map<String, Object> fields;
 
+    /**
+     * Calculate the line protocol string for this point
+     *
+     * @return the line protocol string without new line, empty when there are no fields to write
+     * @see <a href="https://docs.opengemini.org/zh/guide/write_data/insert_line_protocol.html">
+     * * OpenGemini write data line protocol doc</a>
+     */
     public String lineProtocol() {
         StringBuilder sb = SB_CACHE.get();
         sb.setLength(0);
