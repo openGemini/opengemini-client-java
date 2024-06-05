@@ -3,6 +3,7 @@ package io.opengemini.client.asynchttpclient;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
+import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RetentionPolicy;
@@ -255,6 +256,14 @@ class OpenGeminiAsyncHttpClientTest {
 
         CompletableFuture<Void> dropDbFuture = openGeminiAsyncHttpClient.dropDatabase(database);
         dropDbFuture.get();
+    }
+
+    @Test
+    void ping() throws Exception {
+        CompletableFuture<Pong> pingFuture = openGeminiAsyncHttpClient.ping();
+        Pong pong = pingFuture.get();
+
+        Assertions.assertNotNull(pong.getVersion());
     }
 
     private static Point testPoint(String measurementName, int valueIndex, int fieldCount) {

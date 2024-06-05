@@ -3,6 +3,7 @@ package io.opengemini.client.common;
 import io.opengemini.client.api.BaseConfiguration;
 import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.Point;
+import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RetentionPolicy;
@@ -112,6 +113,14 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Pong> ping() {
+        return executePing();
+    }
+
+    /**
      * The implementation class needs to implement this method to execute a GET query call.
      *
      * @param query the query to execute.
@@ -132,5 +141,10 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * @param lineProtocol the line protocol string to write.
      */
     protected abstract CompletableFuture<Void> executeWrite(String database, String lineProtocol);
+
+    /**
+     * The implementation class needs to implement this method to execute a ping call.
+     */
+    protected abstract CompletableFuture<Pong> executePing();
 
 }
