@@ -1,6 +1,8 @@
 package io.opengemini.client.jdk;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
@@ -32,6 +34,7 @@ class OpenGeminiJdkClientTest {
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3))
                 .timeout(Duration.ofSeconds(5))
+                .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@", null))
                 .build();
         this.openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
     }

@@ -1,6 +1,8 @@
 package io.opengemini.client.jdk;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
@@ -9,6 +11,8 @@ import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.JacksonService;
 import io.opengemini.client.common.UrlConst;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -38,7 +42,24 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
                     tlsConfig.getTrustStorePassword(),
                     tlsConfig.isTlsVerifyDisabled()));
         }
+
+        AuthConfig authConfig = conf.getAuthConfig();
+        if (authConfig != null) {
+            AuthType authType = authConfig.getAuthType();
+            if (AuthType.PASSWORD.equals(authType)) {
+                builder.authenticator(getAuthenticator(authConfig.getUsername(), authConfig.getPassword()));
+            }
+        }
         this.client = builder.build();
+    }
+
+    private Authenticator getAuthenticator(String username, String password) {
+        return new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password.toCharArray());
+            }
+        };
     }
 
     /**
