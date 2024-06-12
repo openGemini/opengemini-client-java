@@ -126,7 +126,7 @@ public class OpenGeminiReactorClient extends BaseClient {
                 return content.asString();
             } else {
                 return content.asString()
-                        .flatMap(body -> Mono.error(new OpenGeminiException(body, code)));
+                        .flatMap(body -> Mono.error(new OpenGeminiException(body+ code)));
             }
         });
     }

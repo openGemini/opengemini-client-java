@@ -1,26 +1,11 @@
 package io.opengemini.client.okhttp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Pong;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.TlsConfig;
+import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.ConnectionPool;
-import okhttp3.ConnectionSpec;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -218,7 +203,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     private static <T> void completeUnsuccessfulResponse(CompletableFuture<T> future, String responseBodyString,
                                                          int statusCode) {
         String httpErrorMsg = responseBodyString == null ? "empty body" : responseBodyString;
-        future.completeExceptionally(new OpenGeminiException("http error: " + httpErrorMsg, statusCode));
+        future.completeExceptionally(new OpenGeminiException("http error: " + httpErrorMsg + statusCode));
     }
 
     @Override
