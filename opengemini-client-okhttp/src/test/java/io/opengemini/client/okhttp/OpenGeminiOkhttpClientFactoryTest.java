@@ -3,16 +3,17 @@ package io.opengemini.client.okhttp;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.TlsConfig;
+import io.opengemini.client.test.common.TlsTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.util.Collections;
 
 class OpenGeminiOkhttpClientFactoryTest {
-    static final String KEYSTORE_JKS = "jks/keystore.jks";
-    static final String TRUSTSTORE_JKS = "jks/truststore.jks";
-    static final String JKS_PASSWORD = "123456";
-    static final String TEST_JKS_PATH = "src/test/resources/";
+    static final String KEYSTORE_JKS_PATH = TlsTestUtil.getResourcePathOfKeyStoreJks();
+    static final String TRUSTSTORE_JKS_PATH = TlsTestUtil.getResourcePathOfTrustStoreJks();
+    static final String JKS_PASSWORD = TlsTestUtil.getJksPassword();
 
     private static TlsConfig getBasicTlsConfig() {
         TlsConfig tlsConfig = new TlsConfig();
@@ -39,7 +40,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         TlsConfig tlsConfig = getBasicTlsConfig();
 
         // test tls config with keystore only
-        tlsConfig.setKeyStorePath(TEST_JKS_PATH + KEYSTORE_JKS);
+        tlsConfig.setKeyStorePath(KEYSTORE_JKS_PATH);
         tlsConfig.setKeyStorePassword(JKS_PASSWORD);
         tlsConfig.setTlsVerifyDisabled(true);
         Configuration configuration = Configuration.builder()
@@ -59,7 +60,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         TlsConfig tlsConfig = getBasicTlsConfig();
 
         // test tls config with truststore only
-        tlsConfig.setTrustStorePath(TEST_JKS_PATH + TRUSTSTORE_JKS);
+        tlsConfig.setTrustStorePath(TRUSTSTORE_JKS_PATH);
         tlsConfig.setTrustStorePassword(JKS_PASSWORD);
         tlsConfig.setTlsVerifyDisabled(false);
         Configuration configuration = Configuration.builder()
@@ -79,9 +80,9 @@ class OpenGeminiOkhttpClientFactoryTest {
         TlsConfig tlsConfig = getBasicTlsConfig();
 
         // test tls config with key store and trust store
-        tlsConfig.setKeyStorePath(TEST_JKS_PATH + "jks/keystore.jks");
+        tlsConfig.setKeyStorePath(KEYSTORE_JKS_PATH);
         tlsConfig.setKeyStorePassword(JKS_PASSWORD);
-        tlsConfig.setTrustStorePath(TEST_JKS_PATH + "jks/truststore.jks");
+        tlsConfig.setTrustStorePath(TRUSTSTORE_JKS_PATH);
         tlsConfig.setTrustStorePassword(JKS_PASSWORD);
         tlsConfig.setTlsVerifyDisabled(false);
         Configuration configuration = Configuration.builder()
