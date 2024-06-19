@@ -137,7 +137,7 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
                     return CompletableFuture.failedFuture(e);
                 }
             } else {
-                return CompletableFuture.failedFuture(new OpenGeminiException("http error: " + response.body(),
+                return CompletableFuture.failedFuture(new OpenGeminiException("http error: " + response.body()+
                         response.statusCode()));
             }
         });
