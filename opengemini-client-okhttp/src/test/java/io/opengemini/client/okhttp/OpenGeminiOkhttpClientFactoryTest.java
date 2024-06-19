@@ -3,9 +3,10 @@ package io.opengemini.client.okhttp;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.TlsConfig;
+import io.opengemini.client.test.common.TlsTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import utils.TlsTestUtil;
+
 import java.time.Duration;
 import java.util.Collections;
 

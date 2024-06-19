@@ -1,4 +1,4 @@
-package utils;
+package io.opengemini.client.test.common;
 
 public class TlsTestUtil {
     public static final String JKS_PASSWORD = "TestOpenGemini@#123";
