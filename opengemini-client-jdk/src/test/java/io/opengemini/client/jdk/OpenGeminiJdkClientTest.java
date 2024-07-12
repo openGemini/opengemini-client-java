@@ -252,7 +252,7 @@ class OpenGeminiJdkClientTest {
         CompletableFuture<Void> createRsp = openGeminiJdkClient.createRetentionPolicy(
                 database, rp, Boolean.FALSE);
 
-        ExecutionException e = Assertions.assertThrows(ExecutionException.class, () -> createRsp.get());
+        ExecutionException e = Assertions.assertThrows(ExecutionException.class, createRsp::get);
         Assertions.assertInstanceOf(OpenGeminiException.class, e.getCause());
         Assertions.assertTrue(e.getCause().getMessage().contains(
                 "syntax error: unexpected IDENT, expecting DURATIONVAL"));
@@ -263,10 +263,11 @@ class OpenGeminiJdkClientTest {
         List<RetentionPolicy> rsp = showRpRsp.get();
         CompletableFuture<Void> dropRsp = openGeminiJdkClient.dropRetentionPolicy(database, rp.getName());
         dropRsp.get();
-        Assertions.assertFalse(rsp.contains(testRpName + 0));
+        for (RetentionPolicy retentionPolicy : rsp) {
+            Assertions.assertFalse(retentionPolicy.getName().contains(testRpName + 0));
+        }
 
-        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(database);
-        dropdb.get();
+        openGeminiJdkClient.dropDatabase(database).get();
     }
 
     @Test

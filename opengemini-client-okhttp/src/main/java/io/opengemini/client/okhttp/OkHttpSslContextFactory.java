@@ -29,8 +29,7 @@ class OkHttpSslContextFactory {
             SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(keyManagers, trustManagers, new SecureRandom());
             X509TrustManager x509TrustManager = (X509TrustManager) trustManagers[0];
-            OkHttpSslContext okHttpSslContext = new OkHttpSslContext(sslContext.getSocketFactory(), x509TrustManager);
-            return okHttpSslContext;
+            return new OkHttpSslContext(sslContext.getSocketFactory(), x509TrustManager);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
