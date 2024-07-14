@@ -134,7 +134,6 @@ class OpenGeminiJdkClientTest {
         dropdb.get();
 
         Series x = queryResult.getResults().get(0).getSeries().get(0);
-        System.out.println(x);
         Assertions.assertEquals(x.getValues().size(), 1);
         Assertions.assertTrue(x.getValues().get(0).contains("value1"));
         Assertions.assertTrue(x.getColumns().contains("field0"));
@@ -163,7 +162,6 @@ class OpenGeminiJdkClientTest {
         dropdb.get();
 
         Series x = queryResult.getResults().get(0).getSeries().get(0);
-        System.out.println(x);
         Assertions.assertEquals(x.getValues().size(), 1);
         Assertions.assertTrue(x.getValues().get(0).contains("value1"));
         Assertions.assertTrue(x.getColumns().contains("field0"));
@@ -197,7 +195,6 @@ class OpenGeminiJdkClientTest {
         dropdb.get();
 
         Series x = queryResult.getResults().get(0).getSeries().get(0);
-        System.out.println(x);
         Assertions.assertEquals(x.getValues().size(), 3);
         Assertions.assertTrue(x.getColumns().contains("field0"));
         Assertions.assertTrue(x.getColumns().contains("tag0"));
