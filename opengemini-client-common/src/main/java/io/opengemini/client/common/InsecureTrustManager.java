@@ -1,4 +1,4 @@
-package io.opengemini.client.api;
+package io.opengemini.client.common;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;

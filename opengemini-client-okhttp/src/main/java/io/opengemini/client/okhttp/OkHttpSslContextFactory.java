@@ -1,6 +1,6 @@
 package io.opengemini.client.okhttp;
 
-import io.opengemini.client.api.InsecureTrustManager;
+import io.opengemini.client.common.InsecureTrustManager;
 import io.opengemini.client.api.TlsConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
