@@ -1,11 +1,14 @@
 package io.opengemini.client.okhttp;
 
-import io.opengemini.client.common.InsecureTrustManager;
 import io.opengemini.client.api.TlsConfig;
+import io.opengemini.client.common.InsecureTrustManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -13,9 +16,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 
 class OkHttpSslContextFactory {
     static OkHttpSslContext createOkHttpSslContext(TlsConfig tlsConfig) {

@@ -23,7 +23,8 @@ public class Query {
      */
     private String retentionPolicy;
 
-    public Query(String command){
+    public Query(String command) {
         this.command = command;
     }
+
 }

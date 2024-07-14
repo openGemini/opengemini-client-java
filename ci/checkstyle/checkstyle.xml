@@ -41,8 +41,8 @@ page at http://checkstyle.sourceforge.net/config.html -->
     <module name="RegexpSingleline">
         <!-- Checks that TODOs don't have stuff in parenthesis, e.g., username. -->
         <property name="format" value="((//.*)|(\*.*))TODO\("/>
-        <property name="message" value="TODO comments must not include usernames." />
-        <property name="severity" value="error" />
+        <property name="message" value="TODO comments must not include usernames."/>
+        <property name="severity" value="error"/>
     </module>
 
     <module name="RegexpSingleline">
@@ -58,7 +58,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
     </module>
 
     <module name="SuppressionFilter">
-        <property name="file" value="${checkstyle.suppressions.file}" default="suppressions.xml" />
+        <property name="file" value="${checkstyle.suppressions.file}" default="suppressions.xml"/>
     </module>
 
     <!-- Check that every module has a package-info.java -->
@@ -73,11 +73,11 @@ page at http://checkstyle.sourceforge.net/config.html -->
             <property name="checkFormat" value="$1"/>
         </module>
 
-        <module name="SuppressWarningsHolder" />
+        <module name="SuppressWarningsHolder"/>
 
         <module name="TodoComment">
             <!-- Checks that disallowed strings are not used in comments.  -->
-            <property name="format" value="(FIXME)|(XXX)" />
+            <property name="format" value="(FIXME)|(XXX)"/>
         </module>
 
         <!--
@@ -103,7 +103,8 @@ page at http://checkstyle.sourceforge.net/config.html -->
             <!-- Checks for redundant modifiers on various symbol definitions.
               See: http://checkstyle.sourceforge.net/config_modifier.html#RedundantModifier
             -->
-            <property name="tokens" value="METHOD_DEF, VARIABLE_DEF, ANNOTATION_FIELD_DEF, INTERFACE_DEF, CLASS_DEF, ENUM_DEF"/>
+            <property name="tokens"
+                      value="METHOD_DEF, VARIABLE_DEF, ANNOTATION_FIELD_DEF, INTERFACE_DEF, CLASS_DEF, ENUM_DEF"/>
         </module>
 
         <module name="UnusedImports">
@@ -299,6 +300,15 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
         <!-- Detects empty statements (standalone ";" semicolon). -->
         <module name="EmptyStatement"/>
+
+        <!-- Checks if unnecessary semicolon is used after type declaration. -->
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <!-- Checks if unnecessary semicolon is used after type member declaration. -->
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+        <!-- Checks if unnecessary semicolon is in enum definitions. -->
+        <module name="UnnecessarySemicolonInEnumeration"/>
+        <!-- Checks if unnecessary semicolon is used in last resource declaration. -->
+        <module name="UnnecessarySemicolonInTryWithResources"/>
 
         <!--
 
