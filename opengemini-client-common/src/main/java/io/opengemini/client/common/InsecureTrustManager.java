@@ -1,8 +1,8 @@
 package io.opengemini.client.common;
 
-import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import javax.net.ssl.X509TrustManager;
 
 public class InsecureTrustManager implements X509TrustManager {
 
