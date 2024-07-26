@@ -3,6 +3,7 @@
 
 # ide
 .idea/**
+!.idea/icon.svg
 
 # Project exclude paths
 **.log
