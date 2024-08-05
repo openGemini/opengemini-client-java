@@ -14,12 +14,12 @@ public class TlsConfig {
     public String keyStorePath;
 
     @ToString.Exclude
-    public String keyStorePassword;
+    public char[] keyStorePassword;
 
     public String trustStorePath;
 
     @ToString.Exclude
-    public String trustStorePassword;
+    public char[] trustStorePassword;
 
     public boolean tlsVerifyDisabled;
 

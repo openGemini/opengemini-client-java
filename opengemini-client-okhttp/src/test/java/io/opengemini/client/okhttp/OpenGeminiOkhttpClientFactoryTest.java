@@ -13,7 +13,7 @@ import java.util.Collections;
 class OpenGeminiOkhttpClientFactoryTest {
     static final String KEYSTORE_JKS_PATH = TlsTestUtil.getResourcePathOfKeyStoreJks();
     static final String TRUSTSTORE_JKS_PATH = TlsTestUtil.getResourcePathOfTrustStoreJks();
-    static final String JKS_PASSWORD = TlsTestUtil.getJksPassword();
+    static final char[] JKS_PASSWORD = TlsTestUtil.getJksPassword();
 
     private static TlsConfig getBasicTlsConfig() {
         TlsConfig tlsConfig = new TlsConfig();

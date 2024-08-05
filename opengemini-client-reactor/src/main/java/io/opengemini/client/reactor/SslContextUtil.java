@@ -12,8 +12,8 @@ import javax.net.ssl.TrustManagerFactory;
 
 public class SslContextUtil {
     public static SslContext buildFromJks(
-            String keyStorePath, String keyStorePassword,
-            String trustStorePath, String trustStorePassword,
+            String keyStorePath, char[] keyStorePassword,
+            String trustStorePath, char[] trustStorePassword,
             boolean disableSslVerify, String[] tlsProtocols, String[] tlsCiphers) {
 
         try {
@@ -22,11 +22,11 @@ public class SslContextUtil {
             if (keyStorePath != null && keyStorePassword != null) {
                 KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
                 try (FileInputStream keyStoreInputStream = new FileInputStream(keyStorePath)) {
-                    keyStore.load(keyStoreInputStream, keyStorePassword.toCharArray());
+                    keyStore.load(keyStoreInputStream, keyStorePassword);
                 }
                 String defaultKeyAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
                 KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(defaultKeyAlgorithm);
-                keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
+                keyManagerFactory.init(keyStore, keyStorePassword);
                 sslContextBuilder.keyManager(keyManagerFactory);
             }
 
@@ -35,7 +35,7 @@ public class SslContextUtil {
             } else if (trustStorePath != null && trustStorePassword != null) {
                 KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
                 try (FileInputStream trustStoreInputStream = new FileInputStream(trustStorePath)) {
-                    trustStore.load(trustStoreInputStream, trustStorePassword.toCharArray());
+                    trustStore.load(trustStoreInputStream, trustStorePassword);
                 }
                 String defaultTrustAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(defaultTrustAlgorithm);

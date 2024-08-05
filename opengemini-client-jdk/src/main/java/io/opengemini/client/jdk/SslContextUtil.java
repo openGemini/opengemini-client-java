@@ -13,28 +13,28 @@ import javax.net.ssl.TrustManagerFactory;
 public class SslContextUtil {
 
     public static SSLContext buildSSLContextFromJks(String keyStorePath,
-                                              String keyStorePassword,
+                                              char[] keyStorePassword,
                                               String trustStorePath,
-                                              String trustStorePassword,
+                                              char[] trustStorePassword,
                                               boolean disableSslVerify) {
         try {
             // Load the key store
             KeyStore keyStore = KeyStore.getInstance("JKS");
             try (FileInputStream keyStoreFile = new FileInputStream(keyStorePath)) {
-                keyStore.load(keyStoreFile, keyStorePassword.toCharArray());
+                keyStore.load(keyStoreFile, keyStorePassword);
             }
 
             // Set up key manager factory to use our key store
             String defaultKeyAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(defaultKeyAlgorithm);
-            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
+            keyManagerFactory.init(keyStore, keyStorePassword);
 
             // Load the trust store, if specified
             TrustManagerFactory trustManagerFactory = null;
             if (trustStorePath != null) {
                 KeyStore trustStore = KeyStore.getInstance("JKS");
                 try (FileInputStream trustStoreFile = new FileInputStream(trustStorePath)) {
-                    trustStore.load(trustStoreFile, trustStorePassword.toCharArray());
+                    trustStore.load(trustStoreFile, trustStorePassword);
                 }
 
                 // Set up trust manager factory to use our trust store

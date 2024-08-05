@@ -1,7 +1,7 @@
 package io.opengemini.client.test.common;
 
 public class TlsTestUtil {
-    public static final String JKS_PASSWORD = "TestOpenGemini@#123";
+    private static final char[] JKS_PASSWORD = "TestOpenGemini@#123".toCharArray();
     private static final String ABSOLUTE_RESOURCE_PATH =
         TlsTestUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
@@ -13,7 +13,7 @@ public class TlsTestUtil {
         return ABSOLUTE_RESOURCE_PATH + "/jks/truststore.jks";
     }
 
-    public static String getJksPassword() {
+    public static char[] getJksPassword() {
         return JKS_PASSWORD;
     }
 }
