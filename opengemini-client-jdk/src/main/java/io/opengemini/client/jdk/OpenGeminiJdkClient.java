@@ -38,11 +38,11 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
         if (conf.isTlsEnabled()) {
             TlsConfig tlsConfig = conf.getTlsConfig();
             builder = builder.sslContext(SslContextUtil.buildSSLContextFromJks(
-                    tlsConfig.getKeyStorePath(),
-                    tlsConfig.getKeyStorePassword(),
-                    tlsConfig.getTrustStorePath(),
-                    tlsConfig.getTrustStorePassword(),
-                    tlsConfig.isTlsVerifyDisabled()));
+                    tlsConfig.keyStorePath,
+                    tlsConfig.keyStorePassword,
+                    tlsConfig.trustStorePath,
+                    tlsConfig.trustStorePassword,
+                    tlsConfig.tlsVerifyDisabled));
         }
 
         AuthConfig authConfig = conf.getAuthConfig();
