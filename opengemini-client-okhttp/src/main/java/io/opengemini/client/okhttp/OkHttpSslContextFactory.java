@@ -36,7 +36,7 @@ class OkHttpSslContextFactory {
     }
 
     private static KeyManager[] getKeyManagers(String keyStorePath,
-                                               String keyStorePassword) {
+                                               char[] keyStorePassword) {
         try {
             if (keyStorePath == null) {
                 return null;
@@ -45,7 +45,7 @@ class OkHttpSslContextFactory {
             KeyStore keyStore = loadKeyStore(keyStorePath, keyStorePassword);
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
                     KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
+            keyManagerFactory.init(keyStore, keyStorePassword);
             return keyManagerFactory.getKeyManagers();
         } catch (Exception e) {
             throw new IllegalStateException(e);
@@ -54,7 +54,7 @@ class OkHttpSslContextFactory {
 
     @NotNull
     private static TrustManager[] getTrustManagers(String trustStorePath,
-                                                   String trustStorePassword,
+                                                   char[] trustStorePassword,
                                                    boolean disableSslVerify) {
         try {
             if (disableSslVerify) {
@@ -72,11 +72,10 @@ class OkHttpSslContextFactory {
     }
 
     private static KeyStore loadKeyStore(String keyStorePath,
-                                         String password) {
+                                         char[] password) {
         try (FileInputStream trustStoreFile = new FileInputStream(keyStorePath)) {
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            char[] charArray = password.toCharArray();
-            keyStore.load(trustStoreFile, charArray);
+            keyStore.load(trustStoreFile, password);
             return keyStore;
         } catch (Exception e) {
             throw new IllegalStateException(e);
