@@ -19,11 +19,11 @@ public class TlsConfig {
     @ToString.Exclude
     public char[] trustStorePassword;
 
-    public boolean tlsVerifyDisabled;
+    public boolean verifyDisabled;
 
-    public boolean tlsHostnameVerifyDisabled;
+    public boolean hostnameVerifyDisabled;
 
-    public String[] tlsVersions;
+    public String[] versions;
 
-    public String[] tlsCipherSuites;
+    public String[] cipherSuites;
 }

@@ -49,7 +49,7 @@ public class OpenGeminiOkhttpClientFactory {
 
         TlsConfig tlsConfig = configuration.getTlsConfig();
         if (tlsConfig != null) {
-            boolean enableTls = !tlsConfig.tlsVerifyDisabled;
+            boolean enableTls = !tlsConfig.verifyDisabled;
             if (enableTls && (tlsConfig.trustStorePath == null || tlsConfig.trustStorePassword == null)) {
                 throw new OpenGeminiException(
                         "tls verification enabled, trust store path and password must not be null");
