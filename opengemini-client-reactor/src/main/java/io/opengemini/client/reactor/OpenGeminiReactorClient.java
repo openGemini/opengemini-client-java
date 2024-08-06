@@ -28,14 +28,14 @@ public class OpenGeminiReactorClient extends BaseClient {
             TlsConfig tlsConfig = conf.getTlsConfig();
             client = client.secure(spec -> {
                 SslContext context = SslContextUtil.buildFromJks(
-                        tlsConfig.getKeyStorePath(),
-                        tlsConfig.getKeyStorePassword(),
-                        tlsConfig.getTrustStorePath(),
-                        tlsConfig.getTrustStorePassword(),
-                        tlsConfig.isTlsVerifyDisabled(),
-                        tlsConfig.getTlsVersions(),
-                        tlsConfig.getTlsCipherSuites());
-                if (tlsConfig.isTlsHostnameVerifyDisabled()) {
+                        tlsConfig.keyStorePath,
+                        tlsConfig.keyStorePassword,
+                        tlsConfig.trustStorePath,
+                        tlsConfig.trustStorePassword,
+                        tlsConfig.tlsVerifyDisabled,
+                        tlsConfig.tlsVersions,
+                        tlsConfig.tlsCipherSuites);
+                if (tlsConfig.tlsHostnameVerifyDisabled) {
                     spec.sslContext(context)
                             .handlerConfigurator(HttpClientSecurityUtils.HOSTNAME_VERIFICATION_CONFIGURER);
                 } else {

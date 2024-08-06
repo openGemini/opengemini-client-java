@@ -27,35 +27,35 @@
         <src.dir>src/main/java</src.dir>
         <!-- dependency -->
         <async-http-client.version>3.0.0.Beta3</async-http-client.version>
-        <commons-lang3.version>3.14.0</commons-lang3.version>
-        <jackson.version>2.16.1</jackson.version>
+        <commons-lang3.version>3.15.0</commons-lang3.version>
+        <jackson.version>2.17.2</jackson.version>
         <junit.version>5.10.2</junit.version>
         <kotlin.version>1.9.22</kotlin.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <log4j.version>2.20.0</log4j.version>
-        <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
-        <mockito.version>4.5.1</mockito.version>
+        <maven-scm-provider-gitexe.version>2.1.0</maven-scm-provider-gitexe.version>
+        <mockito.version>5.12.0</mockito.version>
         <okhttp.version>4.12.0</okhttp.version>
-        <puppycrawl.version>10.12.3</puppycrawl.version>
-        <reactor-netty.version>1.1.10</reactor-netty.version>
+        <puppycrawl.version>10.17.0</puppycrawl.version>
+        <reactor-netty.version>1.1.21</reactor-netty.version>
         <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
         <!-- plugin -->
-        <central-publishing-maven-plugin.version>0.3.0</central-publishing-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <maven-enforce-plugin-maven.version>3.8.0</maven-enforce-plugin-maven.version>
-        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
+        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
         <nexus-staging-plugin.version>1.6.13</nexus-staging-plugin.version>
-        <scala-maven-plugin.version>4.8.1</scala-maven-plugin.version>
-        <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
+        <scala-maven-plugin.version>4.9.2</scala-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.8.6.2</spotbugs-maven-plugin.version>
         <spotless-maven-plugi.version>2.43.0</spotless-maven-plugi.version>
     </properties>
 
