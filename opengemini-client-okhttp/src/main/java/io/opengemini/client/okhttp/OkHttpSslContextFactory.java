@@ -25,7 +25,7 @@ class OkHttpSslContextFactory {
 
             // get trust manager for server certificate auth
             TrustManager[] trustManagers = getTrustManagers(tlsConfig.trustStorePath, tlsConfig.trustStorePassword,
-                    tlsConfig.tlsVerifyDisabled);
+                    tlsConfig.verifyDisabled);
             SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(keyManagers, trustManagers, new SecureRandom());
             X509TrustManager x509TrustManager = (X509TrustManager) trustManagers[0];

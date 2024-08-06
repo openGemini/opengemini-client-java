@@ -44,7 +44,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
 
             // set tls version and cipher suits
             ConnectionSpec connectionSpec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS).tlsVersions(
-                    tlsConfig.tlsVersions).cipherSuites(tlsConfig.tlsCipherSuites).build();
+                    tlsConfig.versions).cipherSuites(tlsConfig.cipherSuites).build();
             okHttpClientBuilder.connectionSpecs(Collections.singletonList(connectionSpec));
 
             // create ssl context from keystore and truststore
@@ -53,7 +53,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
             okHttpClientBuilder.sslSocketFactory(sslContext.sslSocketFactory, sslContext.x509TrustManager);
 
             // override hostnameVerifier to make it always success when hostname verification has been disabled
-            if (tlsConfig.tlsHostnameVerifyDisabled) {
+            if (tlsConfig.hostnameVerifyDisabled) {
                 okHttpClientBuilder.hostnameVerifier((s, sslSession) -> true);
             }
         }

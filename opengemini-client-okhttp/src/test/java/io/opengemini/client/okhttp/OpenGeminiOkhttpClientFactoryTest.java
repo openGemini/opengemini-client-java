@@ -17,8 +17,8 @@ class OpenGeminiOkhttpClientFactoryTest {
 
     private static TlsConfig getBasicTlsConfig() {
         TlsConfig tlsConfig = new TlsConfig();
-        tlsConfig.tlsVersions = new String[]{"TLSv1.3"};
-        tlsConfig.tlsCipherSuites = new String[]{"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"};
+        tlsConfig.versions = new String[]{"TLSv1.3"};
+        tlsConfig.cipherSuites = new String[]{"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"};
         return tlsConfig;
     }
 
@@ -42,7 +42,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         // test tls config with keystore only
         tlsConfig.setKeyStorePath(KEYSTORE_JKS_PATH);
         tlsConfig.setKeyStorePassword(JKS_PASSWORD);
-        tlsConfig.setTlsVerifyDisabled(true);
+        tlsConfig.setVerifyDisabled(true);
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3)).timeout(Duration.ofSeconds(5)).tlsEnabled(true)
@@ -62,7 +62,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         // test tls config with truststore only
         tlsConfig.setTrustStorePath(TRUSTSTORE_JKS_PATH);
         tlsConfig.setTrustStorePassword(JKS_PASSWORD);
-        tlsConfig.setTlsVerifyDisabled(false);
+        tlsConfig.setVerifyDisabled(false);
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3)).timeout(Duration.ofSeconds(5)).tlsEnabled(true)
@@ -84,7 +84,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         tlsConfig.setKeyStorePassword(JKS_PASSWORD);
         tlsConfig.setTrustStorePath(TRUSTSTORE_JKS_PATH);
         tlsConfig.setTrustStorePassword(JKS_PASSWORD);
-        tlsConfig.setTlsVerifyDisabled(false);
+        tlsConfig.setVerifyDisabled(false);
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3)).timeout(Duration.ofSeconds(5)).tlsEnabled(true)
@@ -102,7 +102,7 @@ class OpenGeminiOkhttpClientFactoryTest {
         TlsConfig tlsConfig = getBasicTlsConfig();
 
         // test enable tls verification but lack trust store config
-        tlsConfig.setTlsVerifyDisabled(false);
+        tlsConfig.setVerifyDisabled(false);
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3)).timeout(Duration.ofSeconds(5)).tlsEnabled(true)

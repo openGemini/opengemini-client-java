@@ -42,7 +42,7 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
                     tlsConfig.keyStorePassword,
                     tlsConfig.trustStorePath,
                     tlsConfig.trustStorePassword,
-                    tlsConfig.tlsVerifyDisabled));
+                    tlsConfig.verifyDisabled));
         }
 
         AuthConfig authConfig = conf.getAuthConfig();
