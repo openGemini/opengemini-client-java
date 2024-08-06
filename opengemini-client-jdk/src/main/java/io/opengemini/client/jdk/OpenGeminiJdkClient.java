@@ -50,7 +50,8 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
         if (authConfig != null) {
             AuthType authType = authConfig.getAuthType();
             if (AuthType.PASSWORD.equals(authType)) {
-                builder.authenticator(getAuthenticator(authConfig.getUsername(), authConfig.getPassword()));
+                builder.authenticator(
+                    getAuthenticator(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
             }
         }
         this.client = builder.build();

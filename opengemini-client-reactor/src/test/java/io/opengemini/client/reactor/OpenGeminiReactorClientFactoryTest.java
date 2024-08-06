@@ -61,7 +61,7 @@ class OpenGeminiReactorClientFactoryTest {
     public void testGetClientWithEmptyUserName() {
         configuration.setAddresses(Collections.singletonList(new Address()));
         authConfig.setAuthType(AuthType.PASSWORD);
-        authConfig.setPassword("pass");
+        authConfig.setPassword("pass".toCharArray());
         authConfig.setUsername("");
         configuration.setAuthConfig(authConfig);
 

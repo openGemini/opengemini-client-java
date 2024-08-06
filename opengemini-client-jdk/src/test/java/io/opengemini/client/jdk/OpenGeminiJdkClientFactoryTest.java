@@ -61,7 +61,7 @@ public class OpenGeminiJdkClientFactoryTest {
     public void testGetClientWithEmptyUserName() {
         configuration.setAddresses(List.of(new Address()));
         authConfig.setAuthType(AuthType.PASSWORD);
-        authConfig.setPassword("pass");
+        authConfig.setPassword("pass".toCharArray());
         authConfig.setUsername("");
         configuration.setAuthConfig(authConfig);
 

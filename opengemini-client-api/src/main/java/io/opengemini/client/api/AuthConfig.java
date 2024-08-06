@@ -26,7 +26,7 @@ public class AuthConfig {
     /**
      * Password provided password when used AuthTypePassword.
      */
-    private String password;
+    private char[] password;
 
     /**
      * Token provided token when used AuthTypeToken.
