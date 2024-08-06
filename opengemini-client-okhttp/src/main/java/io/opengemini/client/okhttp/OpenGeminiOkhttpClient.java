@@ -33,7 +33,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     private static final okhttp3.MediaType MEDIA_TYPE_STRING = MediaType.parse("text/plain");
     private final OkHttpClient okHttpClient;
 
-    public OpenGeminiOkhttpClient(Configuration conf) {
+    public OpenGeminiOkhttpClient(@NotNull Configuration conf) {
         super(conf);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().connectTimeout(conf.getConnectTimeout())
                 .readTimeout(conf.getTimeout())

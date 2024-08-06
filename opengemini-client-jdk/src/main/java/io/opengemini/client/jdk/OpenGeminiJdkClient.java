@@ -12,6 +12,7 @@ import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import io.opengemini.client.common.UrlConst;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -29,7 +30,7 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
 
     private final HttpClient client;
 
-    public OpenGeminiJdkClient(Configuration conf) {
+    public OpenGeminiJdkClient(@NotNull Configuration conf) {
         super(conf);
         this.conf = conf;
         HttpClient.Builder builder = HttpClient.newBuilder()
