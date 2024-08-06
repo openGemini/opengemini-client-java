@@ -5,9 +5,10 @@ import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.OpengeminiConst;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenGeminiReactorClientFactory {
-    public static OpenGeminiReactorClient create(Configuration configuration) throws OpenGeminiException {
+    public static OpenGeminiReactorClient create(@NotNull Configuration configuration) throws OpenGeminiException {
         if (configuration.getAddresses() == null || configuration.getAddresses().isEmpty()) {
             throw new OpenGeminiException("at least one address is required");
         }

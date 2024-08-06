@@ -9,6 +9,7 @@ import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.JacksonService;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufMono;
 import reactor.netty.http.client.HttpClient;
@@ -17,7 +18,7 @@ import reactor.netty.http.client.HttpClientSecurityUtils;
 public class OpenGeminiReactorClient extends BaseClient {
     private final HttpClient client;
 
-    public OpenGeminiReactorClient(Configuration conf) {
+    public OpenGeminiReactorClient(@NotNull Configuration conf) {
         super(conf);
         HttpClient client = HttpClient.create();
         client = client.responseTimeout(conf.getTimeout());

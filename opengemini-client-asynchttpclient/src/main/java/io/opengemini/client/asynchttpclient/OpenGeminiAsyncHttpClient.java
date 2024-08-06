@@ -16,6 +16,7 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Dsl;
 import org.asynchttpclient.Response;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,7 +24,7 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
 
     private final AsyncHttpClient asyncHttpClient;
 
-    public OpenGeminiAsyncHttpClient(Configuration conf) {
+    public OpenGeminiAsyncHttpClient(@NotNull Configuration conf) {
         super(conf);
         this.asyncHttpClient = buildClient(conf);
     }
