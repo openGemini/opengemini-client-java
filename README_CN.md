@@ -1,12 +1,19 @@
 # opengemini-client-java
 
-opengemini-client-java 是一个用 Java 语言编写的 OpenGemini 客户端。
+![License](https://img.shields.io/badge/开源许可证-Apache2.0-green) ![language](https://img.shields.io/badge/语言-Java-blue.svg) [![version](https://img.shields.io/github/v/tag/opengemini/opengemini-client-java?label=%e5%8f%91%e8%a1%8c%e7%89%88%e6%9c%ac&color=blue)](https://github.com/opengemini/opengemini-client-java/releases)
 
-查看OpenGemini客户端设计文档，可点击 https://github.com/openGemini/openGemini.github.io/blob/main/src/zh/guide/develop/client_design.md
+[English](README.md) | 简体中文  
 
-简体中文 | [English](README.md)
+`opengemini-client-java`是一个用 Python 语言编写的 OpenGemini 客户端
 
-OpenGemini 是华为云开源的一款云原生分布式时序数据库，获取更多关于 OpenGemini 的信息可点击 https://github.com/openGemini/openGemini
+## 设计文档
+
+[OpenGemini Client 设计文档](https://github.com/openGemini/openGemini.github.io/blob/main/src/zh/guide/develop/client_design.md)
+
+## 关于 OpenGemini
+
+OpenGemini 是一款云原生分布式时序数据库。获取更多信息，请点击[这里](https://github.com/openGemini/openGemini)
+
 ## 特点
 
 - 本项目由多个组件独立实现，可根据不同的诉求单独引用
