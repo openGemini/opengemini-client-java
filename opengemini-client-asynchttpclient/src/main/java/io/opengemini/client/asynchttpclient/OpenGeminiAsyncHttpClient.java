@@ -44,7 +44,8 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
 
     private static void configClientAuth(AuthConfig authConfig, DefaultAsyncHttpClientConfig.Builder builder) {
         if (AuthType.PASSWORD == authConfig.getAuthType()) {
-            builder.addRequestFilter(new BasicAuthRequestFilter(authConfig.getUsername(), authConfig.getPassword()));
+            builder.addRequestFilter(
+                new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
     }
 

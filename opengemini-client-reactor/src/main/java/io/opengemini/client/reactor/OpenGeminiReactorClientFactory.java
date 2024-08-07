@@ -22,7 +22,7 @@ public class OpenGeminiReactorClientFactory {
                 if (authConfig.getUsername() == null || authConfig.getUsername().isEmpty()) {
                     throw new OpenGeminiException("invalid auth config due to empty username");
                 }
-                if (authConfig.getPassword() == null || authConfig.getPassword().isEmpty()) {
+                if (authConfig.getPassword() == null || authConfig.getPassword().length == 0) {
                     throw new OpenGeminiException("invalid auth config due to empty password");
                 }
             }

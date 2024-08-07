@@ -35,7 +35,7 @@ class OpenGeminiJdkClientTest {
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3))
                 .timeout(Duration.ofSeconds(5))
-                .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@", null))
+                .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@".toCharArray(), null))
                 .build();
         this.openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
     }

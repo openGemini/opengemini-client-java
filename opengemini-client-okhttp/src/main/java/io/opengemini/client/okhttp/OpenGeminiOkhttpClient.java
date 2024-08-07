@@ -74,7 +74,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     private static void configClientAuth(AuthConfig authConfig, OkHttpClient.Builder okHttpClientBuilder) {
         if (AuthType.PASSWORD == authConfig.getAuthType()) {
             okHttpClientBuilder.addInterceptor(
-                    new BasicAuthInterceptor(authConfig.getUsername(), authConfig.getPassword()));
+                    new BasicAuthInterceptor(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
     }
 
