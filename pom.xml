@@ -18,6 +18,9 @@
         <module>opengemini-client-reactor</module>
         <module>opengemini-client-scala</module>
         <module>opengemini-client-test-common</module>
+        <module>spring-opengemini</module>
+        <module>spring-starter-opengemini</module>
+        <module>spring-starter-opengemini-reactive</module>
     </modules>
 
     <properties>
@@ -41,6 +44,7 @@
         <reactor-netty.version>1.1.21</reactor-netty.version>
         <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
+        <spring.version>6.0.19</spring.version>
         <!-- plugin -->
         <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
