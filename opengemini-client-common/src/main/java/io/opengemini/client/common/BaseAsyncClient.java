@@ -106,7 +106,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<Void> writeBatch(String database, List<Point> points) {
+    public CompletableFuture<Void> write(String database, List<Point> points) {
         StringJoiner sj = new StringJoiner("\n");
         points.forEach(point -> sj.add(point.lineProtocol()));
         return executeWrite(database, sj.toString());

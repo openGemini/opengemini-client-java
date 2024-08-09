@@ -72,7 +72,7 @@ public interface OpenGeminiAsyncClient extends AutoCloseable {
      * @param database the name of the database.
      * @param points   the points to write.
      */
-    CompletableFuture<Void> writeBatch(String database, List<Point> points);
+    CompletableFuture<Void> write(String database, List<Point> points);
 
     /**
      * Ping the OpenGemini server
