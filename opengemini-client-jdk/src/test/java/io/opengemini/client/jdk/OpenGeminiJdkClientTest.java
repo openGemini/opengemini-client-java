@@ -182,7 +182,7 @@ class OpenGeminiJdkClientTest {
         Point testPoint2 = generalTestPoint(measurementName, 2, 1);
         Point testPoint3 = generalTestPoint(measurementName, 3, 1);
 
-        CompletableFuture<Void> writeRsp = openGeminiJdkClient.writeBatch(
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(
                 databaseName, Arrays.asList(testPoint1, testPoint2, testPoint3));
         writeRsp.get();
         Thread.sleep(3000);

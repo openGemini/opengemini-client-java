@@ -175,7 +175,7 @@ class OpenGeminiOkhttpClientTest {
         Point testPoint2 = testPoint(measurementName, 2, 1);
         Point testPoint3 = testPoint(measurementName, 3, 1);
 
-        CompletableFuture<Void> writeRsp = openGeminiOkhttpClient.writeBatch(databaseName,
+        CompletableFuture<Void> writeRsp = openGeminiOkhttpClient.write(databaseName,
                 Arrays.asList(testPoint1, testPoint2, testPoint3));
         writeRsp.get();
         Thread.sleep(3000);
