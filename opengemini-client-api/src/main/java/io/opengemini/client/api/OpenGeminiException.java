@@ -1,5 +1,8 @@
 package io.opengemini.client.api;
 
+import lombok.Getter;
+
+@Getter
 public class OpenGeminiException extends Exception {
     private static final int DEFAULT_STATUS_CODE = 500;
 
