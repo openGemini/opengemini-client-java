@@ -18,11 +18,11 @@ public class Point {
 
     private static final ThreadLocal<StringBuilder> SB_CACHE = ThreadLocal.withInitial(() -> new StringBuilder(1024));
 
-    String measurement;
-    Precision precision = Precision.PRECISIONNANOSECOND;
-    long time;
-    Map<String, String> tags;
-    Map<String, Object> fields;
+    private String measurement;
+    private Precision precision = Precision.PRECISIONNANOSECOND;
+    private long time;
+    private Map<String, String> tags;
+    private Map<String, Object> fields;
 
     /**
      * Calculate the line protocol string for this point
