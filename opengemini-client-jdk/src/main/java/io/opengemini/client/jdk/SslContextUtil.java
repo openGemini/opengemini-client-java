@@ -1,9 +1,8 @@
 package io.opengemini.client.jdk;
 
 import io.opengemini.client.common.InsecureTrustManager;
+import io.opengemini.client.common.SslUtil;
 
-import java.io.FileInputStream;
-import java.security.KeyStore;
 import java.security.SecureRandom;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -13,33 +12,17 @@ import javax.net.ssl.TrustManagerFactory;
 public class SslContextUtil {
 
     public static SSLContext buildSSLContextFromJks(String keyStorePath,
-                                              char[] keyStorePassword,
-                                              String trustStorePath,
-                                              char[] trustStorePassword,
-                                              boolean disableSslVerify) {
+                                                    char[] keyStorePassword,
+                                                    String trustStorePath,
+                                                    char[] trustStorePassword,
+                                                    boolean disableSslVerify) {
         try {
-            // Load the key store
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            try (FileInputStream keyStoreFile = new FileInputStream(keyStorePath)) {
-                keyStore.load(keyStoreFile, keyStorePassword);
-            }
-
-            // Set up key manager factory to use our key store
-            String defaultKeyAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(defaultKeyAlgorithm);
-            keyManagerFactory.init(keyStore, keyStorePassword);
+            KeyManagerFactory keyManagerFactory = SslUtil.initKeyManagerFactory(keyStorePath, keyStorePassword);
 
             // Load the trust store, if specified
             TrustManagerFactory trustManagerFactory = null;
             if (trustStorePath != null) {
-                KeyStore trustStore = KeyStore.getInstance("JKS");
-                try (FileInputStream trustStoreFile = new FileInputStream(trustStorePath)) {
-                    trustStore.load(trustStoreFile, trustStorePassword);
-                }
-
-                // Set up trust manager factory to use our trust store
-                trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                trustManagerFactory.init(trustStore);
+                trustManagerFactory = SslUtil.initTrustManagerFactory(trustStorePath, trustStorePassword);
             }
 
             // Set up SSL context
@@ -47,7 +30,7 @@ public class SslContextUtil {
 
             TrustManager[] trustManagers;
             if (disableSslVerify) {
-                trustManagers = new TrustManager[] { new InsecureTrustManager() };
+                trustManagers = new TrustManager[]{new InsecureTrustManager()};
             } else if (trustManagerFactory != null) {
                 trustManagers = trustManagerFactory.getTrustManagers();
             } else {
@@ -66,4 +49,5 @@ public class SslContextUtil {
             throw new IllegalStateException(e);
         }
     }
+
 }
