@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.opengemini</groupId>
-        <artifactId>opengemini-client-parent</artifactId>
+        <artifactId>opengemini-spring-parent</artifactId>
         <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>spring-opengemini</artifactId>
+    <artifactId>opengemini-spring</artifactId>
 
     <dependencies>
         <dependency>
