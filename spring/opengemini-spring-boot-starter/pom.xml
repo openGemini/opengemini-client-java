@@ -5,16 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.opengemini</groupId>
-        <artifactId>opengemini-client-parent</artifactId>
+        <artifactId>opengemini-spring-parent</artifactId>
         <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>spring-starter-opengemini-reactive</artifactId>
+    <artifactId>opengemini-spring-boot-starter</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.opengemini</groupId>
-            <artifactId>opengemini-client-reactor</artifactId>
+            <artifactId>opengemini-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
