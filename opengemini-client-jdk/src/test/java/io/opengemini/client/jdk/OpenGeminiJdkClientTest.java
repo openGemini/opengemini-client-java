@@ -170,6 +170,15 @@ class OpenGeminiJdkClientTest {
         Assertions.assertTrue(x.getColumns().contains("tag29"));
     }
 
+    @Test
+    void write_empty_batch_points() throws Exception {
+        String databaseName = "db_test_write_batch";
+
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName,
+                new ArrayList<>());
+        writeRsp.get();
+    }
+
     @SneakyThrows
     @Test
     void testWriteBatchPoints() {

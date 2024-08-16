@@ -164,6 +164,15 @@ class OpenGeminiAsyncHttpClientTest {
     }
 
     @Test
+    void write_empty_batch_points() throws Exception {
+        String databaseName = "db_test_write_batch";
+
+        CompletableFuture<Void> writeRsp = openGeminiAsyncHttpClient.write(databaseName,
+                new ArrayList<>());
+        writeRsp.get();
+    }
+
+    @Test
     void write_batch_points() throws Exception {
         String databaseName = "db_test_write_batch";
         CompletableFuture<Void> createDbFuture = openGeminiAsyncHttpClient.createDatabase(databaseName);
