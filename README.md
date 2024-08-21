@@ -49,6 +49,21 @@ To use mvn test, please first run an opengemini server locally. We recommend usi
 docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 ```
 
+### Create Client
+
+```java
+import io.opengemini.client.jdk.OpenGeminiJdkClient;
+
+Configuration configuration = Configuration.builder()
+        .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+        .connectTimeout(Duration.ofSeconds(3))
+        .timeout(Duration.ofSeconds(5))
+        .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@".toCharArray(), null))
+        .build();
+
+OpenGeminiJdkClient openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
+```
+
 ### maven import
 
 ```xml

@@ -50,6 +50,21 @@ mvn install -Dmaven.test.skip=true
 docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 ```
 
+### 创建客户端
+
+```java
+import io.opengemini.client.jdk.OpenGeminiJdkClient;
+
+Configuration configuration = Configuration.builder()
+        .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+        .connectTimeout(Duration.ofSeconds(3))
+        .timeout(Duration.ofSeconds(5))
+        .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@".toCharArray(), null))
+        .build();
+
+OpenGeminiJdkClient openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
+```
+
 ### maven引用
 
 ```xml
