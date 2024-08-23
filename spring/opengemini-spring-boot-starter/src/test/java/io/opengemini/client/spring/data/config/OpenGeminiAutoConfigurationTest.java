@@ -1,6 +1,6 @@
 package io.opengemini.client.spring.data.config;
 
-import io.opengemini.client.spring.data.OpenGeminiApplication;
+import io.opengemini.client.spring.data.TestApplication;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig
-@SpringBootTest(classes = OpenGeminiApplication.class)
+@SpringBootTest(classes = TestApplication.class)
 public class OpenGeminiAutoConfigurationTest {
 
     @Autowired

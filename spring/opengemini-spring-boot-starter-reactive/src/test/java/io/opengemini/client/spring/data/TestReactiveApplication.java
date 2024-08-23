@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OpenGeminiApplication {
+public class TestReactiveApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpenGeminiApplication.class, args);
+        SpringApplication.run(TestReactiveApplication.class, args);
     }
 
 }
