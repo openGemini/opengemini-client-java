@@ -1,6 +1,6 @@
 package io.opengemini.client.spring.data.config;
 
-import io.opengemini.client.spring.data.OpenGeminiApplication;
+import io.opengemini.client.spring.data.TestReactiveApplication;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
 import io.opengemini.client.spring.data.core.ReactiveOpenGeminiTemplate;
@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig
-@SpringBootTest(classes = OpenGeminiApplication.class)
+@SpringBootTest(classes = TestReactiveApplication.class)
 public class OpenGeminiReactiveAutoConfigurationTest {
 
     @Autowired
