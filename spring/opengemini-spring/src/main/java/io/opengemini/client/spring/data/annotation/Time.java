@@ -1,4 +1,4 @@
-package io.opengemini.client.spring.data.annotations;
+package io.opengemini.client.spring.data.annotation;
 
 import io.opengemini.client.api.Precision;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface TimeColumn {
+public @interface Time {
 
     Precision precision() default Precision.PRECISIONMILLISECOND;
 

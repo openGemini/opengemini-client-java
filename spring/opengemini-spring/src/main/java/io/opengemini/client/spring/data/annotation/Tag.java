@@ -1,4 +1,4 @@
-package io.opengemini.client.spring.data.annotations;
+package io.opengemini.client.spring.data.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,13 +7,11 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Column {
+public @interface Tag {
 
     /**
-     * If unset, the annotated field's name will be used as the column name.
+     * If unset, the annotated field's name will be used as the tag name.
      */
     String name();
-
-    boolean tag() default false;
 
 }
