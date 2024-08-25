@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
 
-@AutoConfiguration(after = OpenGeminiAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnClass({ReactiveOpenGeminiTemplate.class, Flux.class})
 public class OpenGeminiReactiveAutoConfiguration {
 

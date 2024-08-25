@@ -1,9 +1,12 @@
-package io.opengemini.client.spring.data.annotations;
+package io.opengemini.client.spring.data.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * If unannotated, the method in OpenGeminiTemplate that requires a retention policy name should be used.
+ */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface RetentionPolicy {
@@ -12,9 +15,9 @@ public @interface RetentionPolicy {
 
     boolean create() default true;
 
-    String duration();
+    String duration() default "";
 
-    String shardGroupDuration();
+    String shardGroupDuration() default "";
 
     String hotDuration() default "";
 

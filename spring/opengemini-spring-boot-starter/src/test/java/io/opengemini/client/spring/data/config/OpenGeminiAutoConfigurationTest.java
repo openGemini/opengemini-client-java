@@ -1,8 +1,8 @@
 package io.opengemini.client.spring.data.config;
 
-import io.opengemini.client.spring.data.TestApplication;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
+import io.opengemini.client.spring.data.sample.TestApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package io.opengemini.client.spring.data;
+package io.opengemini.client.spring.data.sample;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
