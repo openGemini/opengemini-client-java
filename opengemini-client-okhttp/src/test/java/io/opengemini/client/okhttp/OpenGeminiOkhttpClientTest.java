@@ -4,11 +4,13 @@ import io.opengemini.client.api.Address;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
+import io.opengemini.client.api.Precision;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RetentionPolicy;
 import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.api.Series;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -286,5 +288,47 @@ class OpenGeminiOkhttpClientTest {
         testPoint.setTags(tags);
         testPoint.setFields(fields);
         return testPoint;
+    }
+
+
+    @SneakyThrows
+    @Test
+    void testQueryPrecision() {
+        String databaseName = "query_precision_0001";
+        CompletableFuture<Void> createdb = openGeminiOkhttpClient.createDatabase(databaseName);
+        createdb.get();
+
+        String measurementName = "query_precision_ms_0001";
+        Point testPoint1 = testPoint(measurementName, 1, 1);
+        Point testPoint2 = testPoint(measurementName, 2, 1);
+        Point testPoint3 = testPoint(measurementName, 3, 1);
+
+        CompletableFuture<Void> writeRsp = openGeminiOkhttpClient.write(databaseName,
+                Arrays.asList(testPoint1, testPoint2, testPoint3));
+        writeRsp.get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
+        CompletableFuture<QueryResult> rst = openGeminiOkhttpClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        Object timeValue = x.getValues().get(0).get(0);
+        Assertions.assertInstanceOf(String.class, timeValue);
+        String timeValueStr = (String) timeValue;
+        Assertions.assertTrue(timeValueStr.startsWith("20") && timeValueStr.endsWith("Z"));
+
+        selectQuery = new Query("select * from " + measurementName, databaseName, "", Precision.PRECISIONNANOSECOND);
+        rst = openGeminiOkhttpClient.query(selectQuery);
+        queryResult = rst.get();
+
+        x = queryResult.getResults().get(0).getSeries().get(0);
+        timeValue = x.getValues().get(0).get(0);
+        Assertions.assertInstanceOf(Long.class, timeValue);
+        long timeValueDouble = (Long) timeValue;
+        Assertions.assertTrue(timeValueDouble > 1724778721457052741L);
+
+        CompletableFuture<Void> dropdb = openGeminiOkhttpClient.dropDatabase(databaseName);
+        dropdb.get();
     }
 }

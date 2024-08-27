@@ -6,6 +6,7 @@ import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
+import io.opengemini.client.api.Precision;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RetentionPolicy;
@@ -284,4 +285,41 @@ class OpenGeminiJdkClientTest {
         Assertions.assertNotNull(pong.getVersion());
     }
 
+    @SneakyThrows
+    @Test
+    void testQueryPrecision() {
+        String databaseName = "query_precision_0001";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        createdb.get();
+
+        String measurementName = "query_precision_ms_0001";
+        Point testPoint = generalTestPoint(measurementName, 1, 1);
+
+        CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName, testPoint);
+        writeRsp.get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
+        CompletableFuture<QueryResult> rst = openGeminiJdkClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        Object timeValue = x.getValues().get(0).get(0);
+        Assertions.assertInstanceOf(String.class, timeValue);
+        String timeValueStr = (String) timeValue;
+        Assertions.assertTrue(timeValueStr.startsWith("20") && timeValueStr.endsWith("Z"));
+
+        selectQuery = new Query("select * from " + measurementName, databaseName, "", Precision.PRECISIONNANOSECOND);
+        rst = openGeminiJdkClient.query(selectQuery);
+        queryResult = rst.get();
+
+        x = queryResult.getResults().get(0).getSeries().get(0);
+        timeValue = x.getValues().get(0).get(0);
+        Assertions.assertInstanceOf(Long.class, timeValue);
+        long timeValueDouble = (Long) timeValue;
+        Assertions.assertTrue(timeValueDouble > 1724778721457052741L);
+
+        CompletableFuture<Void> dropdb = openGeminiJdkClient.dropDatabase(databaseName);
+        dropdb.get();
+    }
 }
