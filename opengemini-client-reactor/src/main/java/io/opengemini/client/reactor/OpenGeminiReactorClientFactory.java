@@ -3,8 +3,8 @@ package io.opengemini.client.reactor;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
+import io.opengemini.client.api.OpenGeminiConst;
 import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.OpengeminiConst;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenGeminiReactorClientFactory {
@@ -37,10 +37,10 @@ public class OpenGeminiReactorClientFactory {
             }
         }
         if (configuration.getTimeout() == null || configuration.getTimeout().isNegative()) {
-            configuration.setTimeout(OpengeminiConst.DEFAULT_TIMEOUT);
+            configuration.setTimeout(OpenGeminiConst.DEFAULT_TIMEOUT);
         }
         if (configuration.getConnectTimeout() == null || configuration.getConnectTimeout().isNegative()) {
-            configuration.setConnectTimeout(OpengeminiConst.DEFAULT_CONNECT_TIMEOUT);
+            configuration.setConnectTimeout(OpenGeminiConst.DEFAULT_CONNECT_TIMEOUT);
         }
         return new OpenGeminiReactorClient(configuration);
     }
