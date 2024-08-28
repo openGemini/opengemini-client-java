@@ -3,8 +3,8 @@ package io.opengemini.client.okhttp;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
+import io.opengemini.client.api.OpenGeminiConst;
 import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.OpengeminiConst;
 import io.opengemini.client.api.TlsConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,11 +41,11 @@ public class OpenGeminiOkhttpClientFactory {
         }
 
         if (configuration.getTimeout() == null || configuration.getTimeout().isNegative()) {
-            configuration.setTimeout(OpengeminiConst.DEFAULT_TIMEOUT);
+            configuration.setTimeout(OpenGeminiConst.DEFAULT_TIMEOUT);
         }
 
         if (configuration.getConnectTimeout() == null || configuration.getConnectTimeout().isNegative()) {
-            configuration.setConnectTimeout(OpengeminiConst.DEFAULT_CONNECT_TIMEOUT);
+            configuration.setConnectTimeout(OpenGeminiConst.DEFAULT_CONNECT_TIMEOUT);
         }
 
         TlsConfig tlsConfig = configuration.getTlsConfig();
