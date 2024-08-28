@@ -58,6 +58,10 @@ public abstract class BaseClient {
         if (query.getRetentionPolicy() != null) {
             queryUrl += "&rp=" + query.getRetentionPolicy();
         }
+
+        if (query.getPrecision() != null) {
+            queryUrl += "&epoch=" + query.getPrecision().getEpoch();
+        }
         return queryUrl;
     }
 }

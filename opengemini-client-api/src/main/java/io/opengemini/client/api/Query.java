@@ -23,8 +23,18 @@ public class Query {
      */
     private String retentionPolicy;
 
+    /*
+     * the precision of the time in query result
+     */
+    private Precision precision;
+
     public Query(String command) {
         this.command = command;
     }
 
+    public Query(String command, String database, String retentionPolicy) {
+        this.command = command;
+        this.database = database;
+        this.retentionPolicy = retentionPolicy;
+    }
 }
