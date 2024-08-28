@@ -22,3 +22,5 @@ dependency-reduced-pom.xml
 
 # log file
 logs/
+
+*.xml.releaseBackup
