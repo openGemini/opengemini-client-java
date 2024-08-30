@@ -44,7 +44,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
 
             // set tls version and cipher suits
             ConnectionSpec connectionSpec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS).tlsVersions(
-                    tlsConfig.versions).cipherSuites(tlsConfig.cipherSuites).build();
+                    tlsConfig.protocols).cipherSuites(tlsConfig.cipherSuites).build();
             okHttpClientBuilder.connectionSpecs(Collections.singletonList(connectionSpec));
 
             // create ssl context from keystore and truststore

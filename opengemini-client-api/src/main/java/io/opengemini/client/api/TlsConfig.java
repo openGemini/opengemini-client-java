@@ -23,7 +23,7 @@ public class TlsConfig {
 
     public boolean hostnameVerifyDisabled;
 
-    public String[] versions;
+    public String[] protocols;
 
     public String[] cipherSuites;
 }

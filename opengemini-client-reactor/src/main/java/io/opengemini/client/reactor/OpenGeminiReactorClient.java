@@ -34,7 +34,7 @@ public class OpenGeminiReactorClient extends BaseClient {
                         tlsConfig.trustStorePath,
                         tlsConfig.trustStorePassword,
                         tlsConfig.verifyDisabled,
-                        tlsConfig.versions,
+                        tlsConfig.protocols,
                         tlsConfig.cipherSuites);
                 if (tlsConfig.hostnameVerifyDisabled) {
                     spec.sslContext(context)

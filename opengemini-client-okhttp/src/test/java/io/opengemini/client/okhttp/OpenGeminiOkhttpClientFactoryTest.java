@@ -17,7 +17,7 @@ class OpenGeminiOkhttpClientFactoryTest {
 
     private static TlsConfig getBasicTlsConfig() {
         TlsConfig tlsConfig = new TlsConfig();
-        tlsConfig.versions = new String[]{"TLSv1.3"};
+        tlsConfig.protocols = new String[]{"TLSv1.3"};
         tlsConfig.cipherSuites = new String[]{"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"};
         return tlsConfig;
     }
