@@ -28,12 +28,12 @@ OpenGemini is a cloud-native distributed time series database, find more informa
 | opengemini-client-kotlin/scala    | -                               | Preferred for Corresponding Development Language                     | Stay Tuned |
 
 
-## Requirements
+## Prerequisites
 
 - Compiling this project requires at least OpenJDK 17
 - When running this project, the OpenJDK versions depended on by various components are different, as shown in the table in the previous chapter
 
-## Usage
+## Integration
 
 ### Build
 
@@ -58,3 +58,62 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
     <version>${latest.version}</version>
 </dependency>
 ```
+
+## Quick Start
+
+```java
+package org.example;
+
+import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Point;
+import io.opengemini.client.api.Query;
+import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.jdk.Configuration;
+import io.opengemini.client.jdk.OpenGeminiJdkClient;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+public class Main {
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(5))
+                .build();
+
+        OpenGeminiJdkClient openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
+
+        String databaseName = "db_quick_start";
+        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        createdb.get();
+
+        Point point = new Point();
+        point.setMeasurement("ms_quick_start");
+        HashMap<String, String> tags = new HashMap<>();
+        HashMap<String, Object> fields = new HashMap<>();
+        tags.put("tag1", "tag value1");
+        fields.put("field1", "field value1");
+        point.setTags(tags);
+        point.setFields(fields);
+
+        openGeminiJdkClient.write(databaseName, point).get();
+
+        // Creating a new tag requires waiting for the server to create and update indexes
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + "ms_quick_start", databaseName, "");
+        CompletableFuture<QueryResult> queryRst = openGeminiJdkClient.query(selectQuery);
+
+        System.out.println("query result: " + queryRst.get());
+    }
+}
+```
+
+## Contributor
+
+Welcome to [join us](Contribution.md)
