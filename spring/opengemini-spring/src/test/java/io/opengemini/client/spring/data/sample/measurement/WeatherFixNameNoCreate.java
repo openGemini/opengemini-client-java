@@ -1,6 +1,5 @@
 package io.opengemini.client.spring.data.sample.measurement;
 
-
 import io.opengemini.client.api.Precision;
 import io.opengemini.client.spring.data.annotation.Database;
 import io.opengemini.client.spring.data.annotation.Field;
