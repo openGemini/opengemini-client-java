@@ -116,4 +116,4 @@ public class Main {
 ```
 ## 贡献
 
-欢迎[加入我们](Contribution.md)
+欢迎[加入我们](CONTRIBUTION_CN.md)

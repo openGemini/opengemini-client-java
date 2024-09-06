@@ -116,4 +116,4 @@ public class Main {
 
 ## Contributor
 
-Welcome to [join us](Contribution.md)
+Welcome to [join us](CONTRIBUTION.md)
