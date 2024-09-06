@@ -125,6 +125,10 @@ class OpenGeminiJdkClientTest {
 
         CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(databaseName, testPoint);
         writeRsp.get();
+
+        Point invalidPoint = generalTestPoint(measurementName, 0, 0);
+        openGeminiJdkClient.write(databaseName, invalidPoint).get();
+
         Thread.sleep(3000);
 
         Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
@@ -191,9 +195,10 @@ class OpenGeminiJdkClientTest {
         Point testPoint1 = generalTestPoint(measurementName, 1, 1);
         Point testPoint2 = generalTestPoint(measurementName, 2, 1);
         Point testPoint3 = generalTestPoint(measurementName, 3, 1);
+        Point invalidPoint4 = generalTestPoint(measurementName, 4, 0);
 
         CompletableFuture<Void> writeRsp = openGeminiJdkClient.write(
-                databaseName, Arrays.asList(testPoint1, testPoint2, testPoint3));
+                databaseName, Arrays.asList(testPoint1, testPoint2, testPoint3, invalidPoint4));
         writeRsp.get();
         Thread.sleep(3000);
 

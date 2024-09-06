@@ -99,6 +99,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     @Override
     public CompletableFuture<Void> write(String database, Point point) {
         String body = point.lineProtocol();
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
         return executeWrite(database, body);
     }
 
@@ -111,8 +114,18 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
             return CompletableFuture.completedFuture(null);
         }
         StringJoiner sj = new StringJoiner("\n");
-        points.forEach(point -> sj.add(point.lineProtocol()));
-        return executeWrite(database, sj.toString());
+        for (Point point : points) {
+            String lineProtocol = point.lineProtocol();
+            if (StringUtils.isEmpty(lineProtocol)) {
+                continue;
+            }
+            sj.add(lineProtocol);
+        }
+        String body = sj.toString();
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, body);
     }
 
     /**
