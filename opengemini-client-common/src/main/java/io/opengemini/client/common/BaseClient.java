@@ -2,16 +2,18 @@ package io.opengemini.client.common;
 
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.BaseConfiguration;
+import io.opengemini.client.api.Endpoint;
 import io.opengemini.client.api.Query;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseClient {
-    private final List<String> serverUrls = new ArrayList<>();
+    private final List<Endpoint> serverUrls = new ArrayList<>();
 
     private final AtomicInteger prevIndex = new AtomicInteger(-1);
 
@@ -23,13 +25,14 @@ public abstract class BaseClient {
             httpPrefix = "http://";
         }
         for (Address address : conf.getAddresses()) {
-            this.serverUrls.add(httpPrefix + address.getHost() + ":" + address.getPort());
+            String url = httpPrefix + address.getHost() + ":" + address.getPort();
+            this.serverUrls.add(new Endpoint(url, new AtomicBoolean(false)));
         }
     }
 
     protected String nextUrlPrefix() {
         int idx = Math.abs(prevIndex.incrementAndGet() % serverUrls.size());
-        return serverUrls.get(idx);
+        return serverUrls.get(idx).getUrl();
     }
 
     protected String encode(String str) {
