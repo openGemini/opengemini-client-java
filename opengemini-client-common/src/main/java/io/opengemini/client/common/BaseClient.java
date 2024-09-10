@@ -5,17 +5,25 @@ import io.opengemini.client.api.BaseConfiguration;
 import io.opengemini.client.api.Endpoint;
 import io.opengemini.client.api.Query;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BaseClient {
+public abstract class BaseClient implements Closeable {
     private final List<Endpoint> serverUrls = new ArrayList<>();
 
     private final AtomicInteger prevIndex = new AtomicInteger(-1);
+
+    private final Optional<ScheduledExecutorService> scheduler;
 
     public BaseClient(BaseConfiguration conf) {
         String httpPrefix;
@@ -27,6 +35,15 @@ public abstract class BaseClient {
         for (Address address : conf.getAddresses()) {
             String url = httpPrefix + address.getHost() + ":" + address.getPort();
             this.serverUrls.add(new Endpoint(url, new AtomicBoolean(false)));
+        }
+        if (this.serverUrls.size() > 1) {
+            this.scheduler = Optional.of(Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r);
+                t.setName("opengemini-client-health-checker");
+                return t;
+            }));
+        } else {
+            this.scheduler = Optional.empty();
         }
     }
 
@@ -66,5 +83,10 @@ public abstract class BaseClient {
             queryUrl += "&epoch=" + query.getPrecision().getEpoch();
         }
         return queryUrl;
+    }
+
+    @Override
+    public void close() throws IOException {
+        scheduler.ifPresent(ExecutorService::shutdown);
     }
 }
