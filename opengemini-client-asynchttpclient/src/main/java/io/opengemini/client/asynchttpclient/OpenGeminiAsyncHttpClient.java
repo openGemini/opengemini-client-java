@@ -18,6 +18,7 @@ import org.asynchttpclient.Dsl;
 import org.asynchttpclient.Response;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
@@ -125,7 +126,7 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         asyncHttpClient.close();
     }
 }
