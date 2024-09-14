@@ -7,6 +7,8 @@ import io.opengemini.client.api.Query;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,10 +48,45 @@ public abstract class BaseClient implements Closeable {
         } else {
             this.scheduler = Optional.empty();
         }
+        scheduler.ifPresent(this::startHealthCheck);
+    }
+
+    /**
+     * Health Check
+     * Start schedule task(period 10s) to ping all server url
+     */
+    private void startHealthCheck(ScheduledExecutorService healthCheckSchedule) {
+        healthCheckSchedule.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                for (Endpoint url : serverUrls) {
+                    try {
+                        URL urls = new URL(url.getUrl() + getPingUrl());
+                        HttpURLConnection connection = (HttpURLConnection) urls.openConnection();
+                        connection.setRequestMethod("GET");
+                        connection.setConnectTimeout(2000);
+                        connection.connect();
+                        int responseCode = connection.getResponseCode();
+                        url.getIsDown().set(responseCode < 200 || responseCode >= 300);
+                    } catch (IOException e) {
+                        url.setIsDown(new AtomicBoolean(true));
+                    }
+                }
+            }
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     protected String nextUrlPrefix() {
         int idx = Math.abs(prevIndex.incrementAndGet() % serverUrls.size());
+        if (serverUrls.size() > 1) {
+            for (int i = 0; i < serverUrls.size(); i++) {
+                if (!serverUrls.get(idx).getIsDown().get()) {
+                    return serverUrls.get(idx).getUrl();
+                } else {
+                    idx = Math.abs(prevIndex.incrementAndGet() % serverUrls.size());
+                }
+            }
+        }
         return serverUrls.get(idx).getUrl();
     }
 
