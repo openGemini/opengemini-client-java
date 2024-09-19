@@ -56,21 +56,22 @@ public abstract class BaseClient implements Closeable {
      * Start schedule task(period 10s) to ping all server url
      */
     private void startHealthCheck(ScheduledExecutorService healthCheckSchedule) {
-        healthCheckSchedule.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                for (Endpoint url : serverUrls) {
+        healthCheckSchedule.scheduleWithFixedDelay(() -> {
+            for (Endpoint url : serverUrls) {
+                try {
+                    URL urls = new URL(url.getUrl() + getPingUrl());
+                    HttpURLConnection connection = (HttpURLConnection) urls.openConnection();
                     try {
-                        URL urls = new URL(url.getUrl() + getPingUrl());
-                        HttpURLConnection connection = (HttpURLConnection) urls.openConnection();
                         connection.setRequestMethod("GET");
                         connection.setConnectTimeout(2000);
                         connection.connect();
                         int responseCode = connection.getResponseCode();
                         url.getIsDown().set(responseCode < 200 || responseCode >= 300);
-                    } catch (IOException e) {
-                        url.setIsDown(new AtomicBoolean(true));
+                    } finally {
+                        connection.disconnect();
                     }
+                } catch (IOException e) {
+                    url.getIsDown().set(true);
                 }
             }
         }, 0, 10, TimeUnit.SECONDS);
