@@ -14,4 +14,7 @@
 
     <!-- we don't need package-info on tests -->
     <suppress checks="JavadocPackage" files=".*[\\/]src[\\/]test[\\/].*"/>
+
+    <!-- Suppress LineLength rule for QueryBuilderTest.java -->
+    <suppress checks="LineLength" files=".*QueryBuilderTest\.java"/>
 </suppressions>
