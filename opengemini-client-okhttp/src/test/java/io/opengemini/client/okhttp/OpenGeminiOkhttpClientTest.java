@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +44,12 @@ class OpenGeminiOkhttpClientTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         this.openGeminiOkhttpClient.close();
     }
 
     @Test
-    void query_should_throws_exception_when_address_is_wrong() {
+    void query_should_throws_exception_when_address_is_wrong() throws IOException {
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
                 .connectTimeout(Duration.ofSeconds(3))

@@ -1,8 +1,8 @@
 package io.opengemini.client.okhttp;
 
+import io.github.shoothzj.http.facade.core.TlsConfig;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.test.common.TlsTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,10 @@ class OpenGeminiOkhttpClientFactoryTest {
     static final char[] JKS_PASSWORD = TlsTestUtil.getJksPassword();
 
     private static TlsConfig getBasicTlsConfig() {
-        TlsConfig tlsConfig = new TlsConfig();
-        tlsConfig.versions = new String[]{"TLSv1.3"};
-        tlsConfig.cipherSuites = new String[]{"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"};
-        return tlsConfig;
+        TlsConfig.Builder tlsConfigBuilder = new TlsConfig.Builder();
+        tlsConfigBuilder = tlsConfigBuilder.versions(new String[]{"TLSv1.3"});
+        tlsConfigBuilder = tlsConfigBuilder.cipherSuites(new String[]{"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"});
+        return tlsConfigBuilder.build();
     }
 
     @Test
