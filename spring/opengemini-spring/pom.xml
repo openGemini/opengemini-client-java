@@ -19,10 +19,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.opengemini</groupId>
-            <artifactId>opengemini-client-okhttp</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opengemini</groupId>
@@ -33,12 +31,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
     </dependencies>
 

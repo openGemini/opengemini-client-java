@@ -9,11 +9,9 @@
     <version>0.3.0</version>
     <packaging>pom</packaging>
     <modules>
+        <module>opengemini-client</module>
         <module>opengemini-client-api</module>
-        <module>opengemini-client-asynchttpclient</module>
         <module>opengemini-client-common</module>
-        <module>opengemini-client-jdk</module>
-        <module>opengemini-client-okhttp</module>
         <module>opengemini-client-reactor</module>
         <module>opengemini-client-test-common</module>
         <module>spring</module>
@@ -41,7 +39,6 @@
         <reactor-netty.version>1.1.21</reactor-netty.version>
         <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
-        <spring.version>6.0.19</spring.version>
         <spring-boot.version>3.1.11</spring-boot.version>
         <!-- plugin -->
         <central-publishing-maven-plugin.version>0.6.0</central-publishing-maven-plugin.version>

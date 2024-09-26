@@ -17,7 +17,6 @@ import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -98,12 +97,16 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
                 T resp = JacksonService.toObject(body, type);
                 return CompletableFuture.completedFuture(resp);
             } catch (JsonProcessingException e) {
-                return CompletableFuture.failedFuture(e);
+                CompletableFuture<T> future = new CompletableFuture<>();
+                future.completeExceptionally(e);
+                return future;
             }
         } else {
             String errorMsg = "http error: " + body;
-            return CompletableFuture.failedFuture(
-                new OpenGeminiException(errorMsg, response.statusCode()));
+            OpenGeminiException openGeminiException = new OpenGeminiException(errorMsg, response.statusCode());
+            CompletableFuture<T> future = new CompletableFuture<>();
+            future.completeExceptionally(openGeminiException);
+            return future;
         }
     }
 
@@ -114,12 +117,6 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? null : body.getBytes(StandardCharsets.UTF_8),
                 headers);
-    }
-
-    @Override
-    protected String encode(String str) {
-        // jdk17 has a better way than jdk8
-        return URLEncoder.encode(str, StandardCharsets.UTF_8);
     }
 
     @Override

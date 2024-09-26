@@ -9,7 +9,7 @@
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>opengemini-client-okhttp</artifactId>
+    <artifactId>opengemini-client</artifactId>
 
     <dependencies>
         <dependency>
@@ -23,15 +23,22 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.opengemini</groupId>
-            <artifactId>opengemini-client-test-common</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.asynchttpclient</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>${async-http-client.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>${okhttp.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-test-common</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

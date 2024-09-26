@@ -105,11 +105,15 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
                     T body = JacksonService.toObject(responseBody, type);
                     return CompletableFuture.completedFuture(body);
                 } catch (JsonProcessingException e) {
-                    return CompletableFuture.failedFuture(e);
+                    CompletableFuture<T> future = new CompletableFuture<>();
+                    future.completeExceptionally(e);
+                    return future;
                 }
             } else {
                 OpenGeminiException exp = new OpenGeminiException("http error: " + responseBody, responseStatus.code());
-                return CompletableFuture.failedFuture(exp);
+                CompletableFuture<T> future = new CompletableFuture<>();
+                future.completeExceptionally(exp);
+                return future;
             }
         });
     }
