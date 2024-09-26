@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.shoothzj.http.facade.core.TlsConfig;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContext;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;

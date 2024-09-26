@@ -1,7 +1,7 @@
 package io.opengemini.client.common;
 
 import io.opengemini.client.api.Address;
-import io.opengemini.client.api.BaseConfiguration;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.Endpoint;
 import io.opengemini.client.api.Query;
 
@@ -32,7 +32,7 @@ public abstract class BaseClient implements Closeable {
 
     private final Optional<ScheduledExecutorService> scheduler;
 
-    public BaseClient(BaseConfiguration conf) {
+    public BaseClient(Configuration conf) {
         this.headers = new HashMap<>();
         if (conf.isGzipEnabled()) {
             ArrayList<String> contentEncodingHeader = new ArrayList<>();

@@ -7,6 +7,7 @@ import io.github.shoothzj.http.facade.client.HttpClientEngine;
 import io.github.shoothzj.http.facade.client.HttpClientFactory;
 import io.github.shoothzj.http.facade.core.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiOkhttpClient extends BaseAsyncClient {
@@ -42,25 +42,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
             configClientAuth(builder, authConfig);
         }
 
-        ConnectionPoolConfig poolConfig = conf.getConnectionPoolConfig();
-        if (poolConfig != null) {
-            configClientConnectionPool(poolConfig, builder);
-        }
-
         this.okHttpClient = HttpClientFactory.createHttpClient(builder.build());
-    }
-
-    private static void configClientConnectionPool(ConnectionPoolConfig poolConfig, HttpClientConfig.Builder builder) {
-        HttpClientConfig.OkHttpConfig.ConnectionPoolConfig connectionPoolConfig =
-            new HttpClientConfig.OkHttpConfig.ConnectionPoolConfig();
-        connectionPoolConfig.setMaxIdleConnections(poolConfig.getMaxIdleConnections());
-
-        long nanos = poolConfig.getKeepAliveTimeUnit().toNanos(poolConfig.getKeepAliveDuration());
-        connectionPoolConfig.setKeepAliveDuration(Duration.ofNanos(nanos));
-
-        HttpClientConfig.OkHttpConfig okHttpConfig = new HttpClientConfig.OkHttpConfig();
-        okHttpConfig.setConnectionPoolConfig(connectionPoolConfig);
-        builder.okHttpConfig(okHttpConfig);
     }
 
     /**

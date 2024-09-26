@@ -3,7 +3,7 @@ package io.opengemini.client.common;
 import io.github.shoothzj.http.facade.client.BasicAuthRequestFilter;
 import io.github.shoothzj.http.facade.client.HttpClientConfig;
 import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.BaseConfiguration;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAsyncClient {
 
-    public BaseAsyncClient(BaseConfiguration conf) {
+    public BaseAsyncClient(Configuration conf) {
         super(conf);
     }
 

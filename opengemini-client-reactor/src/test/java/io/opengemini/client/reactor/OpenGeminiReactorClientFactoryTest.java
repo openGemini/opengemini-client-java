@@ -4,6 +4,7 @@ import io.opengemini.client.api.Address;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

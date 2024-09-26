@@ -1,6 +1,7 @@
 package io.opengemini.client.asynchttpclient;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
