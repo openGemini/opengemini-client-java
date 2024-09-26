@@ -1,5 +1,6 @@
 package io.opengemini.client.reactor;
 
+import io.github.shoothzj.http.facade.client.HttpClientConfig;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.Query;
@@ -17,20 +18,26 @@ class OpenGeminiReactorClientTest {
 
     @BeforeEach
     void setUp() {
+        HttpClientConfig httpConfig = new HttpClientConfig.Builder()
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(3))
+                .build();
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
-                .connectTimeout(Duration.ofSeconds(3))
-                .timeout(Duration.ofSeconds(5))
+                .httpConfig(httpConfig)
                 .build();
         this.reactorClient = new OpenGeminiReactorClient(configuration);
     }
 
     @Test
     void queryWithWrongAddress() {
+        HttpClientConfig httpConfig = new HttpClientConfig.Builder()
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(3))
+                .build();
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
-                .connectTimeout(Duration.ofSeconds(3))
-                .timeout(Duration.ofSeconds(5))
+                .httpConfig(httpConfig)
                 .build();
 
         OpenGeminiReactorClient wrongClient = new OpenGeminiReactorClient(configuration);

@@ -1,12 +1,14 @@
-package io.opengemini.client.jdk;
+package io.opengemini.client.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.shoothzj.http.facade.client.BasicAuthRequestFilter;
 import io.github.shoothzj.http.facade.client.HttpClient;
 import io.github.shoothzj.http.facade.client.HttpClientConfig;
-import io.github.shoothzj.http.facade.client.HttpClientEngine;
 import io.github.shoothzj.http.facade.client.HttpClientFactory;
+import io.github.shoothzj.http.facade.client.RequestFilter;
 import io.github.shoothzj.http.facade.core.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
@@ -17,32 +19,31 @@ import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class OpenGeminiJdkClient extends BaseAsyncClient {
-
-    private final Configuration conf;
+public class OpenGeminiClient extends BaseAsyncClient {
+    protected final Configuration conf;
 
     private final HttpClient client;
 
-    public OpenGeminiJdkClient(@NotNull Configuration conf) {
+    public OpenGeminiClient(@NotNull Configuration conf) {
         super(conf);
         this.conf = conf;
-        HttpClientConfig.Builder builder = new HttpClientConfig.Builder();
-        builder.engine(HttpClientEngine.JDK).connectTimeout(conf.getConnectTimeout())
-                           .timeout(conf.getTimeout());
-
-        if (conf.isTlsEnabled()) {
-            builder.tlsConfig(conf.getTlsConfig());
-        }
-
         AuthConfig authConfig = conf.getAuthConfig();
-        if (authConfig != null) {
-            configClientAuth(builder, authConfig);
+        HttpClientConfig httpConfig = conf.getHttpConfig();
+        if (authConfig != null && authConfig.getAuthType().equals(AuthType.PASSWORD)) {
+            List<RequestFilter> requestFilters = httpConfig.requestFilters() == null
+                    ? new ArrayList<>() : httpConfig.requestFilters();
+            requestFilters.add(new BasicAuthRequestFilter(authConfig.getUsername(),
+                    String.valueOf(authConfig.getPassword())));
+            httpConfig.setRequestFilters(requestFilters);
         }
-        this.client = HttpClientFactory.createHttpClient(builder.build());
+        this.client = HttpClientFactory.createHttpClient(httpConfig);
     }
 
     /**
@@ -115,12 +116,17 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
     }
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
-        return client.post(buildUriWithPrefix(url), body == null ? null : body.getBytes(StandardCharsets.UTF_8),
+        return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
                 headers);
     }
 
     @Override
-    public void close() {
-        // no need to close
+    public void close() throws IOException {
+        this.client.close();
+    }
+
+    @Override
+    public String toString() {
+        return "OpenGeminiClient{" + "httpEngine=" + conf.getHttpConfig().engine() + '}';
     }
 }

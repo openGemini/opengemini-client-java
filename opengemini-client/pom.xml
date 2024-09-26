@@ -11,6 +11,11 @@
 
     <artifactId>opengemini-client</artifactId>
 
+    <properties>
+        <maven.compiler.testSource>17</maven.compiler.testSource>
+        <maven.compiler.testTarget>17</maven.compiler.testTarget>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.opengemini</groupId>
@@ -33,12 +38,6 @@
             <artifactId>okhttp</artifactId>
             <version>${okhttp.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.opengemini</groupId>
-            <artifactId>opengemini-client-test-common</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

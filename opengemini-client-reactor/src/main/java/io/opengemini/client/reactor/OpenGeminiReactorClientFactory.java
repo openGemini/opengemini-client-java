@@ -1,5 +1,6 @@
 package io.opengemini.client.reactor;
 
+import io.github.shoothzj.http.facade.client.HttpClientConfig;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
@@ -37,12 +38,14 @@ public class OpenGeminiReactorClientFactory {
                 throw new OpenGeminiException("batch enabled, batch size must be great than 0");
             }
         }
-        if (configuration.getTimeout() == null || configuration.getTimeout().isNegative()) {
-            configuration.setTimeout(OpenGeminiConst.DEFAULT_TIMEOUT);
+        HttpClientConfig httpConfig = configuration.getHttpConfig();
+        if (httpConfig.timeout() == null || httpConfig.timeout().isNegative()) {
+            httpConfig.setTimeout(OpenGeminiConst.DEFAULT_TIMEOUT);
         }
-        if (configuration.getConnectTimeout() == null || configuration.getConnectTimeout().isNegative()) {
-            configuration.setConnectTimeout(OpenGeminiConst.DEFAULT_CONNECT_TIMEOUT);
+        if (httpConfig.connectTimeout() == null || httpConfig.connectTimeout().isNegative()) {
+            httpConfig.setConnectTimeout(OpenGeminiConst.DEFAULT_CONNECT_TIMEOUT);
         }
+        configuration.setHttpConfig(httpConfig);
         return new OpenGeminiReactorClient(configuration);
     }
 }

@@ -1,20 +1,17 @@
-package io.opengemini.client.okhttp;
+package io.opengemini.client.impl;
 
-import io.github.shoothzj.http.facade.core.TlsConfig;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiConst;
 import io.opengemini.client.api.OpenGeminiException;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenGeminiOkhttpClientFactory {
-    public static OpenGeminiOkhttpClient create(@NotNull Configuration configuration) throws OpenGeminiException {
+public class OpenGeminiClientFactory {
+    public static OpenGeminiClient create(@NotNull Configuration configuration) throws OpenGeminiException {
         if (configuration.getAddresses() == null || configuration.getAddresses().isEmpty()) {
-            throw new OpenGeminiException("at least one address is required");
+            throw new OpenGeminiException("must have at least one address");
         }
-
         AuthConfig authConfig = configuration.getAuthConfig();
         if (authConfig != null) {
             if (authConfig.getAuthType() == AuthType.TOKEN && (authConfig.getToken() == null
@@ -30,7 +27,6 @@ public class OpenGeminiOkhttpClientFactory {
                 }
             }
         }
-
         BatchConfig batchConfig = configuration.getBatchConfig();
         if (batchConfig != null) {
             if (batchConfig.getBatchInterval() <= 0) {
@@ -40,23 +36,6 @@ public class OpenGeminiOkhttpClientFactory {
                 throw new OpenGeminiException("batch enabled, batch size must be great than 0");
             }
         }
-
-        if (configuration.getTimeout() == null || configuration.getTimeout().isNegative()) {
-            configuration.setTimeout(OpenGeminiConst.DEFAULT_TIMEOUT);
-        }
-
-        if (configuration.getConnectTimeout() == null || configuration.getConnectTimeout().isNegative()) {
-            configuration.setConnectTimeout(OpenGeminiConst.DEFAULT_CONNECT_TIMEOUT);
-        }
-
-        TlsConfig tlsConfig = configuration.getTlsConfig();
-        if (tlsConfig != null) {
-            boolean enableTls = !tlsConfig.verifyDisabled();
-            if (enableTls && (tlsConfig.trustStorePath() == null || tlsConfig.trustStorePassword() == null)) {
-                throw new OpenGeminiException(
-                        "tls verification enabled, trust store path and password must not be null");
-            }
-        }
-        return new OpenGeminiOkhttpClient(configuration);
+        return new OpenGeminiClient(configuration);
     }
 }

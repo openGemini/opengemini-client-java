@@ -1,8 +1,5 @@
 package io.opengemini.client.common;
 
-import io.github.shoothzj.http.facade.client.BasicAuthRequestFilter;
-import io.github.shoothzj.http.facade.client.HttpClientConfig;
-import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.Point;
@@ -21,11 +18,6 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
 
     public BaseAsyncClient(Configuration conf) {
         super(conf);
-    }
-
-    protected void configClientAuth(HttpClientConfig.Builder builder, AuthConfig authConfig) {
-        builder.addRequestFilter(
-            new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
     }
 
     /**

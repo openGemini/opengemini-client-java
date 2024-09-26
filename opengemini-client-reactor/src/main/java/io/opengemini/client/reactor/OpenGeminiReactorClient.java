@@ -22,12 +22,12 @@ public class OpenGeminiReactorClient extends BaseClient {
     public OpenGeminiReactorClient(@NotNull Configuration conf) {
         super(conf);
         HttpClient client = HttpClient.create();
-        client = client.responseTimeout(conf.getTimeout());
-        int connectionTimeoutMs = (int) conf.getConnectTimeout().toMillis();
+        client = client.responseTimeout(conf.getHttpConfig().timeout());
+        int connectionTimeoutMs = (int) conf.getHttpConfig().connectTimeout().toMillis();
         client = client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMs);
 
-        if (conf.isTlsEnabled()) {
-            TlsConfig tlsConfig = conf.getTlsConfig();
+        if (conf.getHttpConfig().tlsConfig() != null) {
+            TlsConfig tlsConfig = conf.getHttpConfig().tlsConfig();
             client = client.secure(spec -> {
                 SslContext context = SslContextUtil.buildFromJks(
                         tlsConfig.keyStorePath(),

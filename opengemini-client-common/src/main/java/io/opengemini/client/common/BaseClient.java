@@ -40,7 +40,7 @@ public abstract class BaseClient implements Closeable {
             headers.put("Content-Encoding", contentEncodingHeader);
         }
         String httpPrefix;
-        if (conf.isTlsEnabled()) {
+        if (conf.getHttpConfig().tlsConfig() != null) {
             httpPrefix = "https://";
         } else {
             httpPrefix = "http://";
