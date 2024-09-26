@@ -19,10 +19,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.opengemini</groupId>
-            <artifactId>opengemini-client-okhttp</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opengemini</groupId>

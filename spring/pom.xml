@@ -12,6 +12,11 @@
     <artifactId>opengemini-spring-parent</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
     <modules>
         <module>opengemini-spring</module>
         <module>opengemini-spring-boot-starter</module>
