@@ -108,12 +108,12 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     }
 
     private CompletableFuture<HttpResponse> get(String url) {
-        return okHttpClient.get(buildUriWithPrefix(url));
+        return okHttpClient.get(buildUriWithPrefix(url), headers);
     }
 
     private CompletableFuture<HttpResponse> post(String url, String body) {
         byte[] requestBody = body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8);
-        return okHttpClient.post(buildUriWithPrefix(url), requestBody);
+        return okHttpClient.post(buildUriWithPrefix(url), requestBody, headers);
     }
 
     private static <T> CompletableFuture<T> composeExtractBody(CompletableFuture<HttpResponse> responseFuture,

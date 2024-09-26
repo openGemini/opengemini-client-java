@@ -22,6 +22,8 @@ public class BaseConfiguration {
 
     BatchConfig batchConfig;
 
+    boolean gzipEnabled;
+
     boolean tlsEnabled;
 
     TlsConfig tlsConfig;
