@@ -53,7 +53,7 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-        CompletableFuture<HttpResponse> resFuture = asyncHttpClient.get(buildUriWithPrefix(queryUrl));
+        CompletableFuture<HttpResponse> resFuture = asyncHttpClient.get(buildUriWithPrefix(queryUrl), headers);
         return compose(resFuture, QueryResult.class);
     }
 
@@ -65,7 +65,8 @@ public class OpenGeminiAsyncHttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<QueryResult> executePostQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-        CompletableFuture<HttpResponse> responseFuture = asyncHttpClient.post(buildUriWithPrefix(queryUrl), null);
+        CompletableFuture<HttpResponse> responseFuture = asyncHttpClient.post(buildUriWithPrefix(queryUrl),
+                null, headers);
         return compose(responseFuture, QueryResult.class);
     }
 

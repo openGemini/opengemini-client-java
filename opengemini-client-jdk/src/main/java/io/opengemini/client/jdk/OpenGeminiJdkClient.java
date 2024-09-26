@@ -107,11 +107,12 @@ public class OpenGeminiJdkClient extends BaseAsyncClient {
     }
 
     public CompletableFuture<HttpResponse> get(String url) {
-        return client.get(buildUriWithPrefix(url));
+        return client.get(buildUriWithPrefix(url), headers);
     }
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
-        return client.post(buildUriWithPrefix(url), body == null ? null : body.getBytes(StandardCharsets.UTF_8));
+        return client.post(buildUriWithPrefix(url), body == null ? null : body.getBytes(StandardCharsets.UTF_8),
+                headers);
     }
 
     @Override

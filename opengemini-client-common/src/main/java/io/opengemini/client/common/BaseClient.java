@@ -12,7 +12,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseClient implements Closeable {
+    protected final Map<String, List<String>> headers;
+
     private final List<Endpoint> serverUrls = new ArrayList<>();
 
     private final AtomicInteger prevIndex = new AtomicInteger(-1);
@@ -29,6 +33,12 @@ public abstract class BaseClient implements Closeable {
     private final Optional<ScheduledExecutorService> scheduler;
 
     public BaseClient(BaseConfiguration conf) {
+        this.headers = new HashMap<>();
+        if (conf.isGzipEnabled()) {
+            ArrayList<String> contentEncodingHeader = new ArrayList<>();
+            contentEncodingHeader.add("gzip");
+            headers.put("Content-Encoding", contentEncodingHeader);
+        }
         String httpPrefix;
         if (conf.isTlsEnabled()) {
             httpPrefix = "https://";
