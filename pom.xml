@@ -13,13 +13,14 @@
         <module>opengemini-client-api</module>
         <module>opengemini-client-common</module>
         <module>opengemini-client-reactor</module>
-        <module>opengemini-client-test-common</module>
         <module>spring</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.testSource>8</maven.compiler.testSource>
+        <maven.compiler.testTarget>8</maven.compiler.testTarget>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <src.dir>src/main/java</src.dir>
         <!-- dependency -->
@@ -95,6 +96,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
@@ -153,6 +160,8 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <testSource>${maven.compiler.testSource}</testSource>
+                    <testTarget>${maven.compiler.testTarget}</testTarget>
                 </configuration>
             </plugin>
             <plugin>

@@ -69,7 +69,7 @@ import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.jdk.Configuration;
-import io.opengemini.client.jdk.OpenGeminiJdkClient;
+import io.opengemini.client.impl.OpenGeminiJdkClient;
 
 import java.time.Duration;
 import java.util.Collections;
