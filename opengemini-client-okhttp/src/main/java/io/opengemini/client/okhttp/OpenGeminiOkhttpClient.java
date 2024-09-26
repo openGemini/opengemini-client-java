@@ -1,90 +1,66 @@
 package io.opengemini.client.okhttp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.shoothzj.http.facade.client.HttpClient;
+import io.github.shoothzj.http.facade.client.HttpClientConfig;
+import io.github.shoothzj.http.facade.client.HttpClientEngine;
+import io.github.shoothzj.http.facade.client.HttpClientFactory;
+import io.github.shoothzj.http.facade.core.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.ConnectionPool;
-import okhttp3.ConnectionSpec;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class OpenGeminiOkhttpClient extends BaseAsyncClient {
 
-    private static final okhttp3.MediaType MEDIA_TYPE_STRING = MediaType.parse("text/plain");
-    private final OkHttpClient okHttpClient;
+    private final HttpClient okHttpClient;
 
     public OpenGeminiOkhttpClient(@NotNull Configuration conf) {
         super(conf);
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().connectTimeout(conf.getConnectTimeout())
-                .readTimeout(conf.getTimeout())
-                .writeTimeout(conf.getTimeout());
+        HttpClientConfig.Builder builder =
+            new HttpClientConfig.Builder().engine(HttpClientEngine.OkHttp)
+                                          .connectTimeout(conf.getConnectTimeout())
+                                          .timeout(conf.getTimeout());
+
 
         if (conf.isTlsEnabled()) {
-            TlsConfig tlsConfig = conf.getTlsConfig();
-
-            // set tls version and cipher suits
-            ConnectionSpec connectionSpec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS).tlsVersions(
-                    tlsConfig.versions).cipherSuites(tlsConfig.cipherSuites).build();
-            okHttpClientBuilder.connectionSpecs(Collections.singletonList(connectionSpec));
-
-            // create ssl context from keystore and truststore
-            OkHttpSslContextFactory.OkHttpSslContext sslContext = OkHttpSslContextFactory.createOkHttpSslContext(
-                    tlsConfig);
-            okHttpClientBuilder.sslSocketFactory(sslContext.sslSocketFactory, sslContext.x509TrustManager);
-
-            // override hostnameVerifier to make it always success when hostname verification has been disabled
-            if (tlsConfig.hostnameVerifyDisabled) {
-                okHttpClientBuilder.hostnameVerifier((s, sslSession) -> true);
-            }
+            builder.tlsConfig(conf.getTlsConfig());
         }
 
         AuthConfig authConfig = conf.getAuthConfig();
         if (authConfig != null) {
-            configClientAuth(authConfig, okHttpClientBuilder);
+            configClientAuth(builder, authConfig);
         }
 
         ConnectionPoolConfig poolConfig = conf.getConnectionPoolConfig();
         if (poolConfig != null) {
-            configClientConnectionPool(poolConfig, okHttpClientBuilder);
+            configClientConnectionPool(poolConfig, builder);
         }
 
-        this.okHttpClient = okHttpClientBuilder.build();
+        this.okHttpClient = HttpClientFactory.createHttpClient(builder.build());
     }
 
-    private static void configClientAuth(AuthConfig authConfig, OkHttpClient.Builder okHttpClientBuilder) {
-        if (AuthType.PASSWORD == authConfig.getAuthType()) {
-            okHttpClientBuilder.addInterceptor(
-                    new BasicAuthInterceptor(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
-        }
-    }
+    private static void configClientConnectionPool(ConnectionPoolConfig poolConfig, HttpClientConfig.Builder builder) {
+        HttpClientConfig.OkHttpConfig.ConnectionPoolConfig connectionPoolConfig =
+            new HttpClientConfig.OkHttpConfig.ConnectionPoolConfig();
+        connectionPoolConfig.setMaxIdleConnections(poolConfig.getMaxIdleConnections());
 
-    private void configClientConnectionPool(ConnectionPoolConfig poolConfig, OkHttpClient.Builder okHttpClientBuilder) {
-        int maxIdleConnections = poolConfig.getMaxIdleConnections();
-        long keepAliveDuration = poolConfig.getKeepAliveDuration();
-        TimeUnit timeUnit = poolConfig.getKeepAliveTimeUnit();
-        if (maxIdleConnections > 0 && keepAliveDuration > 0 && timeUnit != null) {
-            okHttpClientBuilder.connectionPool(new ConnectionPool(maxIdleConnections, keepAliveDuration, timeUnit));
-        }
+        long nanos = poolConfig.getKeepAliveTimeUnit().toNanos(poolConfig.getKeepAliveDuration());
+        connectionPoolConfig.setKeepAliveDuration(Duration.ofNanos(nanos));
+
+        HttpClientConfig.OkHttpConfig okHttpConfig = new HttpClientConfig.OkHttpConfig();
+        okHttpConfig.setConnectionPoolConfig(connectionPoolConfig);
+        builder.okHttpConfig(okHttpConfig);
     }
 
     /**
@@ -95,8 +71,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-        Request request = new Request.Builder().url(nextUrlPrefix() + queryUrl).get().build();
-        return execute(request, QueryResult.class);
+        return composeExtractBody(get(queryUrl), QueryResult.class);
     }
 
     /**
@@ -107,10 +82,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<QueryResult> executePostQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-        Request request = new Request.Builder().url(nextUrlPrefix() + queryUrl)
-                .post(RequestBody.create(new byte[0]))
-                .build();
-        return execute(request, QueryResult.class);
+        return composeExtractBody(post(queryUrl, null), QueryResult.class);
     }
 
     /**
@@ -122,10 +94,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
         String writeUrl = getWriteUrl(database);
-        Request request = new Request.Builder().url(nextUrlPrefix() + writeUrl)
-                .post(RequestBody.create(lineProtocol, MEDIA_TYPE_STRING))
-                .build();
-        return execute(request, Void.class);
+        return composeExtractBody(post(writeUrl, lineProtocol), Void.class);
     }
 
     /**
@@ -134,85 +103,56 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<Pong> executePing() {
         String pingUrl = getPingUrl();
-        Request request = new Request.Builder().url(nextUrlPrefix() + pingUrl).get().build();
-        return composeExtractHeader(execute(request), HeaderConst.VERSION).thenApply(Pong::new);
+        CompletableFuture<HttpResponse> respFuture = get(pingUrl);
+        return composeExtractHeader(respFuture, HeaderConst.VERSION).thenApply(Pong::new);
     }
 
-    private <T> CompletableFuture<T> execute(Request request, Class<T> type) {
-        return composeExtractBody(execute(request), type);
+    private CompletableFuture<HttpResponse> get(String url) {
+        return okHttpClient.get(buildUriWithPrefix(url));
     }
 
-    private CompletableFuture<Response> execute(Request request) {
-        CompletableFuture<Response> future = new CompletableFuture<>();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                future.complete(response);
-            }
-        });
-        return future;
+    private CompletableFuture<HttpResponse> post(String url, String body) {
+        byte[] requestBody = body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8);
+        return okHttpClient.post(buildUriWithPrefix(url), requestBody);
     }
 
-    private static <T> CompletableFuture<T> composeExtractBody(CompletableFuture<Response> responseFuture,
+    private static <T> CompletableFuture<T> composeExtractBody(CompletableFuture<HttpResponse> responseFuture,
                                                                Class<T> type) {
         return responseFuture.thenCompose(response -> {
             CompletableFuture<T> future = new CompletableFuture<>();
 
-            try {
-                int statusCode = response.code();
-                String responseBodyString = getResponseBodyString(response);
+            int statusCode = response.statusCode();
+            String responseBodyString = response.bodyAsString();
 
-                if (response.isSuccessful()) {
-                    try {
-                        T result = JacksonService.toObject(responseBodyString, type);
-                        future.complete(result);
-                    } catch (JsonProcessingException e) {
-                        future.completeExceptionally(e);
-                    }
-                } else {
-                    completeUnsuccessfulResponse(future, responseBodyString, statusCode);
+            if (statusCode >= 200 && statusCode < 300) {
+                try {
+                    T result = JacksonService.toObject(responseBodyString, type);
+                    future.complete(result);
+                } catch (JsonProcessingException e) {
+                    future.completeExceptionally(e);
                 }
-            } catch (IOException e) {
-                future.completeExceptionally(e);
+            } else {
+                completeUnsuccessfulResponse(future, responseBodyString, statusCode);
             }
             return future;
         });
     }
 
-    private static CompletableFuture<String> composeExtractHeader(CompletableFuture<Response> responseFuture,
+    private static CompletableFuture<String> composeExtractHeader(CompletableFuture<HttpResponse> responseFuture,
                                                                   String headerName) {
         return responseFuture.thenCompose(response -> {
             CompletableFuture<String> future = new CompletableFuture<>();
 
-            try {
-                int statusCode = response.code();
-                String responseBodyString = getResponseBodyString(response);
+            int statusCode = response.statusCode();
+            String responseBodyString = response.bodyAsString();
 
-                if (response.isSuccessful()) {
-                    future.complete(response.header(headerName));
-                } else {
-                    completeUnsuccessfulResponse(future, responseBodyString, statusCode);
-                }
-            } catch (IOException e) {
-                future.completeExceptionally(e);
+            if (statusCode >= 200 && statusCode < 300) {
+                future.complete(response.headers().get(headerName).get(0));
+            } else {
+                completeUnsuccessfulResponse(future, responseBodyString, statusCode);
             }
             return future;
         });
-    }
-
-    private static String getResponseBodyString(Response response) throws IOException {
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            return responseBody.string();
-        } else {
-            return null;
-        }
     }
 
     private static <T> void completeUnsuccessfulResponse(CompletableFuture<T> future, String responseBodyString,
@@ -222,8 +162,7 @@ public class OpenGeminiOkhttpClient extends BaseAsyncClient {
     }
 
     @Override
-    public void close() {
-        okHttpClient.dispatcher().executorService().shutdown();
-        okHttpClient.connectionPool().evictAll();
+    public void close() throws IOException {
+        okHttpClient.close();
     }
 }

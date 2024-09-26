@@ -1,11 +1,11 @@
 package io.opengemini.client.okhttp;
 
+import io.github.shoothzj.http.facade.core.TlsConfig;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.OpenGeminiConst;
 import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.TlsConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenGeminiOkhttpClientFactory {
@@ -50,8 +50,8 @@ public class OpenGeminiOkhttpClientFactory {
 
         TlsConfig tlsConfig = configuration.getTlsConfig();
         if (tlsConfig != null) {
-            boolean enableTls = !tlsConfig.verifyDisabled;
-            if (enableTls && (tlsConfig.trustStorePath == null || tlsConfig.trustStorePassword == null)) {
+            boolean enableTls = !tlsConfig.verifyDisabled();
+            if (enableTls && (tlsConfig.trustStorePath() == null || tlsConfig.trustStorePassword() == null)) {
                 throw new OpenGeminiException(
                         "tls verification enabled, trust store path and password must not be null");
             }

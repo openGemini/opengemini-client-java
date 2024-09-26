@@ -91,6 +91,10 @@ public abstract class BaseClient implements Closeable {
         return serverUrls.get(idx).getUrl();
     }
 
+    protected String buildUriWithPrefix(String url) {
+        return nextUrlPrefix() + url;
+    }
+
     protected String encode(String str) {
         try {
             return URLEncoder.encode(str, StandardCharsets.UTF_8.name());

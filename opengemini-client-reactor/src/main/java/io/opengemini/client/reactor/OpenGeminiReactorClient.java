@@ -1,12 +1,12 @@
 package io.opengemini.client.reactor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.shoothzj.http.facade.core.TlsConfig;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContext;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.TlsConfig;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.JacksonService;
 import org.jetbrains.annotations.NotNull;
@@ -29,14 +29,14 @@ public class OpenGeminiReactorClient extends BaseClient {
             TlsConfig tlsConfig = conf.getTlsConfig();
             client = client.secure(spec -> {
                 SslContext context = SslContextUtil.buildFromJks(
-                        tlsConfig.keyStorePath,
-                        tlsConfig.keyStorePassword,
-                        tlsConfig.trustStorePath,
-                        tlsConfig.trustStorePassword,
-                        tlsConfig.verifyDisabled,
-                        tlsConfig.versions,
-                        tlsConfig.cipherSuites);
-                if (tlsConfig.hostnameVerifyDisabled) {
+                        tlsConfig.keyStorePath(),
+                        tlsConfig.keyStorePassword(),
+                        tlsConfig.trustStorePath(),
+                        tlsConfig.trustStorePassword(),
+                        tlsConfig.verifyDisabled(),
+                        tlsConfig.versions(),
+                        tlsConfig.cipherSuites());
+                if (tlsConfig.hostnameVerifyDisabled()) {
                     spec.sslContext(context)
                             .handlerConfigurator(HttpClientSecurityUtils.HOSTNAME_VERIFICATION_CONFIGURER);
                 } else {

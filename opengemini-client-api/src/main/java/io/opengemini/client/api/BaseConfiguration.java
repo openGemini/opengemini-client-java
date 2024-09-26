@@ -1,5 +1,6 @@
 package io.opengemini.client.api;
 
+import io.github.shoothzj.http.facade.core.TlsConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
