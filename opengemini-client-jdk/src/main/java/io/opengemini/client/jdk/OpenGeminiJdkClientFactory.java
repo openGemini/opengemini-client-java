@@ -3,6 +3,7 @@ package io.opengemini.client.jdk;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiConst;
 import io.opengemini.client.api.OpenGeminiException;
 import org.jetbrains.annotations.NotNull;

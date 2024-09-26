@@ -1,6 +1,7 @@
 package io.opengemini.client.okhttp;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 class OpenGeminiOkhttpClientTest {
 
@@ -38,7 +38,6 @@ class OpenGeminiOkhttpClientTest {
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                 .connectTimeout(Duration.ofSeconds(3))
                 .timeout(Duration.ofSeconds(5))
-                .connectionPoolConfig(ConnectionPoolConfig.of(1, 2, TimeUnit.MINUTES))
                 .build();
         this.openGeminiOkhttpClient = new OpenGeminiOkhttpClient(configuration);
     }

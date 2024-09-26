@@ -7,6 +7,7 @@ import io.github.shoothzj.http.facade.client.HttpClientEngine;
 import io.github.shoothzj.http.facade.client.HttpClientFactory;
 import io.github.shoothzj.http.facade.core.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;

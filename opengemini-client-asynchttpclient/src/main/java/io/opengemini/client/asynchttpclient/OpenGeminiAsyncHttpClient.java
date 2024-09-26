@@ -9,6 +9,7 @@ import io.github.shoothzj.http.facade.core.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;

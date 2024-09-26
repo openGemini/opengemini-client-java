@@ -1,6 +1,7 @@
 package io.opengemini.client.reactor;
 
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import org.junit.jupiter.api.Assertions;
