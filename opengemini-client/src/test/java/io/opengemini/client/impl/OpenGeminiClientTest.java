@@ -1,7 +1,7 @@
 package io.opengemini.client.impl;
 
-import io.github.shoothzj.http.facade.client.HttpClientConfig;
-import io.github.shoothzj.http.facade.client.HttpClientEngine;
+import io.github.openfacade.http.HttpClientConfig;
+import io.github.openfacade.http.HttpClientEngine;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
@@ -42,8 +42,8 @@ class OpenGeminiClientTest {
     protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
         List<HttpClientEngine> engines = new ArrayList<>();
         engines.add(HttpClientEngine.AsyncHttpClient);
-        engines.add(HttpClientEngine.JDK);
-        engines.add(HttpClientEngine.JDK8);
+        engines.add(HttpClientEngine.JAVA);
+        engines.add(HttpClientEngine.JAVA8);
         engines.add(HttpClientEngine.OkHttp);
         List<OpenGeminiClient> clients = new ArrayList<>();
         for (HttpClientEngine engine : engines) {

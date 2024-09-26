@@ -1,7 +1,7 @@
 package io.opengemini.client.reactor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.shoothzj.http.facade.core.TlsConfig;
+import io.github.openfacade.http.TlsConfig;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContext;
 import io.opengemini.client.api.Configuration;

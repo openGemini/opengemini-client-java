@@ -1,12 +1,11 @@
 package io.opengemini.client.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.shoothzj.http.facade.client.BasicAuthRequestFilter;
-import io.github.shoothzj.http.facade.client.HttpClient;
-import io.github.shoothzj.http.facade.client.HttpClientConfig;
-import io.github.shoothzj.http.facade.client.HttpClientFactory;
-import io.github.shoothzj.http.facade.client.RequestFilter;
-import io.github.shoothzj.http.facade.core.HttpResponse;
+import io.github.openfacade.http.BasicAuthRequestFilter;
+import io.github.openfacade.http.HttpClient;
+import io.github.openfacade.http.HttpClientConfig;
+import io.github.openfacade.http.HttpClientFactory;
+import io.github.openfacade.http.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.Configuration;
@@ -21,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,11 +34,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
         AuthConfig authConfig = conf.getAuthConfig();
         HttpClientConfig httpConfig = conf.getHttpConfig();
         if (authConfig != null && authConfig.getAuthType().equals(AuthType.PASSWORD)) {
-            List<RequestFilter> requestFilters = httpConfig.requestFilters() == null
-                    ? new ArrayList<>() : httpConfig.requestFilters();
-            requestFilters.add(new BasicAuthRequestFilter(authConfig.getUsername(),
+            httpConfig.addRequestFilter(new BasicAuthRequestFilter(authConfig.getUsername(),
                     String.valueOf(authConfig.getPassword())));
-            httpConfig.setRequestFilters(requestFilters);
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
     }

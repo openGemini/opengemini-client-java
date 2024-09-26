@@ -1,6 +1,6 @@
 package io.opengemini.client.reactor;
 
-import io.github.shoothzj.http.facade.client.HttpClientConfig;
+import io.github.openfacade.http.HttpClientConfig;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;

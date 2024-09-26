@@ -1,6 +1,6 @@
 package io.opengemini.client.api;
 
-import io.github.shoothzj.http.facade.client.HttpClientConfig;
+import io.github.openfacade.http.HttpClientConfig;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
