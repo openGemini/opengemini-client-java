@@ -54,7 +54,7 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 ```xml
 <dependency>
     <groupId>io.opengemini</groupId>
-    <artifactId>opengemini-client-jdk</artifactId>
+    <artifactId>opengemini-client</artifactId>
     <version>${latest.version}</version>
 </dependency>
 ```

@@ -4,7 +4,7 @@
 
 [English](README.md) | 简体中文  
 
-`opengemini-client-java`是一个用 Python 语言编写的 OpenGemini 客户端
+`opengemini-client-java`是一个用 Java 语言编写的 OpenGemini 客户端
 
 ## 设计文档
 
@@ -55,7 +55,7 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 ```xml
 <dependency>
     <groupId>io.opengemini</groupId>
-    <artifactId>opengemini-client-jdk</artifactId>
+    <artifactId>opengemini-client</artifactId>
     <version>${latest.version}</version>
 </dependency>
 ```
