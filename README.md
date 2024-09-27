@@ -25,7 +25,6 @@ OpenGemini is a cloud-native distributed time series database, find more informa
 | opengemini-client-reactor         | OpenJDK 8(1.8)                  | Reactive Paradigm Framework          | Stay Tuned |
 | opengemini-client-okhttp          | OpenJDK 8(1.8)                  | Popular okhttp component, preferred for Android scenarios            | Stay Tuned |
 | opengemini-client-asynchttpclient | OpenJDK 11                      | Asynchronous Programming Framework Scenarios for Performance Pursuit | Stay Tuned |
-| opengemini-client-kotlin/scala    | -                               | Preferred for Corresponding Development Language                     | Stay Tuned |
 
 
 ## Prerequisites
@@ -64,12 +63,15 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 ```java
 package org.example;
 
+import io.github.openfacade.http.HttpClientConfig;
 import io.opengemini.client.api.Address;
+import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.jdk.Configuration;
-import io.opengemini.client.impl.OpenGeminiJdkClient;
+import io.opengemini.client.impl.OpenGeminiClient;
+import io.opengemini.client.impl.OpenGeminiClientFactory;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -79,17 +81,20 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) throws ExecutionException, InterruptedException, OpenGeminiException {
+        HttpClientConfig httpConfig = new HttpClientConfig.Builder()
+                .connectTimeout(Duration.ofSeconds(3))
+                .timeout(Duration.ofSeconds(3))
+                .build();
         Configuration configuration = Configuration.builder()
                 .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
-                .connectTimeout(Duration.ofSeconds(3))
-                .timeout(Duration.ofSeconds(5))
+                .httpConfig(httpConfig)
                 .build();
 
-        OpenGeminiJdkClient openGeminiJdkClient = new OpenGeminiJdkClient(configuration);
+        OpenGeminiClient client = OpenGeminiClientFactory.create(configuration);
 
         String databaseName = "db_quick_start";
-        CompletableFuture<Void> createdb = openGeminiJdkClient.createDatabase(databaseName);
+        CompletableFuture<Void> createdb = client.createDatabase(databaseName);
         createdb.get();
 
         Point point = new Point();
@@ -101,19 +106,19 @@ public class Main {
         point.setTags(tags);
         point.setFields(fields);
 
-        openGeminiJdkClient.write(databaseName, point).get();
+        client.write(databaseName, point).get();
 
         // Creating a new tag requires waiting for the server to create and update indexes
         Thread.sleep(3000);
 
         Query selectQuery = new Query("select * from " + "ms_quick_start", databaseName, "");
-        CompletableFuture<QueryResult> queryRst = openGeminiJdkClient.query(selectQuery);
+        CompletableFuture<QueryResult> queryRst = client.query(selectQuery);
 
         System.out.println("query result: " + queryRst.get());
     }
 }
 ```
 
-## Contributor
+## Contribution
 
 Welcome to [join us](CONTRIBUTION.md)
