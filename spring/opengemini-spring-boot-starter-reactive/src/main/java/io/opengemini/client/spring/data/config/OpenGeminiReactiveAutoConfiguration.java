@@ -1,5 +1,7 @@
 package io.opengemini.client.spring.data.config;
 
+import io.opengemini.client.spring.data.core.DefaultOpenGeminiSerializerFactory;
+import io.opengemini.client.spring.data.core.OpenGeminiSerializerFactory;
 import io.opengemini.client.spring.data.core.ReactiveOpenGeminiTemplate;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -17,4 +19,9 @@ public class OpenGeminiReactiveAutoConfiguration {
         return new ReactiveOpenGeminiTemplate();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(name = "openGeminiSerializerFactory")
+    public OpenGeminiSerializerFactory openGeminiSerializerFactory() {
+        return new DefaultOpenGeminiSerializerFactory();
+    }
 }

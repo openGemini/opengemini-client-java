@@ -1,6 +1,7 @@
 package io.opengemini.client.spring.data.config;
 
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
+import io.opengemini.client.spring.data.core.OpenGeminiSerializerFactory;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
 import io.opengemini.client.spring.data.sample.TestApplication;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +20,9 @@ public class OpenGeminiAutoConfigurationTest {
     @Autowired
     private OpenGeminiTemplate openGeminiTemplate;
 
+    @Autowired
+    private OpenGeminiSerializerFactory openGeminiSerializerFactory;
+
     @Test
     public void properties_bean_should_be_declared() {
         Assertions.assertNotNull(openGeminiProperties);
@@ -28,6 +32,11 @@ public class OpenGeminiAutoConfigurationTest {
     @Test
     public void template_bean_should_be_declared() {
         Assertions.assertNotNull(openGeminiTemplate);
+    }
+
+    @Test
+    public void serializerFactory_bean_should_be_declared() {
+        Assertions.assertNotNull(openGeminiSerializerFactory);
     }
 
 }
