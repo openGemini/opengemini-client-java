@@ -34,8 +34,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
         AuthConfig authConfig = conf.getAuthConfig();
         HttpClientConfig httpConfig = conf.getHttpConfig();
         if (authConfig != null && authConfig.getAuthType().equals(AuthType.PASSWORD)) {
-            httpConfig.addRequestFilter(new BasicAuthRequestFilter(authConfig.getUsername(),
-                    String.valueOf(authConfig.getPassword())));
+            httpConfig.addRequestFilter(
+                    new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
     }
@@ -65,12 +65,13 @@ public class OpenGeminiClient extends BaseAsyncClient {
     /**
      * Execute a write call with java HttpClient.
      *
-     * @param database     the name of the database.
-     * @param lineProtocol the line protocol string to write.
+     * @param database        the name of the database.
+     * @param retentionPolicy the name of the retention policy.
+     * @param lineProtocol    the line protocol string to write.
      */
     @Override
-    protected CompletableFuture<Void> executeWrite(String database, String lineProtocol) {
-        String writeUrl = getWriteUrl(database);
+    protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
+        String writeUrl = getWriteUrl(database, retentionPolicy);
         return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
     }
 
@@ -80,9 +81,9 @@ public class OpenGeminiClient extends BaseAsyncClient {
     @Override
     protected CompletableFuture<Pong> executePing() {
         String pingUrl = getPingUrl();
-        return get(pingUrl).thenApply(
-            response -> Optional.ofNullable(response.headers().get(HeaderConst.VERSION)).map(values -> values.get(0))
-                                .orElse(null)).thenApply(Pong::new);
+        return get(pingUrl).thenApply(response -> Optional.ofNullable(response.headers().get(HeaderConst.VERSION))
+                .map(values -> values.get(0))
+                .orElse(null)).thenApply(Pong::new);
     }
 
     private <T> @NotNull CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
@@ -111,7 +112,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
-                headers);
+                           headers);
     }
 
     @Override

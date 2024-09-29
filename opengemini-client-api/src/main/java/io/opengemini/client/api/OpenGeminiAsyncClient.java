@@ -75,6 +75,24 @@ public interface OpenGeminiAsyncClient extends AutoCloseable {
     CompletableFuture<Void> write(String database, List<Point> points);
 
     /**
+     * Write a single point to the database.
+     *
+     * @param database        the name of the database.
+     * @param retentionPolicy the name of the retention policy.
+     * @param point           the point to write.
+     */
+    CompletableFuture<Void> write(String database, String retentionPolicy, Point point);
+
+    /**
+     * Write points to the database.
+     *
+     * @param database        the name of the database.
+     * @param retentionPolicy the name of the retention policy.
+     * @param points          the points to write.
+     */
+    CompletableFuture<Void> write(String database, String retentionPolicy, List<Point> points);
+
+    /**
      * Ping the OpenGemini server
      */
     CompletableFuture<Pong> ping();

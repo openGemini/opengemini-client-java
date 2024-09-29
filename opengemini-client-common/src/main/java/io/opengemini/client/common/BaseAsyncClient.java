@@ -98,11 +98,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      */
     @Override
     public CompletableFuture<Void> write(String database, Point point) {
-        String body = point.lineProtocol();
-        if (StringUtils.isEmpty(body)) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return executeWrite(database, body);
+        return write(database, null, point);
     }
 
     /**
@@ -110,6 +106,20 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      */
     @Override
     public CompletableFuture<Void> write(String database, List<Point> points) {
+        return write(database, null, points);
+    }
+
+    @Override
+    public CompletableFuture<Void> write(String database, String retentionPolicy, Point point) {
+        String body = point.lineProtocol();
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, retentionPolicy, body);
+    }
+
+    @Override
+    public CompletableFuture<Void> write(String database, String retentionPolicy, List<Point> points) {
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -125,7 +135,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         if (StringUtils.isEmpty(body)) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWrite(database, body);
+        return executeWrite(database, retentionPolicy, body);
     }
 
     /**
@@ -153,10 +163,13 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     /**
      * The implementation class needs to implement this method to execute a write call.
      *
-     * @param database     the name of the database.
-     * @param lineProtocol the line protocol string to write.
+     * @param database        the name of the database.
+     * @param retentionPolicy the name of the retention policy.
+     * @param lineProtocol    the line protocol string to write.
      */
-    protected abstract CompletableFuture<Void> executeWrite(String database, String lineProtocol);
+    protected abstract CompletableFuture<Void> executeWrite(String database,
+                                                            String retentionPolicy,
+                                                            String lineProtocol);
 
     /**
      * The implementation class needs to implement this method to execute a ping call.
