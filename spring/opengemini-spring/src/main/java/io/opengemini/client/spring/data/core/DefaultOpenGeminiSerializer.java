@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -79,19 +80,19 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
                 fieldMap.put(fieldMetaData.getName(), fieldMetaData);
             }
         }
-        return new ClassMetaData<>(clazz, msAnnotation.name(), fieldMap);
+        return new ClassMetaData<>(clazz, fieldMap);
     }
 
     @Override
-    public Point serialize(T t) throws OpenGeminiException {
+    public Point serialize(String measurementName, T pojo) throws OpenGeminiException {
         Point point = new Point();
-        point.setMeasurement(classMetaData.getMeasurementName());
+        point.setMeasurement(measurementName);
         point.setFields(new HashMap<>());
         point.setTags(new HashMap<>());
 
         try {
             for (AbstractFieldMetaData fieldMetaData : classMetaData.getFieldMap().values()) {
-                fieldMetaData.fillPoint(point, t);
+                fieldMetaData.fillPoint(point, pojo);
             }
             return point;
         } catch (IllegalAccessException e) {
@@ -100,7 +101,19 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
     }
 
     @Override
-    public List<T> deserialize(QueryResult queryResult) throws OpenGeminiException {
+    public List<Point> serialize(String measurementName, List<T> pojoList) throws OpenGeminiException {
+        if (CollectionUtils.isEmpty(pojoList)) {
+            return Collections.emptyList();
+        }
+        List<Point> points = new LinkedList<>();
+        for (T pojo : pojoList) {
+            points.add(serialize(measurementName, pojo));
+        }
+        return points;
+    }
+
+    @Override
+    public List<T> deserialize(String measurementName, QueryResult queryResult) throws OpenGeminiException {
         validateResultNoError(queryResult);
 
         List<T> pojoList = new LinkedList<>();
@@ -109,7 +122,7 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
                 continue;
             }
             for (Series series : seriesResult.getSeries()) {
-                if (!StringUtils.equals(series.getName(), classMetaData.getMeasurementName())) {
+                if (!StringUtils.equals(series.getName(), measurementName)) {
                     continue;
                 }
                 pojoList.addAll(parseSeriesAsPojoList(series));
@@ -148,8 +161,7 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
                     pojo = null;
                 }
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                 | InvocationTargetException e) {
+        } catch (Exception e) {
             throw new OpenGeminiException(e);
         }
         return pojoList;
@@ -182,12 +194,10 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
     @Getter
     private static class ClassMetaData<T> {
         private final Class<T> clazz;
-        private final String measurementName;
         private final Map<String, AbstractFieldMetaData> fieldMap;
 
-        public ClassMetaData(Class<T> clazz, String measurementName, Map<String, AbstractFieldMetaData> fieldMap) {
+        public ClassMetaData(Class<T> clazz, Map<String, AbstractFieldMetaData> fieldMap) {
             this.clazz = clazz;
-            this.measurementName = measurementName;
             this.fieldMap = fieldMap;
         }
 
@@ -383,7 +393,7 @@ public class DefaultOpenGeminiSerializer<T> implements OpenGeminiSerializer<T> {
         private Long parseNanoTimeValueFromResult(Object fieldValue) {
             if (fieldValue instanceof String) {
                 Instant instant = Instant.from(RFC3339_FORMATTER.parse(String.valueOf(fieldValue)));
-                return TimeUnit.NANOSECONDS.toNanos(instant.getEpochSecond()) + instant.getNano();
+                return TimeUnit.SECONDS.toNanos(instant.getEpochSecond()) + instant.getNano();
             }
             if (fieldValue instanceof Long) {
                 return (Long) fieldValue;

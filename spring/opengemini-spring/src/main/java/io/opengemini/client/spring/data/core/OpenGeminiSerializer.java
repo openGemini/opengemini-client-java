@@ -13,7 +13,9 @@ import java.util.List;
  */
 public interface OpenGeminiSerializer<T> {
 
-    Point serialize(T t) throws OpenGeminiException;
+    Point serialize(String measurementName, T pojo) throws OpenGeminiException;
 
-    List<T> deserialize(QueryResult queryResult) throws OpenGeminiException;
+    List<Point> serialize(String measurementName, List<T> pojoList) throws OpenGeminiException;
+
+    List<T> deserialize(String measurementName, QueryResult queryResult) throws OpenGeminiException;
 }

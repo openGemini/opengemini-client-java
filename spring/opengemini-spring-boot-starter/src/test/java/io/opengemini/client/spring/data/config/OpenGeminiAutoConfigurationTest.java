@@ -1,5 +1,6 @@
 package io.opengemini.client.spring.data.config;
 
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiSerializerFactory;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
@@ -21,6 +22,9 @@ public class OpenGeminiAutoConfigurationTest {
     private OpenGeminiTemplate openGeminiTemplate;
 
     @Autowired
+    private OpenGeminiAsyncClient openGeminiAsyncClient;
+
+    @Autowired
     private OpenGeminiSerializerFactory openGeminiSerializerFactory;
 
     @Test
@@ -37,6 +41,11 @@ public class OpenGeminiAutoConfigurationTest {
     @Test
     public void serializerFactory_bean_should_be_declared() {
         Assertions.assertNotNull(openGeminiSerializerFactory);
+    }
+
+    @Test
+    public void asyncClient_bean_should_be_declared() {
+        Assertions.assertNotNull(openGeminiAsyncClient);
     }
 
 }

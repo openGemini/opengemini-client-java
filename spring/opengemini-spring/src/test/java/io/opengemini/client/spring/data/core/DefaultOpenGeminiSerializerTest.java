@@ -46,13 +46,14 @@ class DefaultOpenGeminiSerializerTest {
         weather.setTemperature(28.5D);
         weather.setTime(1725371248720L);
 
-        Point point = serializer.serialize(weather);
+        Point point = serializer.serialize("weather_ms", weather);
         Assertions.assertNotNull(point);
-        Assertions.assertEquals("testms", point.getMeasurement());
+        Assertions.assertEquals("weather_ms", point.getMeasurement());
         Assertions.assertEquals("shenzhen", point.getTags().get("Location"));
         Assertions.assertEquals(28.5D, point.getFields().get("Temperature"));
         Assertions.assertEquals(weather.getTime(), point.getTime());
-        Assertions.assertEquals("testms,Location=shenzhen Temperature=28.5 1725371248720000000", point.lineProtocol());
+        Assertions.assertEquals("weather_ms,Location=shenzhen Temperature=28.5 1725371248720000000",
+                                point.lineProtocol());
     }
 
     @Test
@@ -63,7 +64,7 @@ class DefaultOpenGeminiSerializerTest {
         QueryResult queryResult = new QueryResult();
         queryResult.setError("some error");
 
-        Assertions.assertThrows(OpenGeminiException.class, () -> serializer.deserialize(queryResult));
+        Assertions.assertThrows(OpenGeminiException.class, () -> serializer.deserialize("weather_ms", queryResult));
     }
 
     @Test
@@ -72,7 +73,7 @@ class DefaultOpenGeminiSerializerTest {
                 WeatherFixNameNoCreate.class);
 
         Series series = new Series();
-        series.setName("testms");
+        series.setName("weather_ms");
         series.setColumns(Arrays.asList("Location", "Temperature", "time"));
         series.setValues(List.of(Arrays.asList("shenzhen", 28.5D, 1725371248720000000L),
                                  Arrays.asList("shanghai", 26.8D, 1725371248720000000L)));
@@ -83,7 +84,7 @@ class DefaultOpenGeminiSerializerTest {
         QueryResult queryResult = new QueryResult();
         queryResult.setResults(List.of(seriesResult));
 
-        List<WeatherFixNameNoCreate> list = serializer.deserialize(queryResult);
+        List<WeatherFixNameNoCreate> list = serializer.deserialize("weather_ms", queryResult);
 
         Assertions.assertEquals(2, list.size());
         Assertions.assertEquals("shenzhen", list.get(0).getLocation());
