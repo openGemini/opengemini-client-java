@@ -113,8 +113,12 @@ public abstract class BaseClient implements Closeable {
         }
     }
 
-    protected String getWriteUrl(String database) {
-        return UrlConst.WRITE + "?db=" + database;
+    protected String getWriteUrl(String database, String retentionPolicy) {
+        String writeUrl = UrlConst.WRITE + "?db=" + database;
+        if (retentionPolicy != null) {
+            writeUrl += "&rp=" + retentionPolicy;
+        }
+        return writeUrl;
     }
 
     protected String getPingUrl() {

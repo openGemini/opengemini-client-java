@@ -169,6 +169,41 @@ class OpenGeminiClientTest {
 
     @SneakyThrows
     @Test
+    void testWritePointWithRp() {
+        String databaseName = "write_database_0001";
+        openGeminiClient.createDatabase(databaseName).get();
+
+        String rpName = "write_rp_0001";
+        RpConfig rpConfig = new RpConfig(rpName, "3d", "", "");
+        openGeminiClient.createRetentionPolicy(databaseName, rpConfig, false).get();
+
+        String measurementName = "write_measurement_0001";
+        Point testPoint = generalTestPoint(measurementName, 1, 1);
+
+        CompletableFuture<Void> writeRsp = openGeminiClient.write(databaseName, rpName, testPoint);
+        writeRsp.get();
+
+        Point invalidPoint = generalTestPoint(measurementName, 0, 0);
+        openGeminiClient.write(databaseName, invalidPoint).get();
+
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, rpName);
+        CompletableFuture<QueryResult> rst = openGeminiClient.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        openGeminiClient.dropRetentionPolicy(databaseName, rpName).get();
+        openGeminiClient.dropDatabase(databaseName).get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        Assertions.assertEquals(x.getValues().size(), 1);
+        Assertions.assertTrue(x.getValues().get(0).contains("value1"));
+        Assertions.assertTrue(x.getColumns().contains("field0"));
+        Assertions.assertTrue(x.getColumns().contains("tag0"));
+    }
+
+    @SneakyThrows
+    @Test
     void testWritePointMoreFields() {
         String databaseName = "write_database_0002";
         CompletableFuture<Void> createdb = openGeminiClient.createDatabase(databaseName);
@@ -418,7 +453,7 @@ class OpenGeminiClientTest {
 
         CompletableFuture<Void> writeRsp = client.write(databaseName, testPoint);
         writeRsp.get();
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         Query selectQuery = new Query("select * from " + measurementName, databaseName, null);
         CompletableFuture<QueryResult> rst = client.query(selectQuery);
@@ -497,6 +532,36 @@ class OpenGeminiClientTest {
 
         CompletableFuture<Void> dropDbFuture = client.dropDatabase(databaseName);
         dropDbFuture.get();
+
+        Series x = queryResult.getResults().get(0).getSeries().get(0);
+        Assertions.assertEquals(x.getValues().size(), 3);
+        Assertions.assertTrue(x.getColumns().contains("field0"));
+        Assertions.assertTrue(x.getColumns().contains("tag0"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("clientList")
+    void write_batch_points_with_rp(OpenGeminiClient client) throws Exception {
+        String databaseName = "db_test_write_batch" + httpEngine(client);
+        client.createDatabase(databaseName).get();
+
+        String rpName = "rp_test_write_batch" + httpEngine(client);
+        client.createRetentionPolicy(databaseName, new RpConfig(rpName, "3d", "", ""), false).get();
+
+        String measurementName = "ms_test_write_batch" + httpEngine(client);
+        Point testPoint1 = testPoint(measurementName, 1, 1);
+        Point testPoint2 = testPoint(measurementName, 2, 1);
+        Point testPoint3 = testPoint(measurementName, 3, 1);
+
+        client.write(databaseName, rpName, Arrays.asList(testPoint1, testPoint2, testPoint3)).get();
+        Thread.sleep(3000);
+
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, rpName);
+        CompletableFuture<QueryResult> rst = client.query(selectQuery);
+        QueryResult queryResult = rst.get();
+
+        client.dropRetentionPolicy(databaseName, rpName).get();
+        client.dropDatabase(databaseName).get();
 
         Series x = queryResult.getResults().get(0).getSeries().get(0);
         Assertions.assertEquals(x.getValues().size(), 3);
