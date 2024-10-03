@@ -10,9 +10,9 @@ import io.opengemini.client.spring.data.annotation.Time;
 import lombok.Getter;
 import lombok.Setter;
 
-@Database(name = "testdb", create = false)
-@RetentionPolicy(name = "testrp", create = false)
-@Measurement(name = "testms")
+@Database(name = "weather_db", create = false)
+@RetentionPolicy(name = "weather_rp", create = false)
+@Measurement(name = "weather_ms")
 @Getter
 @Setter
 public class WeatherTagNotString {

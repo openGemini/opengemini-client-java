@@ -1,5 +1,8 @@
 package io.opengemini.client.spring.data.config;
 
+import io.opengemini.client.api.OpenGeminiAsyncClient;
+import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.impl.OpenGeminiClientFactory;
 import io.opengemini.client.spring.data.core.DefaultOpenGeminiSerializerFactory;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiSerializerFactory;
@@ -17,8 +20,16 @@ public class OpenGeminiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "openGeminiTemplate")
-    public OpenGeminiTemplate openGeminiTemplate() {
-        return new OpenGeminiTemplate();
+    public OpenGeminiTemplate openGeminiTemplate(OpenGeminiAsyncClient openGeminiAsyncClient,
+                                                 OpenGeminiSerializerFactory openGeminiSerializerFactory) {
+        return new OpenGeminiTemplate(openGeminiAsyncClient, openGeminiSerializerFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "openGeminiAsyncClient")
+    public OpenGeminiAsyncClient openGeminiAsyncClient(OpenGeminiProperties openGeminiProperties)
+            throws OpenGeminiException {
+        return OpenGeminiClientFactory.create(openGeminiProperties.toConfiguration());
     }
 
     @Bean
