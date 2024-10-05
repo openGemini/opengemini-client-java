@@ -19,21 +19,21 @@ import org.springframework.context.annotation.Bean;
 public class OpenGeminiAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(name = "openGeminiTemplate")
+    @ConditionalOnMissingBean(OpenGeminiTemplate.class)
     public OpenGeminiTemplate openGeminiTemplate(OpenGeminiAsyncClient openGeminiAsyncClient,
                                                  OpenGeminiSerializerFactory openGeminiSerializerFactory) {
         return new OpenGeminiTemplate(openGeminiAsyncClient, openGeminiSerializerFactory);
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "openGeminiAsyncClient")
+    @ConditionalOnMissingBean(OpenGeminiAsyncClient.class)
     public OpenGeminiAsyncClient openGeminiAsyncClient(OpenGeminiProperties openGeminiProperties)
             throws OpenGeminiException {
         return OpenGeminiClientFactory.create(openGeminiProperties.toConfiguration());
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "openGeminiSerializerFactory")
+    @ConditionalOnMissingBean(OpenGeminiSerializerFactory.class)
     public OpenGeminiSerializerFactory openGeminiSerializerFactory() {
         return new DefaultOpenGeminiSerializerFactory();
     }
