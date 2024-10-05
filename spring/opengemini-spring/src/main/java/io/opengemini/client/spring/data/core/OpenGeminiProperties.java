@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,15 +24,10 @@ public class OpenGeminiProperties {
 
     private List<String> addresses = new ArrayList<>(Collections.singletonList("localhost:8086"));
 
-    public Configuration toConfiguration() {
-        HttpClientConfig httpConfig = new HttpClientConfig.Builder().engine(HttpClientEngine.OkHttp)
-                .connectTimeout(Duration.ofSeconds(3))
-                .timeout(Duration.ofSeconds(3))
-                .build();
+    public Configuration.ConfigurationBuilder toConfigurationBuilder() {
         return Configuration.builder()
                 .addresses(addresses.stream().map(this::toAddress).collect(Collectors.toList()))
-                .httpConfig(httpConfig)
-                .build();
+                .httpConfig(new HttpClientConfig.Builder().engine(HttpClientEngine.OkHttp).build());
     }
 
     private Address toAddress(String s) {
