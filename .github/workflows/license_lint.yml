@@ -12,24 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: java checkstyle
+name: license lint
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
-
 jobs:
-  java_checkstyle:
+  build:
+    name: license lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Maven Central Repository
-        uses: actions/setup-java@v3
+      - name: licenselint
+        uses: shoothzj/licenselint@main
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: checkstyle
-        run: mvn -B clean checkstyle:check
+          author: openGemini Authors
