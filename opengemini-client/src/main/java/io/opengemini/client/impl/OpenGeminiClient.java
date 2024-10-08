@@ -16,7 +16,6 @@
 
 package io.opengemini.client.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.openfacade.http.BasicAuthRequestFilter;
 import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
@@ -103,17 +102,17 @@ public class OpenGeminiClient extends BaseAsyncClient {
     }
 
     private <T> @NotNull CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
-        String body = response.bodyAsString();
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             try {
-                T resp = JacksonService.toObject(body, type);
+                T resp = JacksonService.toObject(response.body(), type);
                 return CompletableFuture.completedFuture(resp);
-            } catch (JsonProcessingException e) {
+            } catch (IOException e) {
                 CompletableFuture<T> future = new CompletableFuture<>();
                 future.completeExceptionally(e);
                 return future;
             }
         } else {
+            String body = response.bodyAsString();
             String errorMsg = "http error: " + body;
             OpenGeminiException openGeminiException = new OpenGeminiException(errorMsg, response.statusCode());
             CompletableFuture<T> future = new CompletableFuture<>();

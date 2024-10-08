@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,13 @@ public class JacksonService {
 
     public static <T> T toObject(@Nullable String json, Class<T> type) throws JsonProcessingException {
         if (json == null || json.isEmpty()) {
+            return null;
+        }
+        return MAPPER.readValue(json, type);
+    }
+
+    public static <T> T toObject(@Nullable byte[] json, Class<T> type) throws IOException {
+        if (json == null || json.length == 0) {
             return null;
         }
         return MAPPER.readValue(json, type);
