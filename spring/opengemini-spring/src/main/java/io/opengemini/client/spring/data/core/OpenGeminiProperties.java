@@ -16,19 +16,17 @@
 
 package io.opengemini.client.spring.data.core;
 
-import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientEngine;
-import io.opengemini.client.api.Address;
-import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.AuthType;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Configuration properties for OpenGemini.
@@ -40,14 +38,79 @@ public class OpenGeminiProperties {
 
     private List<String> addresses = new ArrayList<>(Collections.singletonList("localhost:8086"));
 
-    public Configuration.ConfigurationBuilder toConfigurationBuilder() {
-        return Configuration.builder()
-                .addresses(addresses.stream().map(this::toAddress).collect(Collectors.toList()))
-                .httpConfig(new HttpClientConfig.Builder().engine(HttpClientEngine.OkHttp).build());
+    @NestedConfigurationProperty
+    private Auth auth;
+
+    @NestedConfigurationProperty
+    private Batch batch;
+
+    private Boolean gzipEnabled;
+
+    @NestedConfigurationProperty
+    private Http http = new Http();
+
+    @Getter
+    @Setter
+    public static class Auth {
+        private AuthType type;
+
+        private String username;
+
+        private String password;
+
+        private String token;
     }
 
-    private Address toAddress(String s) {
-        String[] strings = StringUtils.split(s, ':');
-        return new Address(strings[0], Integer.parseInt(strings[1]));
+    @Getter
+    @Setter
+    public static class Batch {
+        private Integer batchInterval;
+
+        private Integer batchSize;
     }
+
+    @Getter
+    @Setter
+    public static class Http {
+        private HttpClientEngine engine = HttpClientEngine.OkHttp;
+
+        private Duration timeout;
+
+        private Duration connectTimeout;
+
+        private Ssl ssl;
+
+        private OkHttp okHttp;
+
+        @Getter
+        @Setter
+        public static class Ssl {
+            private String keyStoreLocation;
+
+            private String keyStorePassword;
+
+            private String trustStoreLocation;
+
+            private String trustStorePassword;
+
+            private Boolean verifyDisabled;
+
+            private Boolean hostnameVerifyDisabled;
+
+            private String[] versions;
+
+            private String[] cipherSuites;
+        }
+
+        @Getter
+        @Setter
+        public static class OkHttp {
+            private Boolean retryOnConnectionFailure;
+
+            private Integer maxIdleConnections;
+
+            private Duration keepAliveDuration;
+        }
+    }
+
 }
