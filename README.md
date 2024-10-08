@@ -12,25 +12,11 @@ English | [简体中文](README_CN.md)
 
 ## About OpenGemini
 
-OpenGemini is a cloud-native distributed time series database, find more information [here](https://github.com/openGemini/openGemini) 
-
-## Characteristic
-
-- This project is implemented independently by multiple components, which can be referenced separately according to different requirements.
-- This project is implemented in line with other SDKs such as opengemini-client-go and opengemini-client-python, adhering to the same API layer philosophy, resulting in a very similar user experience for different users.
-
-| Sdk Components                    | Runtime Minimum OpenJDK Version | Recommended Scenario                 | Notice                                                       |
-| --------------------------------- | ------------------------------- | ------------------------------------ | ------------------------------------------------------------ |
-| opengemini-client-jdk             | OpenJDK 17                      | Minimum Dependency Scenario          | The native httpclient of OpenJDK was introduced in OpenJDK 9, but as versions such as OpenJDK 9 are no longer supported, it is recommended to upgrade to the higher jdk17 version|
-| opengemini-client-reactor         | OpenJDK 8(1.8)                  | Reactive Paradigm Framework          | Stay Tuned |
-| opengemini-client-okhttp          | OpenJDK 8(1.8)                  | Popular okhttp component, preferred for Android scenarios            | Stay Tuned |
-| opengemini-client-asynchttpclient | OpenJDK 11                      | Asynchronous Programming Framework Scenarios for Performance Pursuit | Stay Tuned |
-
+OpenGemini is a cloud-native distributed time series database, find more information [here](https://github.com/openGemini/openGemini)
 
 ## Prerequisites
 
-- Compiling this project requires at least OpenJDK 17
-- When running this project, the OpenJDK versions depended on by various components are different, as shown in the table in the previous chapter
+Compiling this project requires at least OpenJDK 17, and Maven 3.8.0 or later.
 
 ## Integration
 
@@ -57,6 +43,10 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
     <version>${latest.version}</version>
 </dependency>
 ```
+
+### HTTP Engine Selection
+
+By default, the client uses the built-in HTTP engine provided by the JDK. It automatically selects the appropriate implementation based on the Java version, supporting both Java 8 and Java 11+. If needed, you can configure a different HTTP engine by specifying the `.engine` option in the `HttpClientConfig`. Please note, if a different engine is chosen, you will need to manually include the corresponding dependencies.
 
 ## Quick Start
 
