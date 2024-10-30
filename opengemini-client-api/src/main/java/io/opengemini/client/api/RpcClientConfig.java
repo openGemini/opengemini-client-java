@@ -24,6 +24,5 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RpcClientConfig {
-    private String host;
-    private int port;
+    private String target;
 }
