@@ -1,0 +1,43 @@
+syntax = "proto3";
+package write;
+option java_multiple_files = true;
+option java_package = "io.opengemini.client.grpc";
+option java_outer_classname = "WriteProto";
+
+service WriteService {
+  rpc WriteRows (WriteRowsRequest) returns (WriteRowsResponse) {}
+}
+
+message WriteRowsRequest {
+  uint32 version = 1;
+  string database = 2;
+  string rp = 3;
+  string username = 4;
+  string password = 5;
+  Rows rows = 6;
+}
+
+message WriteRowsResponse {
+  ResponseCode code = 1;
+  string error = 2;
+}
+
+message Rows {
+  int64 min_time = 1;
+  int64 max_time = 2;
+  CompressAlgo compress_algo = 3; // compression algorithm for block
+  bytes block = 4;
+}
+
+enum CompressAlgo {
+  UNCOMPRESSED = 0;
+  LZ4_FAST = 1;
+  ZSTD_FAST = 2;
+  SNAPPY = 3;
+}
+
+enum ResponseCode {
+  Success = 0;
+  Partial = 1;
+  Failed = 2;
+}
