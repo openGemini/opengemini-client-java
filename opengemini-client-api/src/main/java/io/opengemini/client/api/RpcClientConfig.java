@@ -25,4 +25,5 @@ import lombok.ToString;
 @ToString
 public class RpcClientConfig {
     private String target;
+    private boolean waitForReady = true;
 }
