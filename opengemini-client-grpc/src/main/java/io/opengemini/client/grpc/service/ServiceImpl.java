@@ -4,7 +4,6 @@ import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import io.opengemini.client.grpc.RpcClientConnectionManager;
 import io.vertx.core.Future;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;

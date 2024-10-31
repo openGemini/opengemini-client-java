@@ -28,5 +28,7 @@ import lombok.ToString;
 public class RpcClientConfig {
     private String host;
     private Integer port;
+    private String username;
+    private String password;
     private boolean waitForReady = true;
 }

@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 public class RpcClientConnectionManager {
     private final Object locker;
+    @Getter
     private final RpcClientConfig config;
     private volatile ManagedChannel managedChannel;
     private volatile Vertx vertx;
@@ -32,6 +33,7 @@ public class RpcClientConnectionManager {
         this.locker = new Object();
         this.config = config;
         this.managedChannel = managedChannel;
+        // TODO: 参数化配置
         this.executorService = Executors.newFixedThreadPool((Runtime.getRuntime().availableProcessors() * 2) + 1, r -> {
             final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
             Thread thread = defaultFactory.newThread(r);
