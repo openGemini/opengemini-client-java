@@ -32,8 +32,8 @@ public class RpcClientSupplier<T> implements Supplier<T> {
             synchronized (this) {
                 if (initialized) {
                     if (holder != null) {
+                        // TODO: Holder close
                         holder = null;
-                        // close
                     }
                 }
                 initialized = false;

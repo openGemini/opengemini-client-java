@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 public class WriteService extends ServiceImpl {
     private final VertxWriteServiceGrpc.WriteServiceVertxStub stub;
 
-    protected WriteService(RpcClientConnectionManager connectionManager) {
+    public WriteService(RpcClientConnectionManager connectionManager) {
         super(connectionManager);
         this.stub = connectionManager.newStub(VertxWriteServiceGrpc::newVertxStub);
     }
