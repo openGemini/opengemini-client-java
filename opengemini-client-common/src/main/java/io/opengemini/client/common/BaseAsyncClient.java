@@ -27,6 +27,7 @@ import io.opengemini.client.api.RpConfig;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
@@ -139,6 +140,25 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
+        String body = toLineProtocol(points);
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, retentionPolicy, body);
+    }
+
+
+    @Override
+    public CompletableFuture<Void> writeByRpc(String database, List<Point> points) {
+        if (points.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        LongSummaryStatistics stats = points.stream().mapToLong(Point::getTime).summaryStatistics();
+        String body = toLineProtocol(points);
+        return executeWriteByRpc(database, body, stats.getMin(), stats.getMax());
+    }
+
+    private static String toLineProtocol(List<Point> points) {
         StringJoiner sj = new StringJoiner("\n");
         for (Point point : points) {
             String lineProtocol = point.lineProtocol();
@@ -147,11 +167,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
             }
             sj.add(lineProtocol);
         }
-        String body = sj.toString();
-        if (StringUtils.isEmpty(body)) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return executeWrite(database, retentionPolicy, body);
+        return sj.toString();
     }
 
     /**
@@ -186,6 +202,17 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     protected abstract CompletableFuture<Void> executeWrite(String database,
                                                             String retentionPolicy,
                                                             String lineProtocol);
+
+    /**
+     * The implementation class needs to implement this method to execute a write operation via an RPC call.
+     *
+     * @param database     the name of the database.
+     * @param lineProtocol the line protocol string to write.
+     * @param minTime      the line protocol min time
+     * @param maxTime      the line protocol max time
+     */
+    protected abstract CompletableFuture<Void> executeWriteByRpc(String database,
+                                                                 String lineProtocol, long minTime, long maxTime);
 
     /**
      * The implementation class needs to implement this method to execute a ping call.

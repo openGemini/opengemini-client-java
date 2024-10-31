@@ -31,6 +31,8 @@ import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.grpc.RpcClient;
+import io.opengemini.client.grpc.WriteRowsRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -43,6 +45,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     private final HttpClient client;
 
+    private final RpcClient rpcClient;
+
     public OpenGeminiClient(@NotNull Configuration conf) {
         super(conf);
         this.conf = conf;
@@ -53,6 +57,12 @@ public class OpenGeminiClient extends BaseAsyncClient {
                     new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
+
+        if (conf.getRpcConfig() != null) {
+            rpcClient = RpcClient.create(conf.getRpcConfig());
+        } else {
+            rpcClient = null;
+        }
     }
 
     /**
@@ -88,6 +98,20 @@ public class OpenGeminiClient extends BaseAsyncClient {
     protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
         String writeUrl = getWriteUrl(database, retentionPolicy);
         return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
+    }
+
+    /**
+     * Execute a write call with RPC client
+     *
+     * @param database     the name of the database.
+     * @param lineProtocol the line protocol string to write.
+     */
+    @Override
+    protected CompletableFuture<Void> executeWriteByRpc(String database, String lineProtocol, long minTime, long maxTime) {
+        if (rpcClient == null) {
+            throw new IllegalStateException("RPC client not initialized");
+        }
+        return rpcClient.getWriteClient().writeRows(database, lineProtocol, minTime, maxTime);
     }
 
     /**
@@ -127,7 +151,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
-                           headers);
+                headers);
     }
 
     @Override
