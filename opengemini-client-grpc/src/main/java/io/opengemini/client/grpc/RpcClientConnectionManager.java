@@ -9,12 +9,11 @@ import io.vertx.core.VertxOptions;
 import io.vertx.grpc.VertxChannelBuilder;
 import lombok.Getter;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
-
-import static io.vertx.core.Vertx.vertx;
 
 public class RpcClientConnectionManager {
     private final Object locker;
@@ -80,10 +79,9 @@ public class RpcClientConnectionManager {
     }
 
     ManagedChannelBuilder<?> defaultChannelBuilder() {
-        if (config.getTarget() == null) {
-            throw new IllegalArgumentException("At least one endpoint should be provided");
-        }
-        final VertxChannelBuilder channelBuilder = VertxChannelBuilder.forTarget(vertx(), config.getTarget());
+        final VertxChannelBuilder channelBuilder = VertxChannelBuilder
+                .forAddress(vertx(), Objects.requireNonNull(config.getHost()), Objects.requireNonNull(config.getPort()))
+                .usePlaintext();
         // TODO: more build config properties
         return channelBuilder;
     }

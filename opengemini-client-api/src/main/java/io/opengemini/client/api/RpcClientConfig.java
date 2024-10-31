@@ -16,6 +16,7 @@
 
 package io.opengemini.client.api;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +24,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
 public class RpcClientConfig {
-    private String target;
+    private String host;
+    private Integer port;
     private boolean waitForReady = true;
 }
