@@ -38,6 +38,7 @@ public class WriteService extends ServiceImpl {
     private void populateBlock(Rows.Builder builder, String lineProtocol) {
         String[] lineProtocols = lineProtocol.split(NEWLINE_DELIMITER);
         // TODO: Parse line protocols
+
     }
 
 
