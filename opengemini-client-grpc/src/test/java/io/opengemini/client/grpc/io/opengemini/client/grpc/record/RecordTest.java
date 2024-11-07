@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -126,17 +127,20 @@ public class RecordTest {
         recMeta.setTagIndex(new int[]{0,1});
         recMeta.setTags(new byte[][]{{1,2}, {3,4}});
 
+        long minTime = new Date().getTime() * 1_000_000 - 10000;
+        long maxTime = new Date().getTime() * 1_000_000;
+
         ColMeta[] colMetas = new ColMeta[2];
         colMetas[0] = new ColMeta();
         colMetas[0].setSetFlag(true);
         colMetas[0].setMin(1);
         colMetas[0].setMax(100);
-        colMetas[0].setMinTime(1000L);
-        colMetas[0].setMaxTime(2000L);
+        colMetas[0].setMinTime(minTime);
+        colMetas[0].setMaxTime(maxTime);
         colMetas[0].setFirst(1);
         colMetas[0].setLast(100);
-        colMetas[0].setFirstTime(1000L);
-        colMetas[0].setLastTime(2000L);
+        colMetas[0].setFirstTime(minTime);
+        colMetas[0].setLastTime(maxTime);
         colMetas[0].setSum(5050);
         colMetas[0].setCount(100);
 
@@ -144,12 +148,12 @@ public class RecordTest {
         colMetas[1].setSetFlag(true);
         colMetas[1].setMin(1.5);
         colMetas[1].setMax(100.5);
-        colMetas[1].setMinTime(1000L);
-        colMetas[1].setMaxTime(2000L);
+        colMetas[1].setMinTime(minTime);
+        colMetas[1].setMaxTime(maxTime);
         colMetas[1].setFirst(1.5);
         colMetas[1].setLast(100.5);
-        colMetas[1].setFirstTime(1000L);
-        colMetas[1].setLastTime(2000L);
+        colMetas[1].setFirstTime(minTime);
+        colMetas[1].setLastTime(maxTime);
         colMetas[1].setSum(5050.5);
         colMetas[1].setCount(100L);
 
