@@ -22,6 +22,7 @@ import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.spring.data.core.MeasurementOperations;
 import io.opengemini.client.spring.data.core.OpenGeminiTemplate;
 import io.opengemini.client.spring.data.sample.TestApplication;
+import io.opengemini.client.spring.data.sample.measurement.WeatherFixNameAutoCreate;
 import io.opengemini.client.spring.data.sample.measurement.WeatherFixNameNoCreate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -74,4 +75,35 @@ public class OpenGeminiTemplateTest {
         Assertions.assertEquals(weatherForWrite.getTime(), weather1.getTime());
     }
 
+    @Test
+    void database_should_auto_created() throws Exception {
+        String databaseName = "weather_db_auto_create";
+        String rpName = "weather_rp_auto_create";
+
+        Assertions.assertTrue(openGeminiTemplate.isDatabaseExists(databaseName));
+        Assertions.assertTrue(openGeminiTemplate.isRetentionPolicyExists(databaseName, rpName));
+
+        MeasurementOperations<WeatherFixNameAutoCreate> measurementOperations = openGeminiTemplate.opsForMeasurement(
+                WeatherFixNameAutoCreate.class);
+        WeatherFixNameAutoCreate weatherForWrite = new WeatherFixNameAutoCreate();
+        weatherForWrite.setLocation("shenzhen");
+        weatherForWrite.setTemperature(28.5D);
+        weatherForWrite.setTime(System.currentTimeMillis());
+        measurementOperations.write(weatherForWrite);
+
+        Thread.sleep(5000);
+
+        String measurementName = "weather_ms";
+        Query selectQuery = new Query("select * from " + measurementName, databaseName, rpName);
+        List<WeatherFixNameAutoCreate> weatherList = measurementOperations.query(selectQuery);
+
+        openGeminiTemplate.dropRetentionPolicy(databaseName, rpName);
+        openGeminiTemplate.dropDatabase(databaseName);
+
+        Assertions.assertEquals(weatherList.size(), 1);
+        WeatherFixNameAutoCreate weather1 = weatherList.get(0);
+        Assertions.assertEquals(weatherForWrite.getLocation(), weather1.getLocation());
+        Assertions.assertEquals(weatherForWrite.getTemperature(), weather1.getTemperature());
+        Assertions.assertEquals(weatherForWrite.getTime(), weather1.getTime());
+    }
 }

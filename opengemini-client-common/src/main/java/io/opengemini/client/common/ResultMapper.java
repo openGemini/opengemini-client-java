@@ -18,22 +18,25 @@ package io.opengemini.client.common;
 
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RetentionPolicy;
+import io.opengemini.client.api.Series;
+import io.opengemini.client.api.SeriesResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ResultMapper {
 
     public static List<String> toDatabases(QueryResult result) {
-        return result.getResults()
-                .get(0)
-                .getSeries()
-                .get(0)
-                .getValues()
-                .stream()
-                .map(x -> String.valueOf(x.get(0)))
-                .collect(Collectors.toList());
+        return Optional.ofNullable(result.getResults())
+                .map(list -> list.get(0))
+                .map(SeriesResult::getSeries)
+                .map(list -> list.get(0))
+                .map(Series::getValues)
+                .map(list -> list.stream().map(x -> String.valueOf(x.get(0))).collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     public static List<RetentionPolicy> toRetentionPolicies(QueryResult result) {

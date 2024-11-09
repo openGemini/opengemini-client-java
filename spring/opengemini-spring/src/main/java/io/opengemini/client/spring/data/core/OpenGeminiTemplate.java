@@ -17,15 +17,20 @@
 package io.opengemini.client.spring.data.core;
 
 import io.opengemini.client.api.OpenGeminiAsyncClient;
+import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.spring.data.annotation.Database;
 import io.opengemini.client.spring.data.annotation.Measurement;
 import io.opengemini.client.spring.data.annotation.RetentionPolicy;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Helper class that simplifies OpenGemini data access code.
@@ -43,6 +48,62 @@ public class OpenGeminiTemplate implements OpenGeminiOperations {
     }
 
     @Override
+    public void createDatabaseIfAbsent(String database) {
+        if (!isDatabaseExists(database)) {
+            createDatabase(database);
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public void createDatabase(String database) {
+        asyncClient.createDatabase(database).get();
+    }
+
+    @SneakyThrows
+    @Override
+    public boolean isDatabaseExists(String database) {
+        List<String> databases = asyncClient.showDatabases().get();
+        return databases != null && databases.contains(database);
+    }
+
+    @SneakyThrows
+    @Override
+    public void dropDatabase(String database) {
+        asyncClient.dropDatabase(database).get();
+    }
+
+    @Override
+    public void createRetentionPolicyIfAbsent(String database, RpConfig rpConfig, boolean isDefault) {
+        if (!isRetentionPolicyExists(database, rpConfig.getName())) {
+            createRetentionPolicy(database, rpConfig, isDefault);
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public void createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault) {
+        asyncClient.createRetentionPolicy(database, rpConfig, isDefault).get();
+    }
+
+    @SneakyThrows
+    @Override
+    public boolean isRetentionPolicyExists(String database, String retentionPolicy) {
+        Set<String> retentionPolicies = asyncClient.showRetentionPolicies(database)
+                .get()
+                .stream()
+                .map(io.opengemini.client.api.RetentionPolicy::getName)
+                .collect(Collectors.toSet());
+        return retentionPolicies.contains(retentionPolicy);
+    }
+
+    @SneakyThrows
+    @Override
+    public void dropRetentionPolicy(String database, String retentionPolicy) {
+        asyncClient.dropRetentionPolicy(database, retentionPolicy).get();
+    }
+
+    @Override
     public <T> MeasurementOperations<T> opsForMeasurement(Class<T> clazz) {
         MeasurementOperationsCacheKey key = MeasurementOperationsCacheKey.of(clazz);
         return getMeasurementOperations(key);
@@ -54,7 +115,7 @@ public class OpenGeminiTemplate implements OpenGeminiOperations {
                                                           String measurementName,
                                                           Class<T> clazz) {
         MeasurementOperationsCacheKey key = new MeasurementOperationsCacheKey(databaseName, retentionPolicyName,
-                                                                              measurementName, clazz);
+                measurementName, clazz);
         return getMeasurementOperations(key);
     }
 
@@ -64,7 +125,7 @@ public class OpenGeminiTemplate implements OpenGeminiOperations {
             OpenGeminiSerializer<T> serializer = (OpenGeminiSerializer<T>) serializerFactory.getSerializer(
                     k.getClazz());
             return new MeasurementOperationsImpl<>(asyncClient, serializer, k.getDatabaseName(),
-                                                   k.getRetentionPolicyName(), k.getMeasurementName());
+                    k.getRetentionPolicyName(), k.getMeasurementName());
         });
     }
 
@@ -100,7 +161,7 @@ public class OpenGeminiTemplate implements OpenGeminiOperations {
                 throw new IllegalArgumentException("Class " + clazz.getName() + " has no @Database annotation");
             }
             return new MeasurementOperationsCacheKey(dbAnnotation.name(), rpAnnotation.name(), msAnnotation.name(),
-                                                     clazz);
+                    clazz);
         }
     }
 }
