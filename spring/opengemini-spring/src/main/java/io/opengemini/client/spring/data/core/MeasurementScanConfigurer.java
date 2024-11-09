@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.spring.data.sample;
+package io.opengemini.client.spring.data.core;
 
-import io.opengemini.client.spring.data.annotation.MeasurementScan;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
-@SpringBootApplication
-@MeasurementScan("io.opengemini.client.spring.data.sample.measurement")
-public class TestApplication {
+import java.util.List;
 
-    public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
+@Setter
+@Getter
+public class MeasurementScanConfigurer implements InitializingBean {
+
+    private List<String> basePackages;
+
+    @Override
+    public void afterPropertiesSet() {
+        Assert.notEmpty(basePackages, "Property 'basePackage' is required");
     }
-
 }
