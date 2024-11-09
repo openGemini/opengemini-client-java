@@ -16,11 +16,30 @@
 
 package io.opengemini.client.spring.data.core;
 
+import io.opengemini.client.api.RpConfig;
+
 /**
  * Interface that specified a basic set of OpenGemini operations, implemented by {@link OpenGeminiTemplate}.
  * A useful option for extensibility and testability (as it can be easily mocked or stubbed).
  */
 public interface OpenGeminiOperations {
+
+    void createDatabaseIfAbsent(String database);
+
+    void createDatabase(String database);
+
+    boolean isDatabaseExists(String database);
+
+    void dropDatabase(String database);
+
+    void createRetentionPolicyIfAbsent(String database, RpConfig rpConfig, boolean isDefault);
+
+    void createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault);
+
+    boolean isRetentionPolicyExists(String database, String retentionPolicy);
+
+    void dropRetentionPolicy(String database, String retentionPolicy);
+
     <T> MeasurementOperations<T> opsForMeasurement(Class<T> clazz);
 
     <T> MeasurementOperations<T> opsForMeasurement(String databaseName,
