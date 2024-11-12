@@ -1,7 +1,9 @@
 package io.opengemini.client.grpc;
 
+import com.google.common.collect.Maps;
 import io.grpc.Server;
 import io.grpc.stub.StreamObserver;
+import io.opengemini.client.api.Point;
 import io.opengemini.client.api.RpcClientConfig;
 import io.vertx.core.Vertx;
 import io.vertx.grpc.VertxServerBuilder;
@@ -14,6 +16,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.AdditionalAnswers.delegatesTo;
@@ -68,6 +74,28 @@ public class RpcClientTest {
                 .setRows(Rows.newBuilder().build())
                 .build();
         rpcClient.getWriteClient().writeRows(request).get();
+    }
+
+    @Test
+    void testWriteRows() throws ExecutionException, InterruptedException {
+        List<Point> points = new ArrayList<>();
+        Point point1 = new Point();
+        Map<String, Object> fields1 = new HashMap<>();
+        fields1.put("a", 1.0);
+        fields1.put("b", -1.0);
+        fields1.put("c", 0.0);
+        point1.setFields(fields1);
+
+        Point point2 = new Point();
+        Map<String, Object> fields2 = new HashMap<>();
+        fields2.put("a", 1.0);
+        fields2.put("b", -1.0);
+        point2.setFields(fields2);
+        points.add(point1);
+        points.add(point2);
+
+
+        rpcClient.getWriteClient().writeRows("test", points).get();
     }
 
     @AfterEach
