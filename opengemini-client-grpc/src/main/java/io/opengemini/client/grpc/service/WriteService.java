@@ -1,8 +1,14 @@
 package io.opengemini.client.grpc.service;
 
+import com.google.protobuf.ByteString;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.grpc.*;
+import io.opengemini.client.grpc.record.ColVal;
+import io.opengemini.client.grpc.record.Field;
+import io.opengemini.client.grpc.record.Record;
+import io.opengemini.client.grpc.support.PointConverter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Objects;
@@ -30,19 +36,36 @@ public class WriteService extends ServiceImpl {
 
         populateBlock(rowsBuilder, points);
 
+        String username = getConnectionManager().getConfig().getUsername();
+        String password = getConnectionManager().getConfig().getPassword();
+
         WriteRowsRequest request = WriteRowsRequest
                 .newBuilder()
                 .setDatabase(Objects.requireNonNull(database))
-                .setUsername(getConnectionManager().getConfig().getUsername())
-                .setPassword(getConnectionManager().getConfig().getPassword())
+                .setUsername(username == null ? "" : username)
+                .setPassword(password == null ? "" : password)
                 .setRows(rowsBuilder.build())
                 .build();
         return writeRows(request);
     }
 
     private void populateBlock(Rows.Builder builder, List<Point> points) {
-        // TODO: Parse points to block
 
+        List<Field> schemas = PointConverter.extractSchema(points);
+        List<ColVal> colVals = PointConverter.extractColVals(points, schemas);
+
+        Record record = new Record();
+        record.setSchema(schemas.toArray(new Field[0]));
+        record.setColVals(colVals.toArray(new ColVal[0]));
+        // TODO: setRecMeta
+        // record.setRecMeta();
+
+        try {
+            // TODO: exception catch
+            builder.setBlock(ByteString.copyFrom(record.marshal()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
