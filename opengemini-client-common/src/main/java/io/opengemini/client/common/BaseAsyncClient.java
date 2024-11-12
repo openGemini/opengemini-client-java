@@ -153,9 +153,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
-        LongSummaryStatistics stats = points.stream().mapToLong(Point::getTime).summaryStatistics();
-        String body = toLineProtocol(points);
-        return executeWriteByRpc(database, body, stats.getMin(), stats.getMax());
+        return executeWriteByRpc(database, points);
     }
 
     private static String toLineProtocol(List<Point> points) {
@@ -207,12 +205,10 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * The implementation class needs to implement this method to execute a write operation via an RPC call.
      *
      * @param database     the name of the database.
-     * @param lineProtocol the line protocol string to write.
-     * @param minTime      the line protocol min time
-     * @param maxTime      the line protocol max time
+     * @param points       the points to write.
      */
     protected abstract CompletableFuture<Void> executeWriteByRpc(String database,
-                                                                 String lineProtocol, long minTime, long maxTime);
+                                                                 List<Point> points);
 
     /**
      * The implementation class needs to implement this method to execute a ping call.

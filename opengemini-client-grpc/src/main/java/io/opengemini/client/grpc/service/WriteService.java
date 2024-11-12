@@ -1,7 +1,10 @@
 package io.opengemini.client.grpc.service;
 
+import io.opengemini.client.api.Point;
 import io.opengemini.client.grpc.*;
 
+import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,15 +18,17 @@ public class WriteService extends ServiceImpl {
         this.stub = connectionManager.newStub(VertxWriteServiceGrpc::newVertxStub);
     }
 
-    public CompletableFuture<Void> writeRows(String database, String lineProtocol, long minTime, long maxTime) {
+    public CompletableFuture<Void> writeRows(String database, List<Point> points) {
+
+        LongSummaryStatistics stats = points.stream().mapToLong(Point::getTime).summaryStatistics();
         Rows.Builder rowsBuilder = Rows.newBuilder()
-                .setMinTime(minTime)
-                .setMaxTime(maxTime);
+                .setMinTime(stats.getMin())
+                .setMaxTime(stats.getMax());
 
         // 如果row的measurement不同的处理方案?
         // rowsBuilder.setMeasurement(....)
 
-        populateBlock(rowsBuilder, lineProtocol);
+        populateBlock(rowsBuilder, points);
 
         WriteRowsRequest request = WriteRowsRequest
                 .newBuilder()
@@ -35,9 +40,8 @@ public class WriteService extends ServiceImpl {
         return writeRows(request);
     }
 
-    private void populateBlock(Rows.Builder builder, String lineProtocol) {
-        String[] lineProtocols = lineProtocol.split(NEWLINE_DELIMITER);
-        // TODO: Parse line protocols
+    private void populateBlock(Rows.Builder builder, List<Point> points) {
+        // TODO: Parse points to block
 
     }
 
