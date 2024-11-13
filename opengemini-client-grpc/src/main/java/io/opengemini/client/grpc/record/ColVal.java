@@ -5,6 +5,8 @@ import lombok.Data;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 @Data
 public class ColVal {
@@ -18,14 +20,21 @@ public class ColVal {
     public byte[] marshal() throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
+            
+            dos.writeLong(len);
+            dos.writeLong(nilCount);
+            dos.writeLong(bitMapOffset);
 
-            // Write Val
             dos.writeInt(val != null ? val.length : 0);
             if (val != null) {
                 dos.write(val);
             }
 
-            // Write Offset
+            dos.writeInt(bitmap != null ? bitmap.length : 0);
+            if (bitmap != null) {
+                dos.write(bitmap);
+            }
+
             dos.writeInt(offset != null ? offset.length : 0);
             if (offset != null) {
                 for (int off : offset) {
@@ -33,19 +42,9 @@ public class ColVal {
                 }
             }
 
-            // Write Bitmap
-            dos.writeInt(bitmap != null ? bitmap.length : 0);
-            if (bitmap != null) {
-                dos.write(bitmap);
-            }
-
-            // Write other fields
-            dos.writeInt(bitMapOffset);
-            dos.writeInt(len);
-            dos.writeInt(nilCount);
-
             dos.flush();
             return baos.toByteArray();
         }
     }
+
 }
