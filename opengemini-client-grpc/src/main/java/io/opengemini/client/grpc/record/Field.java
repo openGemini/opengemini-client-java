@@ -1,5 +1,6 @@
 package io.opengemini.client.grpc.record;
 
+import io.opengemini.client.grpc.support.Encoder;
 import lombok.Data;
 
 import java.io.ByteArrayOutputStream;
@@ -20,7 +21,8 @@ public class Field {
             byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
             dos.writeShort(name.length());
             dos.write(nameBytes);
-            dos.writeLong(type);
+
+            dos.writeLong(Encoder.encodeZigZag64(type));
             dos.flush();
             return baos.toByteArray();
         }

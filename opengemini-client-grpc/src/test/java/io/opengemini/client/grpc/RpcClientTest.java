@@ -16,10 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.AdditionalAnswers.delegatesTo;
@@ -100,8 +97,8 @@ public class RpcClientTest {
 
         Point point2 = new Point();
         Map<String, Object> fields2 = new HashMap<>();
-        fields2.put("a", 1.0);
-        fields2.put("b", -1.0);
+        fields2.put("a", 2.0);
+        fields2.put("b", -2.0);
         Map<String, String> tags2 = new HashMap<>();
         tags2.put("tag1", "111");
         point2.setFields(fields2);

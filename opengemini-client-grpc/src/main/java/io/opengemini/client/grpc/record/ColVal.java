@@ -1,5 +1,6 @@
 package io.opengemini.client.grpc.record;
 
+import io.opengemini.client.grpc.support.Encoder;
 import lombok.Data;
 
 import java.io.ByteArrayOutputStream;
@@ -21,9 +22,9 @@ public class ColVal {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
             
-            dos.writeLong(len);
-            dos.writeLong(nilCount);
-            dos.writeLong(bitMapOffset);
+            dos.writeLong(Encoder.encodeZigZag64(len));
+            dos.writeLong(Encoder.encodeZigZag64(nilCount));
+            dos.writeLong(Encoder.encodeZigZag64(bitMapOffset));
 
             dos.writeInt(val != null ? val.length : 0);
             if (val != null) {
