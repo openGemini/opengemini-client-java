@@ -130,10 +130,10 @@ public final class PointConverter {
         byte[] valArray = new byte[buffer.readableBytes()];
         buffer.readBytes(valArray);
         colVal.setVal(valArray);
-
-        if (field.getType() == FieldType.STRING.getValue()) {
-            colVal.setOffset(offsets.stream().mapToInt(Integer::intValue).toArray());
-        }
+        colVal.setOffset(offsets.stream().mapToInt(Integer::intValue).toArray());
+//        if (field.getType() == FieldType.STRING.getValue()) {
+//            colVal.setOffset(offsets.stream().mapToInt(Integer::intValue).toArray());
+//        }
 
         buffer.release();
     }
