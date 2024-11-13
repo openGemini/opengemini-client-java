@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 @Data
@@ -16,14 +17,10 @@ public class Field {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
 
-//            dos.writeInt(type);
-//            byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-//            dos.writeInt(nameBytes.length);
-//            dos.write(nameBytes);
-
-            dos.writeChars(name);
+            byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
+            dos.writeShort(nameBytes.length);
+            dos.write(nameBytes);
             dos.writeLong(type);
-
             dos.flush();
             return baos.toByteArray();
         }
