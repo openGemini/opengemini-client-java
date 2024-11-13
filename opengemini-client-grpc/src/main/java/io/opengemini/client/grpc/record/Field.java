@@ -18,7 +18,7 @@ public class Field {
              DataOutputStream dos = new DataOutputStream(baos)) {
 
             byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-            dos.writeShort(nameBytes.length);
+            dos.writeShort(name.length());
             dos.write(nameBytes);
             dos.writeLong(type);
             dos.flush();
