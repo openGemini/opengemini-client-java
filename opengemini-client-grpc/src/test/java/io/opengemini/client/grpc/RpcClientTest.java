@@ -78,12 +78,19 @@ public class RpcClientTest {
 
     @Test
     void testWriteRows() throws ExecutionException, InterruptedException {
+        RpcClientConfig config =  RpcClientConfig
+                .builder()
+                .host("127.0.0.1")
+                .port(8305)
+                .build();
+        RpcClient rpcClient  = RpcClient.create(config);
         List<Point> points = new ArrayList<>();
         Point point1 = new Point();
         Map<String, Object> fields1 = new HashMap<>();
         fields1.put("a", 1.0);
         fields1.put("b", -1.0);
         fields1.put("c", 0.0);
+        point1.setTime(new Date().getTime() * 1_000_000);
 
         Map<String, String> tags1 = new HashMap<>();
         tags1.put("tag1", "111");
@@ -99,6 +106,7 @@ public class RpcClientTest {
         tags2.put("tag1", "111");
         point2.setFields(fields2);
         point2.setTags(tags2);
+        point2.setTime((new Date().getTime() + 100) * 1_000_000);
         points.add(point1);
         points.add(point2);
 
