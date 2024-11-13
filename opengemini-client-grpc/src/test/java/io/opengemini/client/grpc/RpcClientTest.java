@@ -84,13 +84,21 @@ public class RpcClientTest {
         fields1.put("a", 1.0);
         fields1.put("b", -1.0);
         fields1.put("c", 0.0);
+
+        Map<String, String> tags1 = new HashMap<>();
+        tags1.put("tag1", "111");
+
         point1.setFields(fields1);
+        point1.setTags(tags1);
 
         Point point2 = new Point();
         Map<String, Object> fields2 = new HashMap<>();
         fields2.put("a", 1.0);
         fields2.put("b", -1.0);
+        Map<String, String> tags2 = new HashMap<>();
+        tags2.put("tag1", "111");
         point2.setFields(fields2);
+        point2.setTags(tags2);
         points.add(point1);
         points.add(point2);
 

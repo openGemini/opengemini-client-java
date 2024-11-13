@@ -58,6 +58,10 @@ public final class PointConverter {
                     fieldTypes.put(fieldName, determineFieldType(value));
                 }
             }
+
+            point.getTags().forEach((tagName, tagValue) -> {
+                fieldTypes.put(tagName, FieldType.TAG.getValue());
+            });
         }
 
         // 转换为Field列表
@@ -68,6 +72,7 @@ public final class PointConverter {
             field.setType(entry.getValue());
             schema.add(field);
         }
+
 
         return schema;
     }
@@ -141,14 +146,11 @@ public final class PointConverter {
             buffer.writeInt(((Number) value).intValue());
         } else if (type == FieldType.BOOLEAN.getValue()) {
             buffer.writeBoolean((Boolean) value);
-        } else if (type == FieldType.STRING.getValue()) {
+        } else if (type == FieldType.STRING.getValue() || type == FieldType.TAG.getValue()) {
             byte[] bytes = ((String) value).getBytes();
             buffer.writeBytes(bytes);
             offsets.add(currentOffset);
             return currentOffset + bytes.length;
-        } else if (type == FieldType.BYTES.getValue()) {
-            byte[] bytes = (byte[]) value;
-            buffer.writeBytes(bytes);
         }
         return currentOffset;
     }
@@ -198,8 +200,6 @@ public final class PointConverter {
             return FieldType.BOOLEAN.getValue();
         } else if (value instanceof String) {
             return FieldType.STRING.getValue();
-        } else if (value instanceof byte[]) {
-            return FieldType.BYTES.getValue();
         } else if (value instanceof Byte) {
             return FieldType.INT32.getValue(); // 单个byte作为int32处理
         }
@@ -211,13 +211,13 @@ public final class PointConverter {
      */
     @Getter
     enum FieldType {
-        DOUBLE(1),
-        FLOAT(2),
-        INT64(3),
-        INT32(4),
+        INT64(1),
+        INT32(1),
+        DOUBLE(3),
+        FLOAT(3),
+        STRING(4),
         BOOLEAN(5),
-        STRING(6),
-        BYTES(7);
+        TAG(6);
 
         private final int value;
 
