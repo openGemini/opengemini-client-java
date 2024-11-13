@@ -11,7 +11,7 @@ import java.util.*;
 
 public final class PointConverter {
     private static final int BITS_PER_BYTE = 8;
-
+    private static final String TIME_FIELD = "time";
 
     public static List<ColVal> extractColVals(List<Point> points, List<Field> schema) {
         if (points == null || points.isEmpty()) {
@@ -62,6 +62,8 @@ public final class PointConverter {
             point.getTags().forEach((tagName, tagValue) -> {
                 fieldTypes.put(tagName, FieldType.TAG.getValue());
             });
+
+            fieldTypes.put(TIME_FIELD, FieldType.INT64.getValue());
         }
 
         // 转换为Field列表
@@ -72,6 +74,8 @@ public final class PointConverter {
             field.setType(entry.getValue());
             schema.add(field);
         }
+
+
 
 
         return schema;
@@ -98,7 +102,10 @@ public final class PointConverter {
 
         for (int rowIndex = 0; rowIndex < points.size(); rowIndex++) {
             Point point = points.get(rowIndex);
-            Map<String, Object> fields = point.getFields();
+            Map<String, Object> fields = new HashMap<>(point.getFields());
+            fields.putAll(point.getTags());
+            fields.put(TIME_FIELD,point.getTime());
+
             Object value = fields != null ? fields.get(field.getName()) : null;
 
             if (value == null) {
