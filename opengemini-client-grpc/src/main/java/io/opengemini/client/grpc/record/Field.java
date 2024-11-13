@@ -16,10 +16,13 @@ public class Field {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
 
-            dos.writeInt(type);
-            byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-            dos.writeInt(nameBytes.length);
-            dos.write(nameBytes);
+//            dos.writeInt(type);
+//            byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
+//            dos.writeInt(nameBytes.length);
+//            dos.write(nameBytes);
+
+            dos.writeChars(name);
+            dos.writeLong(type);
 
             dos.flush();
             return baos.toByteArray();
