@@ -24,7 +24,7 @@ public class WriteService extends ServiceImpl {
         this.stub = connectionManager.newStub(VertxWriteServiceGrpc::newVertxStub);
     }
 
-    public CompletableFuture<Void> writeRows(String database, List<Point> points) {
+    public CompletableFuture<Void> writeRows(String database, String measurement, List<Point> points) {
 
         LongSummaryStatistics stats = points.stream().mapToLong(Point::getTime).summaryStatistics();
         Rows.Builder rowsBuilder = Rows.newBuilder()
@@ -33,7 +33,7 @@ public class WriteService extends ServiceImpl {
 
         // 如果row的measurement不同的处理方案?
         // rowsBuilder.setMeasurement(....)
-
+        rowsBuilder.setMeasurement(measurement);
         populateBlock(rowsBuilder, points);
 
         String username = getConnectionManager().getConfig().getUsername();
