@@ -153,7 +153,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWriteByRpc(database, points);
+        return executeWriteByRpc(database, measurement, points);
     }
 
     private static String toLineProtocol(List<Point> points) {
