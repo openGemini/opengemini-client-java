@@ -1,5 +1,6 @@
 package io.opengemini.client.grpc.support;
 
+import com.google.common.primitives.Longs;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.opengemini.client.api.Point;
@@ -130,30 +131,36 @@ public final class PointConverter {
         byte[] valArray = new byte[buffer.readableBytes()];
         buffer.readBytes(valArray);
         colVal.setVal(valArray);
-        colVal.setOffset(offsets.stream().mapToInt(Integer::intValue).toArray());
-//        if (field.getType() == FieldType.STRING.getValue()) {
-//            colVal.setOffset(offsets.stream().mapToInt(Integer::intValue).toArray());
-//        }
+        colVal.setOffset(convertToLittleEndian(offsets));
 
         buffer.release();
     }
+    public static int[] convertToLittleEndian(List<Integer> offsets) {
+        // 将 List<Integer> 转换为 int[] 数组
+        int[] intArray = offsets.stream().mapToInt(Integer::intValue).toArray();
 
+        // 转换每个整数的字节顺序
+        for (int i = 0; i < intArray.length; i++) {
+            intArray[i] = Integer.reverseBytes(intArray[i]);
+        }
+        return intArray;
+    }
 
     /**
      * 写入单个值
      */
     private static int writeValue(ByteBuf buffer, Object value, int type, int currentOffset, List<Integer> offsets) {
         if (type == FieldType.DOUBLE.getValue()) {
-            buffer.writeDouble(((Number) value).doubleValue());
+            buffer.writeDoubleLE(((Number) value).doubleValue());
         } else if (type == FieldType.FLOAT.getValue()) {
-            buffer.writeFloat(((Number) value).floatValue());
+            buffer.writeFloatLE(((Number) value).floatValue());
         } else if (type == FieldType.INT64.getValue()) {
-            buffer.writeLong(((Number) value).longValue());
+            buffer.writeLongLE(((Number) value).longValue());
         } else if (type == FieldType.INT32.getValue()) {
-            buffer.writeInt(((Number) value).intValue());
+            buffer.writeIntLE(((Number) value).intValue());
         } else if (type == FieldType.BOOLEAN.getValue()) {
             buffer.writeBoolean((Boolean) value);
-        } else if (type == FieldType.STRING.getValue() || type == FieldType.TAG.getValue()) {
+        } else if (type == FieldType.STRING.getValue() || (type == FieldType.TAG.getValue())) {
             byte[] bytes = ((String) value).getBytes();
             buffer.writeBytes(bytes);
             offsets.add(currentOffset);
@@ -162,6 +169,21 @@ public final class PointConverter {
         return currentOffset;
     }
 
+    public static void reverse(byte[] array) {
+        if (array == null) {
+            return;
+        }
+        int i = 0;
+        int j = array.length - 1;
+        byte tmp;
+        while (j > i) {
+            tmp = array[j];
+            array[j] = array[i];
+            array[i] = tmp;
+            j--;
+            i++;
+        }
+    }
     /**
      * 标记为空值
      */
