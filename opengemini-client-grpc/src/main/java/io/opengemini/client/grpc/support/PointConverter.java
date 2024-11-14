@@ -63,8 +63,6 @@ public final class PointConverter {
             point.getTags().forEach((tagName, tagValue) -> {
                 fieldTypes.put(tagName, FieldType.TAG.getValue());
             });
-
-            fieldTypes.put(TIME_FIELD, FieldType.INT64.getValue());
         }
 
         // 转换为Field列表
@@ -76,6 +74,10 @@ public final class PointConverter {
             schema.add(field);
         }
 
+        Field timeField = new Field();
+        timeField.setName(TIME_FIELD);
+        timeField.setType(FieldType.INT64.getValue());
+        schema.add(timeField);
 
 
 
