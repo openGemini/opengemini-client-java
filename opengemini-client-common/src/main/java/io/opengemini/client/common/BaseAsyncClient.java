@@ -149,7 +149,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
 
 
     @Override
-    public CompletableFuture<Void> writeByRpc(String database, List<Point> points) {
+    public CompletableFuture<Void> writeByRpc(String database, String measurement, List<Point> points) {
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -208,6 +208,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * @param points       the points to write.
      */
     protected abstract CompletableFuture<Void> executeWriteByRpc(String database,
+                                                                 String measurement,
                                                                  List<Point> points);
 
     /**
