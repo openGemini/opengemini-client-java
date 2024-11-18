@@ -19,7 +19,7 @@ public class WriteService extends ServiceImpl {
 
     private final VertxWriteServiceGrpc.WriteServiceVertxStub stub;
 
-    public WriteService(RpcClientConnectionManager connectionManager) {
+    public WriteService(RpcClientConnectionManager connectionManager) throws Exception {
         super(connectionManager);
         this.stub = connectionManager.newStub(VertxWriteServiceGrpc::newVertxStub);
     }

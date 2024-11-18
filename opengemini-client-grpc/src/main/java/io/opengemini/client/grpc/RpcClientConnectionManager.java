@@ -2,13 +2,20 @@ package io.opengemini.client.grpc;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NegotiationType;
 import io.grpc.stub.AbstractStub;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.opengemini.client.api.RpcClientConfig;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.grpc.VertxChannelBuilder;
 import lombok.Getter;
 
+import javax.net.ssl.SSLException;
+import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,7 +50,7 @@ public class RpcClientConnectionManager {
         });
     }
 
-    ManagedChannel getChannel() {
+    ManagedChannel getChannel() throws Exception {
         if (managedChannel == null) {
             synchronized (locker) {
                 if (managedChannel == null) {
@@ -80,15 +87,24 @@ public class RpcClientConnectionManager {
         return this.vertx;
     }
 
-    ManagedChannelBuilder<?> defaultChannelBuilder() {
+    ManagedChannelBuilder<?> defaultChannelBuilder() throws Exception {
         final VertxChannelBuilder channelBuilder = VertxChannelBuilder
-                .forAddress(vertx(), Objects.requireNonNull(config.getHost()), Objects.requireNonNull(config.getPort()))
-                .usePlaintext();
+                .forAddress(vertx(), Objects.requireNonNull(config.getHost()), Objects.requireNonNull(config.getPort()));
+
+        if (config.isUseSSL()) {
+            channelBuilder.nettyBuilder().negotiationType(NegotiationType.TLS);
+            channelBuilder.nettyBuilder().sslContext(GrpcSslContexts.forClient()
+                    .trustManager(new File(config.getCaCert()))
+                    .keyManager(new File(config.getClientCert()), new File(config.getClientKey()))
+                    .build());
+        } else {
+            channelBuilder.usePlaintext();
+        }
         // TODO: more build config properties
         return channelBuilder;
     }
 
-    public <T extends AbstractStub<T>> T newStub(Function<ManagedChannel, T> supplier) {
+    public <T extends AbstractStub<T>> T newStub(Function<ManagedChannel, T> supplier) throws Exception {
         return newStub(supplier, getChannel());
     }
 

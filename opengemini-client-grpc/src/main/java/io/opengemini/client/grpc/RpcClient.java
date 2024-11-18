@@ -17,7 +17,13 @@ public class RpcClient {
     private RpcClient(RpcClientConfig config) {
         this.config = config;
         this.connectionManager = new RpcClientConnectionManager(config);
-        this.writeClient = new RpcClientSupplier<>(() -> new WriteService(this.connectionManager));
+        this.writeClient = new RpcClientSupplier<>(() -> {
+            try {
+                return new WriteService(this.connectionManager);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 

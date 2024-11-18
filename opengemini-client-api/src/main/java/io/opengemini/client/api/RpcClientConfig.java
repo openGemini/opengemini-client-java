@@ -30,5 +30,9 @@ public class RpcClientConfig {
     private Integer port;
     private String username;
     private String password;
+    private boolean useSSL = false;
     private boolean waitForReady = true;
+    private String caCert;
+    private String clientCert;
+    private String clientKey;
 }
