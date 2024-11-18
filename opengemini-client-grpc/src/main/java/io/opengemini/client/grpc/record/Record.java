@@ -42,7 +42,6 @@ import java.io.IOException;
  */
 @Data
 public class Record {
-    private RecMeta recMeta;
     private ColVal[] colVals;
     private Field[] schema;
 
@@ -66,11 +65,7 @@ public class Record {
                 dos.write(colValBytes);
             }
 
-            // Write RecMeta
-            if (recMeta != null) {
-                byte[] recMetaBytes = recMeta.marshal();
-                dos.write(recMetaBytes);
-            }
+            // TODO: Write RecMeta
 
             dos.flush();
             return baos.toByteArray();

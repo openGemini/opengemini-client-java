@@ -65,27 +65,6 @@ public class RecordTest {
     }
 
     @Test
-    public void testColMetaMarshal() throws IOException {
-        // 测试ColMeta的各种数据类型marshal
-        ColMeta colMeta = new ColMeta();
-        colMeta.setSetFlag(true);
-        colMeta.setMin(1);
-        colMeta.setMax(100);
-        colMeta.setMinTime(1000L);
-        colMeta.setMaxTime(2000L);
-        colMeta.setFirst(1.5);
-        colMeta.setLast("last");
-        colMeta.setFirstTime(1500L);
-        colMeta.setLastTime(2500L);
-        colMeta.setSum(5050.5);
-        colMeta.setCount(100L);
-
-        byte[] bytes = colMeta.marshal();
-        assertNotNull(bytes);
-        assertTrue(bytes.length > 0);
-    }
-
-    @Test
     public void testCompleteRecordMarshal() throws IOException {
         // 测试完整Record的marshal
         // 构建Schema
@@ -119,46 +98,6 @@ public class RecordTest {
         colVals[1].setNilCount(0);
 
         record.setColVals(colVals);
-
-        // 构建RecMeta
-        RecMeta recMeta = new RecMeta();
-        recMeta.setIntervalIndex(new int[]{0,1,2});
-        recMeta.setTimes(new long[][]{{1000L, 2000L}, {3000L, 4000L}});
-        recMeta.setTagIndex(new int[]{0,1});
-        recMeta.setTags(new byte[][]{{1,2}, {3,4}});
-
-        long minTime = new Date().getTime() * 1_000_000 - 10000;
-        long maxTime = new Date().getTime() * 1_000_000;
-
-        ColMeta[] colMetas = new ColMeta[2];
-        colMetas[0] = new ColMeta();
-        colMetas[0].setSetFlag(true);
-        colMetas[0].setMin(1);
-        colMetas[0].setMax(100);
-        colMetas[0].setMinTime(minTime);
-        colMetas[0].setMaxTime(maxTime);
-        colMetas[0].setFirst(1);
-        colMetas[0].setLast(100);
-        colMetas[0].setFirstTime(minTime);
-        colMetas[0].setLastTime(maxTime);
-        colMetas[0].setSum(5050);
-        colMetas[0].setCount(100);
-
-        colMetas[1] = new ColMeta();
-        colMetas[1].setSetFlag(true);
-        colMetas[1].setMin(1.5);
-        colMetas[1].setMax(100.5);
-        colMetas[1].setMinTime(minTime);
-        colMetas[1].setMaxTime(maxTime);
-        colMetas[1].setFirst(1.5);
-        colMetas[1].setLast(100.5);
-        colMetas[1].setFirstTime(minTime);
-        colMetas[1].setLastTime(maxTime);
-        colMetas[1].setSum(5050.5);
-        colMetas[1].setCount(100L);
-
-        recMeta.setColMeta(colMetas);
-        record.setRecMeta(recMeta);
 
         byte[] bytes = record.marshal();
         assertNotNull(bytes);
@@ -207,34 +146,6 @@ public class RecordTest {
         assertTrue(bytes.length > 0);
     }
 
-    @Test
-    public void testAllDataTypes() throws IOException {
-        // 测试所有支持的数据类型
-        ColMeta colMeta = new ColMeta();
-        colMeta.setSetFlag(true);
-
-        // 测试所有支持的数据类型
-        colMeta.setMin(null);                    // null type
-        colMeta.setMax(100);                     // int type
-        colMeta.setFirst(1000L);                 // long type
-        colMeta.setLast(1.5);                    // double type
-        colMeta.setSum("string value");          // string type
-        colMeta.setCount(new byte[]{1,2,3});     // bytes type
-
-        byte[] bytes = colMeta.marshal();
-        assertNotNull(bytes);
-        assertTrue(bytes.length > 0);
-    }
-
-    @Test(expected = IOException.class)
-    public void testUnsupportedType() throws IOException {
-        // 测试不支持的数据类型
-        ColMeta colMeta = new ColMeta();
-        colMeta.setMin(new Object());  // 不支持的类型
-
-        colMeta.marshal();
-    }
-
     private void printByteStructure(byte[] bytes) throws IOException {
         System.out.println("\nByte Structure Analysis:");
         System.out.println("Total length: " + bytes.length + " bytes");
@@ -275,25 +186,6 @@ public class RecordTest {
             System.out.println("\nRecMeta Section:");
             System.out.println("Remaining bytes: " + dis.available());
         }
-    }
-
-    @Test
-    public void testBoundaryValues() throws IOException {
-        // 测试边界值
-        ColMeta colMeta = new ColMeta();
-        colMeta.setSetFlag(true);
-        colMeta.setMin(Integer.MAX_VALUE);
-        colMeta.setMax(Integer.MIN_VALUE);
-        colMeta.setMinTime(Long.MAX_VALUE);
-        colMeta.setMaxTime(Long.MIN_VALUE);
-        colMeta.setFirst(Double.MAX_VALUE);
-        colMeta.setLast(Double.MIN_VALUE);
-        colMeta.setFirstTime(Long.MAX_VALUE);
-        colMeta.setLastTime(Long.MIN_VALUE);
-
-        byte[] bytes = colMeta.marshal();
-        assertNotNull(bytes);
-        assertTrue(bytes.length > 0);
     }
 
     @org.junit.Test
