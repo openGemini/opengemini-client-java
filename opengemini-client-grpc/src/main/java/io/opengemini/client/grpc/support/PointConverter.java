@@ -19,7 +19,7 @@ public final class PointConverter {
         }
 
         int rowCount = points.size();
-        List<ColVal> colVals = new ArrayList<>();
+        List<ColVal> colVals = new ArrayList<>(schema.size());
 
         // 初始化每个ColVal
         for (int i = 0; i < schema.size(); i++) {
@@ -79,7 +79,6 @@ public final class PointConverter {
         schema.add(timeField);
 
 
-
         return schema;
     }
 
@@ -99,43 +98,46 @@ public final class PointConverter {
      */
     private static void processColumn(List<Point> points, ColVal colVal, Field field) {
         ByteBuf buffer = Unpooled.buffer();
-        List<Integer> offsets = new ArrayList<>();
-        int currentOffset = 0;
+        try {
+            List<Integer> offsets = new ArrayList<>();
+            int currentOffset = 0;
 
-        for (int rowIndex = 0; rowIndex < points.size(); rowIndex++) {
-            Point point = points.get(rowIndex);
-            Map<String, Object> fields = new HashMap<>(point.getFields());
-            fields.putAll(point.getTags());
-            fields.put(TIME_FIELD,point.getTime());
+            for (int rowIndex = 0; rowIndex < points.size(); rowIndex++) {
+                Point point = points.get(rowIndex);
+                Map<String, Object> fields = new HashMap<>(point.getFields());
+                fields.putAll(point.getTags());
+                fields.put(TIME_FIELD, point.getTime());
 
-            Object value = fields.get(field.getName());
+                Object value = fields.get(field.getName());
 
-            if (value == null) {
-                markAsNull(colVal, rowIndex);
-                if (field.getType() == FieldType.STRING.getValue()) {
-                    offsets.add(currentOffset);
+                if (value == null) {
+                    markAsNull(colVal, rowIndex);
+                    if (field.getType() == FieldType.STRING.getValue()) {
+                        offsets.add(currentOffset);
+                    }
+                    continue;
                 }
-                continue;
+
+                try {
+                    currentOffset = writeValue(buffer, value, field.getType(), currentOffset, offsets);
+                    markAsNonNull(colVal, rowIndex);
+                } catch (Exception e) {
+                    markAsNull(colVal, rowIndex);
+                    if (field.getType() == FieldType.STRING.getValue()) {
+                        offsets.add(currentOffset);
+                    }
+                }
             }
 
-            try {
-                currentOffset = writeValue(buffer, value, field.getType(), currentOffset, offsets);
-                markAsNonNull(colVal, rowIndex);
-            } catch (Exception e) {
-                markAsNull(colVal, rowIndex);
-                if (field.getType() == FieldType.STRING.getValue()) {
-                    offsets.add(currentOffset);
-                }
-            }
+            byte[] valArray = new byte[buffer.readableBytes()];
+            buffer.readBytes(valArray);
+            colVal.setVal(valArray);
+            colVal.setOffset(convertToLittleEndian(offsets));
+        } finally {
+            buffer.release();
         }
-
-        byte[] valArray = new byte[buffer.readableBytes()];
-        buffer.readBytes(valArray);
-        colVal.setVal(valArray);
-        colVal.setOffset(convertToLittleEndian(offsets));
-
-        buffer.release();
     }
+
     public static int[] convertToLittleEndian(List<Integer> offsets) {
         int[] intArray = offsets.stream().mapToInt(Integer::intValue).toArray();
 
@@ -184,6 +186,7 @@ public final class PointConverter {
             i++;
         }
     }
+
     /**
      * 标记为空值
      */
