@@ -21,6 +21,8 @@ import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.impl.OpenGeminiClientFactory;
 import io.opengemini.client.spring.data.core.ClientConfigurationBuilderCustomizer;
 import io.opengemini.client.spring.data.core.DefaultOpenGeminiSerializerFactory;
+import io.opengemini.client.spring.data.core.MeasurementScanConfigurer;
+import io.opengemini.client.spring.data.core.MeasurementScanInitializer;
 import io.opengemini.client.spring.data.core.OpenGeminiProperties;
 import io.opengemini.client.spring.data.core.OpenGeminiPropertiesConverter;
 import io.opengemini.client.spring.data.core.OpenGeminiSerializerFactory;
@@ -31,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.lang.Nullable;
 
 @AutoConfiguration
 @ConditionalOnClass(OpenGeminiTemplate.class)
@@ -57,6 +60,12 @@ public class OpenGeminiAutoConfiguration {
     @ConditionalOnMissingBean(OpenGeminiSerializerFactory.class)
     public OpenGeminiSerializerFactory openGeminiSerializerFactory() {
         return new DefaultOpenGeminiSerializerFactory();
+    }
+
+    @Bean
+    public MeasurementScanInitializer measurementScanInitializer(OpenGeminiTemplate openGeminiTemplate,
+                                                                 @Nullable MeasurementScanConfigurer configurer) {
+        return new MeasurementScanInitializer(openGeminiTemplate, configurer);
     }
 
 }
