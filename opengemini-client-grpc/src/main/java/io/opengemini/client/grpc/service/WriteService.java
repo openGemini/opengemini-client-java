@@ -15,8 +15,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class WriteService extends ServiceImpl {
-    private static final String NEWLINE_DELIMITER = "\n";
-
     private final VertxWriteServiceGrpc.WriteServiceVertxStub stub;
 
     public WriteService(RpcClientConnectionManager connectionManager) throws Exception {
