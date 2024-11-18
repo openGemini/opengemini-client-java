@@ -1,6 +1,5 @@
 package io.opengemini.client.grpc.support;
 
-import com.google.common.primitives.Longs;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.opengemini.client.api.Point;
@@ -109,7 +108,7 @@ public final class PointConverter {
             fields.putAll(point.getTags());
             fields.put(TIME_FIELD,point.getTime());
 
-            Object value = fields != null ? fields.get(field.getName()) : null;
+            Object value = fields.get(field.getName());
 
             if (value == null) {
                 markAsNull(colVal, rowIndex);
@@ -138,7 +137,6 @@ public final class PointConverter {
         buffer.release();
     }
     public static int[] convertToLittleEndian(List<Integer> offsets) {
-        // 将 List<Integer> 转换为 int[] 数组
         int[] intArray = offsets.stream().mapToInt(Integer::intValue).toArray();
 
         // 转换每个整数的字节顺序
