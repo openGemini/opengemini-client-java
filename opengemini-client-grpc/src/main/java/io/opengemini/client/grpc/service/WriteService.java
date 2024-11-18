@@ -57,11 +57,8 @@ public class WriteService extends ServiceImpl {
         Record record = new Record();
         record.setSchema(schemas.toArray(new Field[0]));
         record.setColVals(colVals.toArray(new ColVal[0]));
-        // TODO: setRecMeta
-        // record.setRecMeta();
 
         try {
-            // TODO: exception catch
             builder.setBlock(ByteString.copyFrom(record.marshal()));
         } catch (IOException e) {
             throw new RuntimeException(e);
