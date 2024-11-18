@@ -69,7 +69,7 @@ public class WriteService extends ServiceImpl {
             if (ResponseCode.Success == writeRowsResponse.getCode()) {
                 return null;
             } else {
-                // TODO: Exception ?
+                // TODO: return a custom write exception ?
                 return null;
             }
         });
