@@ -100,7 +100,7 @@ public class RpcClientTest {
         fields2.put("a", 2.0);
         fields2.put("b", -2.0);
         Map<String, String> tags2 = new HashMap<>();
-        tags2.put("tag1", "111");
+        tags2.put("tag1", "222");
         point2.setFields(fields2);
         point2.setTags(tags2);
         point2.setTime((new Date().getTime() + 100) * 1_000_000);
@@ -108,7 +108,7 @@ public class RpcClientTest {
         points.add(point2);
 
 
-        rpcClient.getWriteClient().writeRows("test", points).get();
+        rpcClient.getWriteClient().writeRows("test", "test1", points).get();
     }
 
     @AfterEach
