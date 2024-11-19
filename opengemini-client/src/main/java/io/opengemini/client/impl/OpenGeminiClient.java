@@ -98,8 +98,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
     /**
      * Execute a write call with RPC client
      *
-     * @param database     the name of the database.
-     * @param points the points to write.
+     * @param database the name of the database.
+     * @param points   the points to write.
      */
     @Override
     protected CompletableFuture<Void> executeWriteByRpc(String database, String measurement, List<Point> points) {
@@ -152,6 +152,9 @@ public class OpenGeminiClient extends BaseAsyncClient {
     @Override
     public void close() throws IOException {
         this.client.close();
+        if (this.rpcClient != null) {
+            this.rpcClient.close();
+        }
     }
 
     @Override
