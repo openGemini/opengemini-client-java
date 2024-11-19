@@ -36,7 +36,6 @@ public class RecordTest {
 
     @Test
     public void testBasicFieldMarshal() throws IOException {
-        // 测试Field的基本marshal功能
         Field field = new Field();
         field.setType(1);
         field.setName("test_field");
@@ -44,13 +43,12 @@ public class RecordTest {
         byte[] bytes = field.marshal();
         assertNotNull(bytes);
 
-        // 验证长度：4(type) + 4(name length) + name bytes
+        // Validate length：4(type) + 4(name length) + name bytes
         assertEquals(4 + 4 + "test_field".length(), bytes.length);
     }
 
     @Test
     public void testBasicColValMarshal() throws IOException {
-        // 测试ColVal的基本marshal功能
         ColVal colVal = new ColVal();
         colVal.setVal(testBytes);
         colVal.setOffset(new int[]{0, testBytes.length});
@@ -66,8 +64,6 @@ public class RecordTest {
 
     @Test
     public void testCompleteRecordMarshal() throws IOException {
-        // 测试完整Record的marshal
-        // 构建Schema
         Field[] schema = new Field[2];
         schema[0] = new Field();
         schema[0].setType(1);
@@ -79,7 +75,6 @@ public class RecordTest {
 
         record.setSchema(schema);
 
-        // 构建ColVals
         ColVal[] colVals = new ColVal[2];
         colVals[0] = new ColVal();
         colVals[0].setVal(new byte[]{1,2,3,4});
@@ -103,16 +98,13 @@ public class RecordTest {
         assertNotNull(bytes);
         assertTrue(bytes.length > 0);
 
-        // 打印字节结构
         printByteStructure(bytes);
 
-        // 打印图形化结构
         printByteGraphStructure(bytes);
     }
 
     @Test
     public void testNullHandling() throws IOException {
-        // 测试null值处理
         Record record = new Record();
         record.setSchema(new Field[0]);
         record.setColVals(new ColVal[1]);
@@ -153,7 +145,6 @@ public class RecordTest {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         DataInputStream dis = new DataInputStream(bais);
 
-        // 读取Schema部分
         int schemaLen = dis.readInt();
         System.out.println("\nSchema Section:");
         System.out.println("Schema Length: " + schemaLen);
@@ -169,7 +160,6 @@ public class RecordTest {
             System.out.println("    Name: " + new String(nameBytes, StandardCharsets.UTF_8));
         }
 
-        // 读取ColVals部分
         int colValsLen = dis.readInt();
         System.out.println("\nColVals Section:");
         System.out.println("ColVals Length: " + colValsLen);
@@ -177,11 +167,9 @@ public class RecordTest {
         for (int i = 0; i < colValsLen; i++) {
             int colValSize = dis.readInt();
             System.out.println("  ColVal " + i + " size: " + colValSize + " bytes");
-            // 跳过具体内容
             dis.skipBytes(colValSize);
         }
 
-        // 如果还有剩余字节，说明是RecMeta部分
         if (dis.available() > 0) {
             System.out.println("\nRecMeta Section:");
             System.out.println("Remaining bytes: " + dis.available());
@@ -190,19 +178,17 @@ public class RecordTest {
 
     @org.junit.Test
     public void testEmptyStrings() throws IOException {
-        // 测试空字符串
         Field field = new Field();
         field.setType(1);
         field.setName("");
 
         byte[] bytes = field.marshal();
         assertNotNull(bytes);
-        assertEquals(8, bytes.length); // 4(type) + 4(空字符串长度0)
+        assertEquals(8, bytes.length);
     }
 
     @Test
     public void testZeroLengthArrays() throws IOException {
-        // 测试0长度数组
         ColVal colVal = new ColVal();
         colVal.setVal(new byte[0]);
         colVal.setOffset(new int[0]);
