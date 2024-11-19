@@ -83,7 +83,6 @@
         <scala-maven-plugin.version>4.9.2</scala-maven-plugin.version>
         <spotbugs-maven-plugin.version>4.8.6.4</spotbugs-maven-plugin.version>
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
-
     </properties>
 
     <dependencyManagement>
