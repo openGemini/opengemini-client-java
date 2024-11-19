@@ -45,8 +45,6 @@ public class WriteService extends ServiceImpl {
                 .setMinTime(stats.getMin())
                 .setMaxTime(stats.getMax());
 
-        // 如果row的measurement不同的处理方案?
-        // rowsBuilder.setMeasurement(....)
         rowsBuilder.setMeasurement(measurement);
         populateBlock(rowsBuilder, points);
 

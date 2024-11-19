@@ -30,13 +30,13 @@ import java.io.IOException;
  * |  Schema Length  |    Schema Array     |   ColVals Length   |      ColVals Array        |
  * |    (4 bytes)   |   (variable size)   |     (4 bytes)      |    (variable size)         |
  * +----------------------------------------------------------------------------------------+
- *
+ * <p>
  * Schema Array Structure (repeated for each field):
  * +----------------------------------------------------------------------------------------+
  * |  Field Size  |    Type    |   Name Length  |              Name                         |
  * |   (4 bytes)  | (4 bytes)  |   (4 bytes)   |     (variable bytes, UTF-8)                |
  * +----------------------------------------------------------------------------------------+
- *
+ * <p>
  * ColVals Array Structure (repeated for each column):
  * +----------------------------------------------------------------------------------------+
  * |  ColVal Size |                          ColVal Content                                 |
@@ -80,8 +80,6 @@ public class Record {
                 dos.writeInt(colValBytes.length);
                 dos.write(colValBytes);
             }
-
-            // TODO: Write RecMeta
 
             dos.flush();
             return baos.toByteArray();

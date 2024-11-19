@@ -56,7 +56,7 @@ public class RpcClientConnectionManager {
         this.locker = new Object();
         this.config = config;
         this.managedChannel = managedChannel;
-        // TODO: 参数化配置
+        // TODO: Parameterized configuration
         this.executorService = Executors.newFixedThreadPool((Runtime.getRuntime().availableProcessors() * 2) + 1, r -> {
             final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
             Thread thread = defaultFactory.newThread(r);

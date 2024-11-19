@@ -37,7 +37,7 @@ public final class PointConverter {
         int rowCount = points.size();
         List<ColVal> colVals = new ArrayList<>(schema.size());
 
-        // 初始化每个ColVal
+        // Init ColVals
         for (int i = 0; i < schema.size(); i++) {
             ColVal colVal = new ColVal();
             colVal.setLen(rowCount);
@@ -46,7 +46,7 @@ public final class PointConverter {
             colVals.add(colVal);
         }
 
-        // 处理每一列
+        // Process each column
         Map<String, Integer> fieldIndexMap = createFieldIndexMap(schema);
         for (Field field : schema) {
             int colIndex = fieldIndexMap.get(field.getName());
@@ -59,10 +59,10 @@ public final class PointConverter {
      * 从Points中提取Schema信息
      */
     public static List<Field> extractSchema(List<Point> points) {
-        // 使用LinkedHashMap保持字段顺序
+        // Use a LinkedHashMap to maintain field order
         Map<String, Integer> fieldTypes = new LinkedHashMap<>();
 
-        // 遍历所有Point以确保捕获所有可能的字段和类型
+        // Traverse all points to ensure that all possible fields and types are captured.
         for (Point point : points) {
             Map<String, Object> fields = point.getFields();
             if (fields == null) continue;
@@ -80,7 +80,7 @@ public final class PointConverter {
             });
         }
 
-        // 转换为Field列表
+        // Convert to field list
         List<Field> schema = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : fieldTypes.entrySet()) {
             Field field = new Field();
@@ -98,9 +98,6 @@ public final class PointConverter {
         return schema;
     }
 
-    /**
-     * 创建字段名到索引的映射
-     */
     private static Map<String, Integer> createFieldIndexMap(List<Field> schema) {
         Map<String, Integer> fieldIndexMap = new HashMap<>();
         for (int i = 0; i < schema.size(); i++) {
@@ -109,9 +106,6 @@ public final class PointConverter {
         return fieldIndexMap;
     }
 
-    /**
-     * 处理单个列的数据
-     */
     private static void processColumn(List<Point> points, ColVal colVal, Field field) {
         ByteBuf buffer = Unpooled.buffer();
         try {
@@ -164,9 +158,6 @@ public final class PointConverter {
         return intArray;
     }
 
-    /**
-     * 写入单个值
-     */
     private static int writeValue(ByteBuf buffer, Object value, int type, int currentOffset, List<Integer> offsets) {
         if (type == FieldType.DOUBLE.getValue()) {
             buffer.writeDoubleLE(((Number) value).doubleValue());
@@ -187,9 +178,6 @@ public final class PointConverter {
         return currentOffset;
     }
 
-    /**
-     * 标记为空值
-     */
     private static void markAsNull(ColVal colVal, int rowIndex) {
         int byteIndex = rowIndex / BITS_PER_BYTE;
         int bitOffset = rowIndex % BITS_PER_BYTE;
@@ -197,18 +185,12 @@ public final class PointConverter {
         colVal.setNilCount(colVal.getNilCount() + 1);
     }
 
-    /**
-     * 标记为非空值
-     */
     private static void markAsNonNull(ColVal colVal, int rowIndex) {
         int byteIndex = rowIndex / BITS_PER_BYTE;
         int bitOffset = rowIndex % BITS_PER_BYTE;
         colVal.getBitmap()[byteIndex] |= (byte) (1 << bitOffset);
     }
 
-    /**
-     * 初始化bitmap
-     */
     private static void initializeBitmap(ColVal colVal, int rowCount) {
         int bitmapSize = (rowCount + BITS_PER_BYTE - 1) / BITS_PER_BYTE;
         colVal.setBitmap(new byte[bitmapSize]);
@@ -216,9 +198,6 @@ public final class PointConverter {
         colVal.setNilCount(0);
     }
 
-    /**
-     * 确定字段类型
-     */
     private static int determineFieldType(Object value) {
         if (value instanceof Double) {
             return FieldType.DOUBLE.getValue();
@@ -233,14 +212,11 @@ public final class PointConverter {
         } else if (value instanceof String) {
             return FieldType.STRING.getValue();
         } else if (value instanceof Byte) {
-            return FieldType.INT32.getValue(); // 单个byte作为int32处理
+            return FieldType.INT32.getValue();
         }
         throw new IllegalArgumentException("Unsupported type: " + value.getClass());
     }
 
-    /**
-     * 字段类型枚举
-     */
     @Getter
     enum FieldType {
         INT64(1),
