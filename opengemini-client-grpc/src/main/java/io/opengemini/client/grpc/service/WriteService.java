@@ -23,6 +23,7 @@ import io.opengemini.client.grpc.record.ColVal;
 import io.opengemini.client.grpc.record.Field;
 import io.opengemini.client.grpc.record.Record;
 import io.opengemini.client.grpc.support.PointConverter;
+import io.vertx.core.Future;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,13 +80,15 @@ public class WriteService extends ServiceImpl {
 
 
     public CompletableFuture<Void> writeRows(WriteRowsRequest writeRowsRequest) {
-        return execute(() -> stub.writeRows(writeRowsRequest), writeRowsResponse -> {
-            if (ResponseCode.Success == writeRowsResponse.getCode()) {
-                return null;
-            } else {
-                // TODO: return a custom write exception ?
-                return null;
-            }
-        });
+        CompletableFuture<Void> resultFuture = new CompletableFuture<>();
+        stub.writeRows(writeRowsRequest)
+                .onComplete(ar -> {
+                    if (ar.succeeded()) {
+                        resultFuture.complete(null);
+                    } else {
+                        resultFuture.completeExceptionally(ar.cause());
+                    }
+                });
+        return resultFuture;
     }
 }
