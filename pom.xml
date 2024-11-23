@@ -223,7 +223,7 @@
                     </execution>
                     <!-- Execution for grpc-vertx -->
                     <execution>
-                        <id>grpc-vertx</id>
+                        <id>vertx-grpc</id>
                         <goals>
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
