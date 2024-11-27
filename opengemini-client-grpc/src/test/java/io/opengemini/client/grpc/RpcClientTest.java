@@ -1,10 +1,9 @@
 package io.opengemini.client.grpc;
 
-import com.google.common.collect.Maps;
 import io.grpc.Server;
 import io.grpc.stub.StreamObserver;
 import io.opengemini.client.api.Point;
-import io.opengemini.client.api.RpcClientConfig;
+import io.opengemini.client.api.GrpcConfig;
 import io.vertx.core.Vertx;
 import io.vertx.grpc.VertxServerBuilder;
 import io.vertx.junit5.VertxExtension;
@@ -56,7 +55,7 @@ public class RpcClientTest {
                 .start();
         testContext.completeNow();
 
-        RpcClientConfig config = RpcClientConfig.builder().host("127.0.0.1").port(port).build();
+        GrpcConfig config = GrpcConfig.builder().host("127.0.0.1").port(port).build();
 
         rpcClient = RpcClient.create(config);
     }
@@ -75,7 +74,7 @@ public class RpcClientTest {
 
     @Test
     void testWriteRows() throws ExecutionException, InterruptedException {
-        RpcClientConfig config =  RpcClientConfig
+        GrpcConfig config =  GrpcConfig
                 .builder()
                 .host("127.0.0.1")
                 .port(8305)

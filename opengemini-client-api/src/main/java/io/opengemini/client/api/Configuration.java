@@ -41,5 +41,5 @@ public class Configuration {
 
     HttpClientConfig httpConfig;
 
-    RpcClientConfig rpcConfig;
+    GrpcConfig rpcConfig;
 }

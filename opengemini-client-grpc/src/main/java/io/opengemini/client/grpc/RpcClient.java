@@ -16,21 +16,21 @@
 
 package io.opengemini.client.grpc;
 
-import io.opengemini.client.api.RpcClientConfig;
+import io.opengemini.client.api.GrpcConfig;
 import io.opengemini.client.grpc.service.WriteService;
 import io.opengemini.client.grpc.support.RpcClientSupplier;
 
 public class RpcClient {
-    private final RpcClientConfig config;
+    private final GrpcConfig config;
     private final RpcClientConnectionManager connectionManager;
 
     private final RpcClientSupplier<WriteService> writeClient;
 
-    public static RpcClient create(final RpcClientConfig config) {
+    public static RpcClient create(final GrpcConfig config) {
         return new RpcClient(config);
     }
 
-    private RpcClient(RpcClientConfig config) {
+    private RpcClient(GrpcConfig config) {
         this.config = config;
         this.connectionManager = new RpcClientConnectionManager(config);
         this.writeClient = new RpcClientSupplier<>(() -> {

@@ -25,13 +25,14 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-public class RpcClientConfig {
+public class GrpcConfig {
     private String host;
     private Integer port;
     private String username;
     private String password;
     private boolean useSSL = false;
     private boolean waitForReady = true;
+    // TODO： Rename
     private String caCert;
     private String clientCert;
     private String clientKey;

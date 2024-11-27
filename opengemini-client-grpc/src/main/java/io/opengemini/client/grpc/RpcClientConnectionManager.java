@@ -21,16 +21,12 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.NegotiationType;
 import io.grpc.stub.AbstractStub;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.opengemini.client.api.RpcClientConfig;
-import io.vertx.core.Handler;
+import io.opengemini.client.api.GrpcConfig;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.grpc.VertxChannelBuilder;
 import lombok.Getter;
 
-import javax.net.ssl.SSLException;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -41,18 +37,18 @@ import java.util.function.Function;
 public class RpcClientConnectionManager {
     private final Object locker;
     @Getter
-    private final RpcClientConfig config;
+    private final GrpcConfig config;
     private volatile ManagedChannel managedChannel;
     private volatile Vertx vertx;
 
     @Getter
     private final ExecutorService executorService;
 
-    RpcClientConnectionManager(RpcClientConfig config) {
+    RpcClientConnectionManager(GrpcConfig config) {
         this(config, null);
     }
 
-    RpcClientConnectionManager(RpcClientConfig config, ManagedChannel managedChannel) {
+    RpcClientConnectionManager(GrpcConfig config, ManagedChannel managedChannel) {
         this.locker = new Object();
         this.config = config;
         this.managedChannel = managedChannel;
