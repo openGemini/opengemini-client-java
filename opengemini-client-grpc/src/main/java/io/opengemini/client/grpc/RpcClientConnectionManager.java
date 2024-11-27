@@ -106,8 +106,8 @@ public class RpcClientConnectionManager {
         if (config.isUseSSL()) {
             channelBuilder.nettyBuilder().negotiationType(NegotiationType.TLS);
             channelBuilder.nettyBuilder().sslContext(GrpcSslContexts.forClient()
-                    .trustManager(new File(config.getCaCert()))
-                    .keyManager(new File(config.getClientCert()), new File(config.getClientKey()))
+                    .trustManager(new File(config.getCaCertPath()))
+                    .keyManager(new File(config.getClientCertPath()), new File(config.getClientKeyPath()))
                     .build());
         } else {
             channelBuilder.usePlaintext();

@@ -32,8 +32,7 @@ public class GrpcConfig {
     private String password;
     private boolean useSSL = false;
     private boolean waitForReady = true;
-    // TODO： Rename
-    private String caCert;
-    private String clientCert;
-    private String clientKey;
+    private String caCertPath;
+    private String clientCertPath;
+    private String clientKeyPath;
 }
