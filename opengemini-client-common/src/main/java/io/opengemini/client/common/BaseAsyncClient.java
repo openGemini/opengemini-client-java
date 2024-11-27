@@ -27,7 +27,6 @@ import io.opengemini.client.api.RpConfig;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.LongSummaryStatistics;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
@@ -147,13 +146,12 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executeWrite(database, retentionPolicy, body);
     }
 
-
     @Override
-    public CompletableFuture<Void> writeByRpc(String database, String measurement, List<Point> points) {
+    public CompletableFuture<Void> writeByGrpc(String database, String measurement, List<Point> points) {
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWriteByRpc(database, measurement, points);
+        return executeWriteByGrpc(database, measurement, points);
     }
 
     private static String toLineProtocol(List<Point> points) {
@@ -207,9 +205,9 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * @param database     the name of the database.
      * @param points       the points to write.
      */
-    protected abstract CompletableFuture<Void> executeWriteByRpc(String database,
-                                                                 String measurement,
-                                                                 List<Point> points);
+    protected abstract CompletableFuture<Void> executeWriteByGrpc(String database,
+                                                                  String measurement,
+                                                                  List<Point> points);
 
     /**
      * The implementation class needs to implement this method to execute a ping call.
