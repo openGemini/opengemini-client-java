@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(VertxExtension.class)
-public class RpcClientTest {
+public class GrpcClientTest {
     private Vertx vertx;
     private int port;
     private Server server;
@@ -40,7 +40,7 @@ public class RpcClientTest {
             }
     ));
 
-    private RpcClient rpcClient;
+    private GrpcClient grpcClient;
 
     @BeforeEach
     public void setUp(VertxTestContext testContext) throws Exception {
@@ -57,7 +57,7 @@ public class RpcClientTest {
 
         GrpcConfig config = GrpcConfig.builder().host("127.0.0.1").port(port).build();
 
-        rpcClient = RpcClient.create(config);
+        grpcClient = GrpcClient.create(config);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class RpcClientTest {
                 .setPassword("test")
                 .setRows(Rows.newBuilder().build())
                 .build();
-        rpcClient.getWriteClient().writeRows(request).get();
+        grpcClient.getWriteClient().writeRows(request).get();
     }
 
     @Test
@@ -79,7 +79,7 @@ public class RpcClientTest {
                 .host("127.0.0.1")
                 .port(8305)
                 .build();
-        RpcClient rpcClient  = RpcClient.create(config);
+        GrpcClient grpcClient = GrpcClient.create(config);
         List<Point> points = new ArrayList<>();
         Point point1 = new Point();
         Map<String, Object> fields1 = new HashMap<>();
@@ -107,13 +107,13 @@ public class RpcClientTest {
         points.add(point2);
 
 
-        rpcClient.getWriteClient().writeRows("test", "test1", points).get();
+        grpcClient.getWriteClient().writeRows("test", "test1", points).get();
     }
 
     @AfterEach
     void tearDown(VertxTestContext testContext) {
-        if (rpcClient != null) {
-            rpcClient.close();
+        if (grpcClient != null) {
+            grpcClient.close();
         }
         if (server != null) {
             server.shutdown();

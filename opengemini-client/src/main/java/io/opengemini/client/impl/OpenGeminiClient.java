@@ -25,8 +25,7 @@ import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
-import io.opengemini.client.grpc.RpcClient;
-import io.opengemini.client.grpc.WriteRowsRequest;
+import io.opengemini.client.grpc.GrpcClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     private final HttpClient client;
 
-    private final RpcClient rpcClient;
+    private final GrpcClient grpcClient;
 
     public OpenGeminiClient(@NotNull Configuration conf) {
         super(conf);
@@ -54,9 +53,9 @@ public class OpenGeminiClient extends BaseAsyncClient {
         this.client = HttpClientFactory.createHttpClient(httpConfig);
 
         if (conf.getRpcConfig() != null) {
-            rpcClient = RpcClient.create(conf.getRpcConfig());
+            grpcClient = GrpcClient.create(conf.getRpcConfig());
         } else {
-            rpcClient = null;
+            grpcClient = null;
         }
     }
 
@@ -103,10 +102,10 @@ public class OpenGeminiClient extends BaseAsyncClient {
      */
     @Override
     protected CompletableFuture<Void> executeWriteByGrpc(String database, String measurement, List<Point> points) {
-        if (rpcClient == null) {
+        if (grpcClient == null) {
             throw new IllegalStateException("RPC client not initialized");
         }
-        return rpcClient.getWriteClient().writeRows(database, measurement, points);
+        return grpcClient.getWriteClient().writeRows(database, measurement, points);
     }
 
     /**
@@ -152,8 +151,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
     @Override
     public void close() throws IOException {
         this.client.close();
-        if (this.rpcClient != null) {
-            this.rpcClient.close();
+        if (this.grpcClient != null) {
+            this.grpcClient.close();
         }
     }
 
