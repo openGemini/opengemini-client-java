@@ -14,32 +14,10 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.api;
+package io.opengemini.client.grpc.support;
 
-import io.github.openfacade.http.HttpClientConfig;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
-
-@Setter
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Configuration {
-    List<Address> addresses;
-
-    AuthConfig authConfig;
-
-    BatchConfig batchConfig;
-
-    boolean gzipEnabled;
-
-    HttpClientConfig httpConfig;
-
-    GrpcConfig rpcConfig;
+public class Encoder {
+    public static long encodeZigZag64(long value) {
+        return (value << 1) ^ (value >> 63);
+    }
 }

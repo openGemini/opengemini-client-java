@@ -139,6 +139,22 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
+        String body = toLineProtocol(points);
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, retentionPolicy, body);
+    }
+
+    @Override
+    public CompletableFuture<Void> writeByGrpc(String database, String measurement, List<Point> points) {
+        if (points.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWriteByGrpc(database, measurement, points);
+    }
+
+    private static String toLineProtocol(List<Point> points) {
         StringJoiner sj = new StringJoiner("\n");
         for (Point point : points) {
             String lineProtocol = point.lineProtocol();
@@ -147,11 +163,7 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
             }
             sj.add(lineProtocol);
         }
-        String body = sj.toString();
-        if (StringUtils.isEmpty(body)) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return executeWrite(database, retentionPolicy, body);
+        return sj.toString();
     }
 
     /**
@@ -186,6 +198,16 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     protected abstract CompletableFuture<Void> executeWrite(String database,
                                                             String retentionPolicy,
                                                             String lineProtocol);
+
+    /**
+     * The implementation class needs to implement this method to execute a write operation via an RPC call.
+     *
+     * @param database     the name of the database.
+     * @param points       the points to write.
+     */
+    protected abstract CompletableFuture<Void> executeWriteByGrpc(String database,
+                                                                  String measurement,
+                                                                  List<Point> points);
 
     /**
      * The implementation class needs to implement this method to execute a ping call.

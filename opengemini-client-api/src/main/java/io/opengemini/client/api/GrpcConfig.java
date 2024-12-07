@@ -16,30 +16,23 @@
 
 package io.opengemini.client.api;
 
-import io.github.openfacade.http.HttpClientConfig;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.List;
-
-@Setter
 @Getter
+@Setter
+@ToString
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Configuration {
-    List<Address> addresses;
-
-    AuthConfig authConfig;
-
-    BatchConfig batchConfig;
-
-    boolean gzipEnabled;
-
-    HttpClientConfig httpConfig;
-
-    GrpcConfig rpcConfig;
+public class GrpcConfig {
+    private String host;
+    private Integer port;
+    private String username;
+    private String password;
+    private boolean useSSL = false;
+    private boolean waitForReady = true;
+    private String caCertPath;
+    private String clientCertPath;
+    private String clientKeyPath;
 }

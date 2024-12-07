@@ -21,20 +21,16 @@ import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
-import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
-import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Pong;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.grpc.GrpcClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -42,6 +38,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
     protected final Configuration conf;
 
     private final HttpClient client;
+
+    private final GrpcClient grpcClient;
 
     public OpenGeminiClient(@NotNull Configuration conf) {
         super(conf);
@@ -53,6 +51,12 @@ public class OpenGeminiClient extends BaseAsyncClient {
                     new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
+
+        if (conf.getRpcConfig() != null) {
+            grpcClient = GrpcClient.create(conf.getRpcConfig());
+        } else {
+            grpcClient = null;
+        }
     }
 
     /**
@@ -88,6 +92,20 @@ public class OpenGeminiClient extends BaseAsyncClient {
     protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
         String writeUrl = getWriteUrl(database, retentionPolicy);
         return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
+    }
+
+    /**
+     * Execute a write call with RPC client
+     *
+     * @param database the name of the database.
+     * @param points   the points to write.
+     */
+    @Override
+    protected CompletableFuture<Void> executeWriteByGrpc(String database, String measurement, List<Point> points) {
+        if (grpcClient == null) {
+            throw new IllegalStateException("RPC client not initialized");
+        }
+        return grpcClient.getWriteClient().writeRows(database, measurement, points);
     }
 
     /**
@@ -127,12 +145,15 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
-                           headers);
+                headers);
     }
 
     @Override
     public void close() throws IOException {
         this.client.close();
+        if (this.grpcClient != null) {
+            this.grpcClient.close();
+        }
     }
 
     @Override
