@@ -26,7 +26,6 @@ import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import io.opengemini.client.grpc.RpcClient;
-import io.opengemini.client.grpc.WriteRowsRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

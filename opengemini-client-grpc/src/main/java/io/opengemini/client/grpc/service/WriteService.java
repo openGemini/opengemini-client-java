@@ -18,7 +18,10 @@ package io.opengemini.client.grpc.service;
 
 import com.google.protobuf.ByteString;
 import io.opengemini.client.api.Point;
-import io.opengemini.client.grpc.*;
+import io.opengemini.client.grpc.Rows;
+import io.opengemini.client.grpc.RpcClientConnectionManager;
+import io.opengemini.client.grpc.VertxWriteServiceGrpc;
+import io.opengemini.client.grpc.WriteRowsRequest;
 import io.opengemini.client.grpc.record.ColVal;
 import io.opengemini.client.grpc.record.Field;
 import io.opengemini.client.grpc.record.Record;

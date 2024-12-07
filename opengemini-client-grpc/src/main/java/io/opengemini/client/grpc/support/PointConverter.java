@@ -23,7 +23,12 @@ import io.opengemini.client.grpc.record.ColVal;
 import io.opengemini.client.grpc.record.Field;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
 
 public final class PointConverter {
     private static final int BITS_PER_BYTE = 8;

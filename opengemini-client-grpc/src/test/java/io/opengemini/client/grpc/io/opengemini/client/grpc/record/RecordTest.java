@@ -1,6 +1,7 @@
 package io.opengemini.client.grpc.io.opengemini.client.grpc.record;
 
-import io.opengemini.client.grpc.record.*;
+import io.opengemini.client.grpc.record.ColVal;
+import io.opengemini.client.grpc.record.Field;
 import io.opengemini.client.grpc.record.Record;
 import org.junit.Before;
 import org.junit.Test;
