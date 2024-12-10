@@ -1,5 +1,5 @@
 syntax = "proto3";
-package write;
+package proto;
 option java_multiple_files = true;
 option java_package = "io.opengemini.client.grpc";
 option java_outer_classname = "WriteProto";
