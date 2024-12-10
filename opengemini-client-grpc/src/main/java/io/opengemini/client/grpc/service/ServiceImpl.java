@@ -14,32 +14,17 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.api;
+package io.opengemini.client.grpc.service;
 
-import io.github.openfacade.http.HttpClientConfig;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import io.opengemini.client.grpc.RpcClientConnectionManager;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.List;
-
-@Setter
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Configuration {
-    List<Address> addresses;
+public abstract class ServiceImpl {
+    private final RpcClientConnectionManager connectionManager;
 
-    AuthConfig authConfig;
+    protected ServiceImpl(final RpcClientConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
-    BatchConfig batchConfig;
-
-    boolean gzipEnabled;
-
-    HttpClientConfig httpConfig;
-
-    GrpcConfig rpcConfig;
 }
