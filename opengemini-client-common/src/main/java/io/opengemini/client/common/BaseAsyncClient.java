@@ -147,11 +147,11 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
     }
 
     @Override
-    public CompletableFuture<Void> writeByGrpc(String database, String measurement, List<Point> points) {
+    public CompletableFuture<Void> writeByGrpc(String database, List<Point> points) {
         if (points.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWriteByGrpc(database, measurement, points);
+        return executeWriteByGrpc(database, points);
     }
 
     private static String toLineProtocol(List<Point> points) {

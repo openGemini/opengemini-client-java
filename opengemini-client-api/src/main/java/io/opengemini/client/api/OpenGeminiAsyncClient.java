@@ -105,7 +105,7 @@ public interface OpenGeminiAsyncClient extends AutoCloseable {
      * @param database the name of the database.
      * @param points   the points to write.
      */
-    CompletableFuture<Void> writeByGrpc(String database, String measurement, List<Point> points);
+    CompletableFuture<Void> writeByGrpc(String database, List<Point> points);
 
     /**
      * Write points to the database.
