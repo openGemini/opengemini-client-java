@@ -54,6 +54,11 @@
             <version>${okhttp.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.opengemini</groupId>
+            <artifactId>opengemini-client-grpc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
