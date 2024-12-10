@@ -101,11 +101,11 @@ public class OpenGeminiClient extends BaseAsyncClient {
      * @param points   the points to write.
      */
     @Override
-    protected CompletableFuture<Void> executeWriteByGrpc(String database, String measurement, List<Point> points) {
+    protected CompletableFuture<Void> executeWriteByGrpc(String database, List<Point> points) {
         if (grpcClient == null) {
             throw new IllegalStateException("RPC client not initialized");
         }
-        return grpcClient.getWriteClient().writeRows(database, measurement, points);
+        return grpcClient.getWriteClient().writeRows(database, points);
     }
 
     /**

@@ -15,6 +15,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.AdditionalAnswers.delegatesTo;
@@ -31,10 +37,9 @@ public class GrpcClientTest {
     private final WriteServiceGrpc.WriteServiceImplBase serviceImpl = mock(WriteServiceGrpc.WriteServiceImplBase.class, delegatesTo(
             new WriteServiceGrpc.WriteServiceImplBase() {
                 @Override
-                public void writeRows(WriteRowsRequest request, StreamObserver<WriteRowsResponse> responseObserver) {
-                    responseObserver.onNext(WriteRowsResponse.newBuilder().setCode(ResponseCode.Success).build());
+                public void write(WriteRequest request, StreamObserver<WriteResponse> responseObserver) {
+                    responseObserver.onNext(WriteResponse.newBuilder().setCode(ResponseCode.Success).build());
                     responseObserver.onCompleted();
-
                 }
             }
     ));
@@ -61,19 +66,19 @@ public class GrpcClientTest {
 
     @Test
     void testWrite() throws ExecutionException, InterruptedException {
-        WriteRowsRequest request = WriteRowsRequest
+        WriteRequest request = WriteRequest
                 .newBuilder()
                 .setDatabase("test")
                 .setUsername("test")
                 .setPassword("test")
-                .setRows(Rows.newBuilder().build())
+                .addAllRecords(Collections.singletonList(Record.newBuilder().build()))
                 .build();
         grpcClient.getWriteClient().writeRows(request).get();
     }
 
     @Test
     void testWriteRows() throws ExecutionException, InterruptedException {
-        GrpcConfig config =  GrpcConfig
+        GrpcConfig config = GrpcConfig
                 .builder()
                 .host("127.0.0.1")
                 .port(8305)
@@ -92,6 +97,7 @@ public class GrpcClientTest {
 
         point1.setFields(fields1);
         point1.setTags(tags1);
+        point1.setMeasurement("test1");
 
         Point point2 = new Point();
         Map<String, Object> fields2 = new HashMap<>();
@@ -102,11 +108,12 @@ public class GrpcClientTest {
         point2.setFields(fields2);
         point2.setTags(tags2);
         point2.setTime((new Date().getTime() + 100) * 1_000_000);
+        point2.setMeasurement("test1");
         points.add(point1);
         points.add(point2);
 
 
-        grpcClient.getWriteClient().writeRows("test", "test1", points).get();
+        grpcClient.getWriteClient().writeRows("test", points).get();
     }
 
     @AfterEach

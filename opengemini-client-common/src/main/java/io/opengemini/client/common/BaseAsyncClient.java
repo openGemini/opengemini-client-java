@@ -206,7 +206,6 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
      * @param points       the points to write.
      */
     protected abstract CompletableFuture<Void> executeWriteByGrpc(String database,
-                                                                  String measurement,
                                                                   List<Point> points);
 
     /**

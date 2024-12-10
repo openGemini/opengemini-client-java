@@ -18,21 +18,18 @@ package io.opengemini.client.grpc.service;
 
 import com.google.protobuf.ByteString;
 import io.opengemini.client.api.Point;
-import io.opengemini.client.grpc.Rows;
 import io.opengemini.client.grpc.RpcClientConnectionManager;
 import io.opengemini.client.grpc.VertxWriteServiceGrpc;
-import io.opengemini.client.grpc.WriteRowsRequest;
+import io.opengemini.client.grpc.WriteRequest;
+import io.opengemini.client.grpc.Record;
 import io.opengemini.client.grpc.record.ColVal;
 import io.opengemini.client.grpc.record.Field;
-import io.opengemini.client.grpc.record.Record;
 import io.opengemini.client.grpc.support.PointConverter;
-import io.vertx.core.Future;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.LongSummaryStatistics;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class WriteService extends ServiceImpl {
     private final VertxWriteServiceGrpc.WriteServiceVertxStub stub;
@@ -42,49 +39,70 @@ public class WriteService extends ServiceImpl {
         this.stub = connectionManager.newStub(VertxWriteServiceGrpc::newVertxStub);
     }
 
-    public CompletableFuture<Void> writeRows(String database, String measurement, List<Point> points) {
+    public CompletableFuture<Void> writeRows(String database, List<Point> points) {
+        Map<String, List<Point>> measurementPoints = points.stream()
+                .collect(Collectors.groupingBy(
+                        Point::getMeasurement,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    list.sort(Comparator.comparingLong(Point::getTime));
+                                    return list;
+                                }
+                        )
+                ));
 
-        LongSummaryStatistics stats = points.stream().mapToLong(Point::getTime).summaryStatistics();
-        Rows.Builder rowsBuilder = Rows.newBuilder()
-                .setMinTime(stats.getMin())
-                .setMaxTime(stats.getMax());
-
-        rowsBuilder.setMeasurement(measurement);
-        populateBlock(rowsBuilder, points);
+        List<Record> records = buildRecords(measurementPoints);
 
         String username = getConnectionManager().getConfig().getUsername();
         String password = getConnectionManager().getConfig().getPassword();
 
-        WriteRowsRequest request = WriteRowsRequest
+
+        WriteRequest writeRequest = WriteRequest
                 .newBuilder()
                 .setDatabase(Objects.requireNonNull(database))
                 .setUsername(username == null ? "" : username)
                 .setPassword(password == null ? "" : password)
-                .setRows(rowsBuilder.build())
+                .addAllRecords(records)
                 .build();
-        return writeRows(request);
+
+        return writeRows(writeRequest);
     }
 
-    private void populateBlock(Rows.Builder builder, List<Point> points) {
+    private List<Record> buildRecords(Map<String, List<Point>> measurementPoints) {
+        List<io.opengemini.client.grpc.Record> records = new ArrayList<>(measurementPoints.size());
+        measurementPoints.forEach((measurement, points) -> {
+            if (measurement != null && !measurement.isEmpty()) {
+                try {
+                    records.add(buildRecord(measurement, points));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        return records;
+    }
 
+    private Record buildRecord(String measurement, List<Point> points) throws IOException {
         List<Field> schemas = PointConverter.extractSchema(points);
         List<ColVal> colVals = PointConverter.extractColVals(points, schemas);
-
-        Record record = new Record();
+        io.opengemini.client.grpc.record.Record record = new io.opengemini.client.grpc.record.Record();
         record.setSchema(schemas.toArray(new Field[0]));
         record.setColVals(colVals.toArray(new ColVal[0]));
 
-        try {
-            builder.setBlock(ByteString.copyFrom(record.marshal()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Record
+                .newBuilder()
+                .setMinTime(points.get(0).getTime())
+                .setMaxTime(points.get(points.size() - 1).getTime())
+                .setMeasurement(measurement)
+                .setBlock(ByteString.copyFrom(record.marshal()))
+                .build();
     }
 
 
-    public CompletableFuture<Void> writeRows(WriteRowsRequest writeRowsRequest) {
+    public CompletableFuture<Void> writeRows(WriteRequest writeRequest) {
         CompletableFuture<Void> resultFuture = new CompletableFuture<>();
-        stub.writeRows(writeRowsRequest)
+        stub.write(writeRequest)
                 .onComplete(ar -> {
                     if (ar.succeeded()) {
                         resultFuture.complete(null);

@@ -3,34 +3,37 @@ package write;
 option java_multiple_files = true;
 option java_package = "io.opengemini.client.grpc";
 option java_outer_classname = "WriteProto";
-
+// WriteService represents a openGemini RPC write service.
 service WriteService {
-  rpc WriteRows (WriteRowsRequest) returns (WriteRowsResponse) {}
+  // Write writes the given records to the specified database and retention policy.
+  rpc Write (WriteRequest) returns (WriteResponse) {}
+  // Ping is used to check if the server is alive
+  rpc Ping(PingRequest) returns (PingResponse) {}
 }
 
-message WriteRowsRequest {
+
+message WriteRequest {
   uint32 version = 1;
   string database = 2;
-  string rp = 3;
+  string retention_policy = 3;
   string username = 4;
   string password = 5;
-  Rows rows = 6;
+  repeated Record records = 6;
 }
 
-message WriteRowsResponse {
+message WriteResponse {
   ResponseCode code = 1;
-  string error = 2;
 }
 
-message Rows {
+message Record {
   string measurement = 1;
   int64 min_time = 2;
   int64 max_time = 3;
-  CompressAlgo compress_algo = 4; // compression algorithm for block
+  CompressMethod compress_method = 4;
   bytes block = 5;
 }
 
-enum CompressAlgo {
+enum CompressMethod {
   UNCOMPRESSED = 0;
   LZ4_FAST = 1;
   ZSTD_FAST = 2;
@@ -41,4 +44,18 @@ enum ResponseCode {
   Success = 0;
   Partial = 1;
   Failed = 2;
+}
+
+message PingRequest {
+  string client_id = 1;
+}
+
+enum ServerStatus {
+  Up = 0;
+  Down = 1;
+  Unknown = 99;
+}
+
+message PingResponse {
+  ServerStatus status = 1;
 }
