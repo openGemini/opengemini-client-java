@@ -75,6 +75,8 @@
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
+        <maven-protobuf-maven-plugin>0.6.1</maven-protobuf-maven-plugin>
+        <maven-os-maven-plugin.version>1.7.1</maven-os-maven-plugin.version>
         <nexus-staging-plugin.version>1.6.13</nexus-staging-plugin.version>
         <scala-maven-plugin.version>4.9.2</scala-maven-plugin.version>
         <spotbugs-maven-plugin.version>4.8.6.4</spotbugs-maven-plugin.version>
@@ -159,6 +161,13 @@
 
     <build>
         <sourceDirectory>${src.dir}</sourceDirectory>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${maven-os-maven-plugin.version}</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -176,6 +185,40 @@
                                     <version>${maven-enforce-plugin-maven.version}</version>
                                 </requireMavenVersion>
                             </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>${maven-protobuf-maven-plugin}</version>
+                <configuration>
+                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+                </configuration>
+                <executions>
+                    <!-- Execution for grpc-java -->
+                    <execution>
+                        <id>grpc-java</id>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compile-custom</goal>
+                        </goals>
+                        <configuration>
+                            <pluginId>grpc-java</pluginId>
+                            <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+                        </configuration>
+                    </execution>
+                    <!-- Execution for grpc-vertx -->
+                    <execution>
+                        <id>vertx-grpc</id>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compile-custom</goal>
+                        </goals>
+                        <configuration>
+                            <pluginId>grpc-vertx</pluginId>
+                            <pluginArtifact>io.vertx:vertx-grpc-protoc-plugin:${vertx-grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                         </configuration>
                     </execution>
                 </executions>
