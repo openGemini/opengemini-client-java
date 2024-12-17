@@ -32,6 +32,7 @@ import io.opengemini.client.api.Point;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.impl.grpc.GrpcClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
     protected final Configuration conf;
 
     private final HttpClient client;
+    private final GrpcClient grpcClient;
 
     public OpenGeminiClient(@NotNull Configuration conf) {
         super(conf);
@@ -55,6 +57,11 @@ public class OpenGeminiClient extends BaseAsyncClient {
                     new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
+        if (conf.getRpcConfig() != null) {
+            grpcClient = GrpcClient.create(conf.getRpcConfig());
+        } else {
+            grpcClient = null;
+        }
     }
 
     /**
