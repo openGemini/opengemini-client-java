@@ -14,52 +14,32 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.record;
+package io.opengemini.client.impl.grpc.record;
 
-import io.opengemini.client.grpc.support.Encoder;
+import io.opengemini.client.impl.grpc.support.Encoder;
 import lombok.Data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Data
-public class ColVal {
-    private byte[] val;
-    private int[] offset;
-    private byte[] bitmap;
-    private int bitMapOffset;
-    private int len;
-    private int nilCount;
+public class Field {
+    private int type;
+    private String name;
 
     public byte[] marshal() throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
-            
-            dos.writeLong(Encoder.encodeZigZag64(len));
-            dos.writeLong(Encoder.encodeZigZag64(nilCount));
-            dos.writeLong(Encoder.encodeZigZag64(bitMapOffset));
 
-            dos.writeInt(val != null ? val.length : 0);
-            if (val != null) {
-                dos.write(val);
-            }
+            byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
+            dos.writeShort(name.length());
+            dos.write(nameBytes);
 
-            dos.writeInt(bitmap != null ? bitmap.length : 0);
-            if (bitmap != null) {
-                dos.write(bitmap);
-            }
-
-            dos.writeInt(offset != null ? offset.length : 0);
-            if (offset != null) {
-                for (int off : offset) {
-                    dos.writeInt(off);
-                }
-            }
-
+            dos.writeLong(Encoder.encodeZigZag64(type));
             dos.flush();
             return baos.toByteArray();
         }
     }
-
 }

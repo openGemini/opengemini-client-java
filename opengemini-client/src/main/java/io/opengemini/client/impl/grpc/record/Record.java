@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.record;
+package io.opengemini.client.impl.grpc.record;
 
 import lombok.Data;
 

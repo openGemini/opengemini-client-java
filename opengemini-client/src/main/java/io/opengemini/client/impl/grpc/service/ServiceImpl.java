@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.service;
+package io.opengemini.client.impl.grpc.service;
 
-import io.opengemini.client.grpc.RpcClientConnectionManager;
+import io.opengemini.client.impl.grpc.RpcClientConnectionManager;
 import lombok.Getter;
 
 @Getter

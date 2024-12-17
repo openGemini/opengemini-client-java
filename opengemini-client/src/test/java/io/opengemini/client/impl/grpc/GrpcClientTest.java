@@ -1,9 +1,14 @@
-package io.opengemini.client.grpc;
+package io.opengemini.client.impl.grpc;
 
 import io.grpc.Server;
 import io.grpc.stub.StreamObserver;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.GrpcConfig;
+import io.opengemini.client.grpc.Record;
+import io.opengemini.client.grpc.ResponseCode;
+import io.opengemini.client.grpc.WriteRequest;
+import io.opengemini.client.grpc.WriteResponse;
+import io.opengemini.client.grpc.WriteServiceGrpc;
 import io.vertx.core.Vertx;
 import io.vertx.grpc.VertxServerBuilder;
 import io.vertx.junit5.VertxExtension;
@@ -13,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -34,7 +40,7 @@ public class GrpcClientTest {
     private Server server;
 
 
-    private final WriteServiceGrpc.WriteServiceImplBase serviceImpl = mock(WriteServiceGrpc.WriteServiceImplBase.class, delegatesTo(
+    private final WriteServiceGrpc.WriteServiceImplBase serviceImpl = Mockito.mock(WriteServiceGrpc.WriteServiceImplBase.class, delegatesTo(
             new WriteServiceGrpc.WriteServiceImplBase() {
                 @Override
                 public void write(WriteRequest request, StreamObserver<WriteResponse> responseObserver) {
@@ -80,7 +86,7 @@ public class GrpcClientTest {
     void testWriteRows() throws ExecutionException, InterruptedException {
         GrpcConfig config = GrpcConfig
                 .builder()
-                .host("127.0.0.1")
+                .host("192.168.66.29")
                 .port(8305)
                 .build();
         GrpcClient grpcClient = GrpcClient.create(config);

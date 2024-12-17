@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.service;
+package io.opengemini.client.impl.grpc.service;
 
 import com.google.protobuf.ByteString;
 import io.opengemini.client.api.Point;
-import io.opengemini.client.grpc.RpcClientConnectionManager;
+import io.opengemini.client.impl.grpc.RpcClientConnectionManager;
 import io.opengemini.client.grpc.VertxWriteServiceGrpc;
 import io.opengemini.client.grpc.WriteRequest;
 import io.opengemini.client.grpc.Record;
-import io.opengemini.client.grpc.record.ColVal;
-import io.opengemini.client.grpc.record.Field;
-import io.opengemini.client.grpc.support.PointConverter;
+import io.opengemini.client.impl.grpc.record.ColVal;
+import io.opengemini.client.impl.grpc.record.Field;
+import io.opengemini.client.impl.grpc.support.PointConverter;
 
 import java.io.IOException;
 import java.util.*;
@@ -86,7 +86,7 @@ public class WriteService extends ServiceImpl {
     private Record buildRecord(String measurement, List<Point> points) throws IOException {
         List<Field> schemas = PointConverter.extractSchema(points);
         List<ColVal> colVals = PointConverter.extractColVals(points, schemas);
-        io.opengemini.client.grpc.record.Record record = new io.opengemini.client.grpc.record.Record();
+        io.opengemini.client.impl.grpc.record.Record record = new io.opengemini.client.impl.grpc.record.Record();
         record.setSchema(schemas.toArray(new Field[0]));
         record.setColVals(colVals.toArray(new ColVal[0]));
 

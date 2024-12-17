@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.support;
+package io.opengemini.client.impl.grpc.support;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.opengemini.client.api.Point;
-import io.opengemini.client.grpc.record.ColVal;
-import io.opengemini.client.grpc.record.Field;
+import io.opengemini.client.impl.grpc.record.ColVal;
+import io.opengemini.client.impl.grpc.record.Field;
 import lombok.Getter;
 
 import java.util.ArrayList;

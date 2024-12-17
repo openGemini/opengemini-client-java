@@ -25,7 +25,7 @@ import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
-import io.opengemini.client.grpc.GrpcClient;
+import io.opengemini.client.impl.grpc.GrpcClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

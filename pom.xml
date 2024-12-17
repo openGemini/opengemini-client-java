@@ -29,7 +29,6 @@
         <module>opengemini-client-common</module>
         <module>opengemini-client-reactor</module>
         <module>spring</module>
-        <module>opengemini-client-grpc</module>
     </modules>
 
     <properties>

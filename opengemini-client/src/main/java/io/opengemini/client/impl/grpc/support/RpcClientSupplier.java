@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.support;
+package io.opengemini.client.impl.grpc.support;
 
 import java.util.Objects;
 import java.util.function.Supplier;

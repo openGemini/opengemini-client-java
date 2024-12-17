@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc;
+package io.opengemini.client.impl.grpc;
 
 import io.opengemini.client.api.GrpcConfig;
-import io.opengemini.client.grpc.service.WriteService;
-import io.opengemini.client.grpc.support.RpcClientSupplier;
+import io.opengemini.client.impl.grpc.service.WriteService;
+import io.opengemini.client.impl.grpc.support.RpcClientSupplier;
 
 public class GrpcClient {
     private final GrpcConfig config;

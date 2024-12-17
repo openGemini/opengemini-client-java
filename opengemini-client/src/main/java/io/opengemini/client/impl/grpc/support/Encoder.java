@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc.support;
+package io.opengemini.client.impl.grpc.support;
 
 public class Encoder {
     public static long encodeZigZag64(long value) {

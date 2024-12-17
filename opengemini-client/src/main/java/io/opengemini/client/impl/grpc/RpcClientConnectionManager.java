@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.grpc;
+package io.opengemini.client.impl.grpc;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
