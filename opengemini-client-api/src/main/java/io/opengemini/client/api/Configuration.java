@@ -40,4 +40,6 @@ public class Configuration {
     boolean gzipEnabled;
 
     HttpClientConfig httpConfig;
+
+    GrpcConfig rpcConfig;
 }
