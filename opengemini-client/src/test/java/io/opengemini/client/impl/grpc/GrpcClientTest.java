@@ -86,7 +86,7 @@ public class GrpcClientTest {
     void testWriteRows() throws ExecutionException, InterruptedException {
         GrpcConfig config = GrpcConfig
                 .builder()
-                .host("192.168.66.29")
+                .host("127.0.0.1")
                 .port(8305)
                 .build();
         GrpcClient grpcClient = GrpcClient.create(config);
