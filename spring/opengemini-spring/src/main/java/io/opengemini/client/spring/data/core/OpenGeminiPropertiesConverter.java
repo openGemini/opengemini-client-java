@@ -83,7 +83,7 @@ public class OpenGeminiPropertiesConverter {
         HttpClientConfig.Builder builder = new HttpClientConfig.Builder();
         builder.engine(http.getEngine());
         builder.timeout(http.getTimeout());
-        builder.timeout(http.getTimeout());
+        builder.connectTimeout(http.getConnectTimeout());
         Optional.ofNullable(http.getSsl()).map(this::toTlsConfig).ifPresent(builder::tlsConfig);
         Optional.ofNullable(http.getOkHttp()).map(this::toOkHttpConfig).ifPresent(builder::okHttpConfig);
         return builder.build();
