@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class WriteGrpcService extends GrpcService {
-    protected WriteGrpcService(GrpcClientConnectionManager connectionManager) {
+    public WriteGrpcService(GrpcClientConnectionManager connectionManager) {
         super(connectionManager);
     }
 
