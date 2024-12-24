@@ -21,13 +21,7 @@ import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
-import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
-import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Pong;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
@@ -35,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -88,6 +83,11 @@ public class OpenGeminiClient extends BaseAsyncClient {
     protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
         String writeUrl = getWriteUrl(database, retentionPolicy);
         return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
+    }
+
+    @Override
+    protected CompletableFuture<Void> executeWriteByGrpc(String database, List<Point> points) {
+        return null;
     }
 
     /**
