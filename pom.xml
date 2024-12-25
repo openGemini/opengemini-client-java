@@ -59,7 +59,7 @@
         <scala.version>3.4.0</scala.version>
         <slf4j.version>2.0.7</slf4j.version>
         <spring.version>6.0.19</spring.version>
-        <spring-boot.version>3.1.11</spring-boot.version>
+        <spring-boot.version>3.2.9</spring-boot.version>
         <vertx.version>4.5.10</vertx.version>
         <!-- plugin -->
         <central-publishing-maven-plugin.version>0.6.0</central-publishing-maven-plugin.version>
