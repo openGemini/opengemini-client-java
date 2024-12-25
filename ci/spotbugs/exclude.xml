@@ -41,5 +41,8 @@
     <Match>
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
-
+    <!-- Exclude gRPC auto-generated classes -->
+    <Match>
+        <Package name="io.opengemini.client.proto"/>
+    </Match>
 </FindBugsFilter>

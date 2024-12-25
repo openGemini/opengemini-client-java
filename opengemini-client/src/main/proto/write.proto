@@ -1,7 +1,7 @@
 syntax = "proto3";
 package proto;
 option java_multiple_files = true;
-option java_package = "io.opengemini.client.grpc";
+option java_package = "io.opengemini.client.proto";
 option java_outer_classname = "WriteProto";
 
 // WriteService represents a openGemini RPC write service.
