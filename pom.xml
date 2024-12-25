@@ -60,7 +60,7 @@
         <slf4j.version>2.0.7</slf4j.version>
         <spring.version>6.0.19</spring.version>
         <spring-boot.version>3.1.11</spring-boot.version>
-        <vertx-grpc.version>4.5.10</vertx-grpc.version>
+        <vertx.version>4.5.10</vertx.version>
         <!-- plugin -->
         <central-publishing-maven-plugin.version>0.6.0</central-publishing-maven-plugin.version>
         <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
@@ -220,7 +220,7 @@
                         <configuration>
                             <pluginId>grpc-vertx</pluginId>
                             <pluginArtifact>
-                                io.vertx:vertx-grpc-protoc-plugin:${vertx-grpc.version}:exe:${os.detected.classifier}
+                                io.vertx:vertx-grpc-protoc-plugin:${vertx.version}:exe:${os.detected.classifier}
                             </pluginArtifact>
                         </configuration>
                     </execution>

@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-grpc</artifactId>
-            <version>${vertx-grpc.version}</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-junit5</artifactId>
-            <version>${vertx-grpc.version}</version>
+            <version>${vertx.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
