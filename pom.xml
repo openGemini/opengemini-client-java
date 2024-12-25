@@ -210,7 +210,7 @@
                             </pluginArtifact>
                         </configuration>
                     </execution>
-                    <!-- Execution for grpc-vertx -->
+                    <!-- Execution for vertx-grpc -->
                     <execution>
                         <id>vertx-grpc</id>
                         <goals>
