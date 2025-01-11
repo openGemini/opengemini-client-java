@@ -101,7 +101,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
                 .orElse(null)).thenApply(Pong::new);
     }
 
-    private <T> @NotNull CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
+    private @NotNull <T> CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             try {
                 T resp = JacksonService.toObject(response.body(), type);
