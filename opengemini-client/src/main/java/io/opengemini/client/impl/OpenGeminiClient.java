@@ -104,7 +104,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
     private <T> @NotNull CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             try {
-                T resp = JacksonService.toObject(response.body(), type);
+                T resp = processResponseBody(response, type);
                 return CompletableFuture.completedFuture(resp);
             } catch (IOException e) {
                 CompletableFuture<T> future = new CompletableFuture<>();
@@ -119,6 +119,25 @@ public class OpenGeminiClient extends BaseAsyncClient {
             future.completeExceptionally(openGeminiException);
             return future;
         }
+    }
+
+    private <T> T processResponseBody(HttpResponse response, Class<T> type) throws IOException {
+        String contentType = response.headers().get("Content-Type").get(0);
+        byte[] body = response.body();
+        if (contentType.contains("application/x-gzip")) {
+            // Handle gzip content type
+//            body = GzipService.decompress(body);
+        }
+
+        if (contentType.contains("application/msgpack")) {
+            // Handle msgpack content type
+            //return MsgPackService.toObject(body, type);
+        } else if (contentType.contains("application/json")) {
+            // Handle JSON content type
+            return JacksonService.toObject(body, type);
+        }
+            // Default handling
+            return JacksonService.toObject(body, type);
     }
 
     public CompletableFuture<HttpResponse> get(String url) {

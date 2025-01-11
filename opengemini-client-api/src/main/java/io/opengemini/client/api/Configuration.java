@@ -37,6 +37,11 @@ public class Configuration {
 
     BatchConfig batchConfig;
 
+    ContentType contentType;
+
+    CompressMethod compressMethod;
+
+   // deprecated
     boolean gzipEnabled;
 
     HttpClientConfig httpConfig;
