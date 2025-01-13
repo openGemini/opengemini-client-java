@@ -41,7 +41,7 @@ public class Configuration {
 
     CompressMethod compressMethod;
 
-   // deprecated
+   // deprecated, will use compressMethod and contentType
     boolean gzipEnabled;
 
     HttpClientConfig httpConfig;

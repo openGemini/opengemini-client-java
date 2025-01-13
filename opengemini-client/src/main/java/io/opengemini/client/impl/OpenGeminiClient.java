@@ -16,21 +16,19 @@
 
 package io.opengemini.client.impl;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import io.github.openfacade.http.BasicAuthRequestFilter;
 import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
-import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
-import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Pong;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
+import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.common.compress.GzipCompressor;
+import io.opengemini.client.common.compress.SnappyCompressor;
+import io.opengemini.client.common.compress.ZstdCompressor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -122,22 +120,37 @@ public class OpenGeminiClient extends BaseAsyncClient {
     }
 
     private <T> T processResponseBody(HttpResponse response, Class<T> type) throws IOException {
-        String contentType = response.headers().get("Content-Type").get(0);
-        byte[] body = response.body();
-        if (contentType.contains("application/x-gzip")) {
-            // Handle gzip content type
-//            body = GzipService.decompress(body);
+        String contentType = response.headers().get("Content-Type") != null ? response.headers().get("Content-Type").get(0) : null;
+        String contentEncoding = response.headers().get("Content-Encoding") != null ? response.headers().get("Content-Encoding").get(0) : null;
+        byte[] body = processCompression(contentEncoding, response.body(), type);
+
+       return processContentType(contentType, body, type);
+    }
+
+    private <T>  byte[] processCompression(String compressMethod, byte[] body,  Class<T> type ) throws IOException {
+        byte[] decompressedBody = null;
+        if (CompressMethod.GZIP.getValue().equals(compressMethod)) {
+             GzipCompressor compressor = new GzipCompressor();
+            decompressedBody = compressor.decompress(body);
+        } else if (CompressMethod.SNAPPY.getValue().equals(compressMethod)) {
+            SnappyCompressor compressor = new SnappyCompressor();
+            decompressedBody = compressor.decompress(body);
+
+        } else if (CompressMethod.ZSTD.getValue().equals(compressMethod)) {
+            ZstdCompressor compressor = new ZstdCompressor();
+            decompressedBody = compressor.decompress(body);
         }
 
-        if (contentType.contains("application/msgpack")) {
-            // Handle msgpack content type
-            //return MsgPackService.toObject(body, type);
-        } else if (contentType.contains("application/json")) {
-            // Handle JSON content type
+        return decompressedBody != null ? decompressedBody : body;
+    }
+
+    private <T> T processContentType(String contentType, byte[] body,  Class<T> type) throws IOException {
+        if (ContentType.JSON.getValue().equals(contentType)) {
             return JacksonService.toObject(body, type);
+        } else if (ContentType.MSGPACK.getValue().equals(contentType)) {
+            throw new IOException("Unsupported content type: " + contentType);
         }
-            // Default handling
-            return JacksonService.toObject(body, type);
+        return JacksonService.toObject(body, type);
     }
 
     public CompletableFuture<HttpResponse> get(String url) {

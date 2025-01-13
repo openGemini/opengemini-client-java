@@ -18,14 +18,7 @@ package io.opengemini.client.impl;
 
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientEngine;
-import io.opengemini.client.api.Address;
-import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Point;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.RpConfig;
-import io.opengemini.client.api.Series;
+import io.opengemini.client.api.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
@@ -61,6 +54,21 @@ class OpenGeminiClientWriteTest extends TestBase {
             Configuration configuration = Configuration.builder()
                     .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
                     .httpConfig(httpConfig)
+                    .build();
+            clients.add(OpenGeminiClientFactory.create(configuration));
+        }
+
+        List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.GZIP, CompressMethod.ZSTD, CompressMethod.SNAPPY);
+        for (CompressMethod compressMethod : compressMethods) {
+            HttpClientConfig httpConfig = new HttpClientConfig.Builder()
+                    .engine(HttpClientEngine.AsyncHttpClient)
+                    .connectTimeout(Duration.ofSeconds(3))
+                    .timeout(Duration.ofSeconds(3))
+                    .build();
+            Configuration configuration = Configuration.builder()
+                    .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                    .httpConfig(httpConfig)
+                    .compressMethod(compressMethod)
                     .build();
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
