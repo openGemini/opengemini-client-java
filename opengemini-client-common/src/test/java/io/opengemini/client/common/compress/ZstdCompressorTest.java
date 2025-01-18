@@ -16,9 +16,8 @@
 
 package io.opengemini.client.common.compress;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class ZstdCompressorTest {
 
@@ -36,6 +35,6 @@ public class ZstdCompressorTest {
         byte[] decompressedData = zstdCompressor.decompress(compressedData);
 
         // Verify the decompressed data matches the original input
-        assertArrayEquals(inputData, decompressedData);
+        Assertions.assertArrayEquals(inputData, decompressedData);
     }
 }

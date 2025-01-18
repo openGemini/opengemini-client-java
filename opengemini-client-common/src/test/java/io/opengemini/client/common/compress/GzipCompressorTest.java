@@ -16,12 +16,8 @@
 
 package io.opengemini.client.common.compress;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class GzipCompressorTest {
 
@@ -34,16 +30,16 @@ class GzipCompressorTest {
 
         // Compress the data
         byte[] compressedData = gzipCompressor.compress(originalData);
-        assertNotNull(compressedData);
-        assertNotEquals(0, compressedData.length);
+        Assertions.assertNotNull(compressedData);
+        Assertions.assertNotEquals(0, compressedData.length);
 
         // Decompress the data
         byte[] decompressedData = gzipCompressor.decompress(compressedData);
-        assertNotNull(decompressedData);
-        assertArrayEquals(originalData, decompressedData);
+        Assertions.assertNotNull(decompressedData);
+        Assertions. assertArrayEquals(originalData, decompressedData);
 
         // Verify the decompressed string is the same as the original
         String decompressedString = new String(decompressedData);
-        assertEquals(originalString, decompressedString);
+        Assertions.assertEquals(originalString, decompressedString);
     }
 }
