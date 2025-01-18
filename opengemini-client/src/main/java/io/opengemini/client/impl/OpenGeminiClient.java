@@ -21,7 +21,15 @@ import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
-import io.opengemini.client.api.*;
+import io.opengemini.client.api.AuthConfig;
+import io.opengemini.client.api.AuthType;
+import io.opengemini.client.api.CompressMethod;
+import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.ContentType;
+import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Pong;
+import io.opengemini.client.api.Query;
+import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
@@ -119,14 +127,16 @@ public class OpenGeminiClient extends BaseAsyncClient {
     }
 
     private <T> T processResponseBody(HttpResponse response, Class<T> type) throws IOException {
-        String contentType = response.headers().get("Content-Type") != null ? response.headers().get("Content-Type").get(0) : null;
-        String contentEncoding = response.headers().get("Content-Encoding") != null ? response.headers().get("Content-Encoding").get(0) : null;
+        String contentType = response.headers().get("Content-Type") != null
+                ? response.headers().get("Content-Type").get(0) : null;
+        String contentEncoding = response.headers().get("Content-Encoding") != null
+                ? response.headers().get("Content-Encoding").get(0) : null;
         byte[] body = processCompression(contentEncoding, response.body(), type);
 
        return processContentType(contentType, body, type);
     }
 
-    private <T>  byte[] processCompression(String compressMethod, byte[] body,  Class<T> type ) throws IOException {
+    private <T>  byte[] processCompression(String compressMethod, byte[] body,  Class<T> type) throws IOException {
         byte[] decompressedBody = null;
         if (CompressMethod.GZIP.getValue().equals(compressMethod)) {
              GzipCompressor compressor = new GzipCompressor();
