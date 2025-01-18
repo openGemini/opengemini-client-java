@@ -93,7 +93,7 @@ public abstract class BaseClient implements Closeable {
             }
         headers.put("Accept", acceptHeader);
         }
-        if(config.getCompressMethod() != null) {
+        if (config.getCompressMethod() != null) {
             List<String> acceptEncodingHeader = new ArrayList<>();
             switch (config.getCompressMethod()) {
                 case GZIP:
