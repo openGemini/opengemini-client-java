@@ -16,8 +16,8 @@
 
 package io.opengemini.client.common.compress;
 
-import io.opengemini.client.api.CompressMethod;
 import com.github.luben.zstd.Zstd;
+import io.opengemini.client.api.CompressMethod;
 
 public class ZstdCompressor implements Compressor {
 
