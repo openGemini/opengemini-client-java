@@ -36,7 +36,7 @@ class GzipCompressorTest {
         // Decompress the data
         byte[] decompressedData = gzipCompressor.decompress(compressedData);
         Assertions.assertNotNull(decompressedData);
-        Assertions. assertArrayEquals(originalData, decompressedData);
+        Assertions.assertArrayEquals(originalData, decompressedData);
 
         // Verify the decompressed string is the same as the original
         String decompressedString = new String(decompressedData);
