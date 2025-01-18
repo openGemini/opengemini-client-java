@@ -81,31 +81,33 @@ public abstract class BaseClient implements Closeable {
     }
 
     private void applyCodec(Configuration config, Map<String, List<String>> headers) {
-
-        List<String> acceptHeader = new ArrayList<>();
-        switch (config.getContentType()) {
-            case MSGPACK:
-                acceptHeader.add("application/msgpack");
-                break;
-            case JSON:
-                acceptHeader.add("application/json");
-                break;
-        }
+        if (config.getContentType() != null) {
+            List<String> acceptHeader = new ArrayList<>();
+            switch (config.getContentType()) {
+                case MSGPACK:
+                    acceptHeader.add("application/msgpack");
+                    break;
+                case JSON:
+                    acceptHeader.add("application/json");
+                    break;
+            }
         headers.put("Accept", acceptHeader);
-
-        List<String> acceptEncodingHeader = new ArrayList<>();
-        switch (config.getCompressMethod()) {
-            case GZIP:
-                acceptEncodingHeader.add("gzip");
-                break;
-            case ZSTD:
-                acceptEncodingHeader.add("zstd");
-                break;
-            case SNAPPY:
-                acceptEncodingHeader.add("snappy");
-                break;
         }
-        headers.put("Accept-Encoding", acceptEncodingHeader);
+        if(config.getCompressMethod() != null) {
+            List<String> acceptEncodingHeader = new ArrayList<>();
+            switch (config.getCompressMethod()) {
+                case GZIP:
+                    acceptEncodingHeader.add("gzip");
+                    break;
+                case ZSTD:
+                    acceptEncodingHeader.add("zstd");
+                    break;
+                case SNAPPY:
+                    acceptEncodingHeader.add("snappy");
+                    break;
+            }
+            headers.put("Accept-Encoding", acceptEncodingHeader);
+        }
     }
 
     /**

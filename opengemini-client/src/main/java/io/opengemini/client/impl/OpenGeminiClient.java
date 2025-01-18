@@ -16,7 +16,6 @@
 
 package io.opengemini.client.impl;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import io.github.openfacade.http.BasicAuthRequestFilter;
 import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
