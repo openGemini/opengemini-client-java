@@ -56,7 +56,7 @@ public abstract class BaseClient implements Closeable {
             headers.put("Content-Encoding", contentEncodingHeader);
         }
 
-        applyCodec(conf);
+        applyCodec(conf, headers);
 
         String httpPrefix;
         if (conf.getHttpConfig().tlsConfig() != null) {
@@ -80,10 +80,7 @@ public abstract class BaseClient implements Closeable {
         scheduler.ifPresent(this::startHealthCheck);
     }
 
-    private void applyCodec(Configuration config) {
-        if (headers == null) {
-            throw new IllegalStateException("Headers map is not initialized");
-        }
+    private void applyCodec(Configuration config, Map<String, List<String>> headers) {
 
         List<String> acceptHeader = new ArrayList<>();
         switch (config.getContentType()) {
