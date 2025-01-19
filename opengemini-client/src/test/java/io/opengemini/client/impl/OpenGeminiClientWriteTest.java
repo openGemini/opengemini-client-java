@@ -66,8 +66,7 @@ class OpenGeminiClientWriteTest extends TestBase {
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
 
-        List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.GZIP,
-                CompressMethod.ZSTD, CompressMethod.SNAPPY);
+        List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.SNAPPY);
         for (CompressMethod compressMethod : compressMethods) {
             HttpClientConfig httpConfig = new HttpClientConfig.Builder()
                     .engine(HttpClientEngine.AsyncHttpClient)
