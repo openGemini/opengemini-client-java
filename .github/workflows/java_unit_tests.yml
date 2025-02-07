@@ -32,6 +32,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: setup OpenGemini
-        uses: shoothzj/setup-opengemini-action@main
+        uses: hezhangjian/setup-opengemini-action@main
       - name: unit tests
         run: mvn -B clean test
