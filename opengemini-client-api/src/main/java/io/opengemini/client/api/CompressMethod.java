@@ -16,33 +16,18 @@
 
 package io.opengemini.client.api;
 
-import io.github.openfacade.http.HttpClientConfig;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public enum CompressMethod {
+    GZIP("gzip"),
+    SNAPPY("snappy"),
+    ZSTD("zstd");
 
-import java.util.List;
+    private final String value;
 
-@Setter
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Configuration {
-    List<Address> addresses;
+    CompressMethod(String value) {
+        this.value = value;
+    }
 
-    AuthConfig authConfig;
-
-    BatchConfig batchConfig;
-
-    ContentType contentType;
-
-    CompressMethod compressMethod;
-
-   // deprecated, will use compressMethod and contentType
-    boolean gzipEnabled;
-
-    HttpClientConfig httpConfig;
+    public String getValue() {
+        return value;
+    }
 }
