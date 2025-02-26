@@ -47,9 +47,9 @@ class OpenGeminiClientWriteTest extends TestBase {
 
     protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
         List<HttpClientEngine> engines = new ArrayList<>();
-        engines.add(HttpClientEngine.AsyncHttpClient);
-        engines.add(HttpClientEngine.JAVA);
-        engines.add(HttpClientEngine.JAVA8);
+        engines.add(HttpClientEngine.Async);
+        engines.add(HttpClientEngine.Java);
+        engines.add(HttpClientEngine.Java8);
         engines.add(HttpClientEngine.OkHttp);
         List<OpenGeminiClient> clients = new ArrayList<>();
         for (HttpClientEngine engine : engines) {
@@ -58,10 +58,12 @@ class OpenGeminiClientWriteTest extends TestBase {
                     .connectTimeout(Duration.ofSeconds(3))
                     .timeout(Duration.ofSeconds(3))
                     .build();
-            Configuration configuration = Configuration.builder()
-                    .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
-                    .httpConfig(httpConfig)
-                    .build();
+            Configuration configuration =
+                Configuration.builder()
+                             .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                             .httpConfig(httpConfig)
+                             .gzipEnabled(false)
+                             .build();
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
         return clients;
