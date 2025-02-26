@@ -46,7 +46,7 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 
 ### HTTP 引擎选择
 
-默认情况下，客户端使用 JDK 自带的 HTTP 引擎，并根据 Java 版本自动选择合适的实现，支持 Java 8 和 Java 11+。如果有需要，你可以在 `HttpClientConfig` 中通过 `.engine` 选项配置不同的 HTTP 引擎。请注意，若选择不同的引擎，则需要手动添加相应的依赖。
+OpenGeminiClient利用 [http-façade](https://github.com/openfacade/http-façade) 支持了多个 [HTTP 引擎](https://github.com/openfacade/http-façade?tab=readme-ov-file#httpclient-support-engines)。默认情况下，客户端使用 JDK 自带的 HTTP 引擎，并根据 Java 版本自动选择合适的实现，支持 Java 8 和 Java 11+。如果有需要，你可以在 `HttpClientConfig` 中通过 `.engine` 选项配置不同的 HTTP 引擎。请注意，若选择不同的引擎，则需要手动添加相应的依赖。
 
 ## 快速上手
 
