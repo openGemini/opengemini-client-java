@@ -46,7 +46,7 @@ docker run -p 8086:8086 --name opengemini --rm opengeminidb/opengemini-server
 
 ### HTTP Engine Selection
 
-By default, the client uses the built-in HTTP engine provided by the JDK. It automatically selects the appropriate implementation based on the Java version, supporting both Java 8 and Java 11+. If needed, you can configure a different HTTP engine by specifying the `.engine` option in the `HttpClientConfig`. Please note, if a different engine is chosen, you will need to manually include the corresponding dependencies.
+OpenGeminiClient supports multiple [HTTP engines](https://github.com/openfacade/http-facade?tab=readme-ov-file#httpclient-support-engines) by leveraging [http-facade](https://github.com/openfacade/http-facade). By default, the client uses the built-in HTTP engine provided by the JDK. It automatically selects the appropriate implementation based on the Java version, supporting both Java 8 and Java 11+. If needed, you can configure a different HTTP engine by specifying the `.engine` option in the `HttpClientConfig`. Please note, if a different engine is chosen, you will need to manually include the corresponding dependencies.
 
 ## Quick Start
 
