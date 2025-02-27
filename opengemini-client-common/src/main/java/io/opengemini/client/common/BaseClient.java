@@ -55,6 +55,9 @@ public abstract class BaseClient implements Closeable {
             contentEncodingHeader.add("gzip");
             headers.put("Content-Encoding", contentEncodingHeader);
         }
+
+        applyCodec(conf, headers);
+
         String httpPrefix;
         if (conf.getHttpConfig().tlsConfig() != null) {
             httpPrefix = "https://";
@@ -75,6 +78,36 @@ public abstract class BaseClient implements Closeable {
             this.scheduler = Optional.empty();
         }
         scheduler.ifPresent(this::startHealthCheck);
+    }
+
+    private void applyCodec(Configuration config, Map<String, List<String>> headers) {
+        if (config.getContentType() != null) {
+            List<String> acceptHeader = new ArrayList<>();
+            switch (config.getContentType()) {
+                case MSGPACK:
+                    acceptHeader.add("application/msgpack");
+                    break;
+                case JSON:
+                    acceptHeader.add("application/json");
+                    break;
+            }
+        headers.put("Accept", acceptHeader);
+        }
+        if (config.getCompressMethod() != null) {
+            List<String> acceptEncodingHeader = new ArrayList<>();
+            switch (config.getCompressMethod()) {
+                case GZIP:
+                    acceptEncodingHeader.add("gzip");
+                    break;
+                case ZSTD:
+                    acceptEncodingHeader.add("zstd");
+                    break;
+                case SNAPPY:
+                    acceptEncodingHeader.add("snappy");
+                    break;
+            }
+            headers.put("Accept-Encoding", acceptEncodingHeader);
+        }
     }
 
     /**

@@ -23,7 +23,9 @@ import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
+import io.opengemini.client.api.CompressMethod;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.ContentType;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
@@ -31,6 +33,9 @@ import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.common.BaseAsyncClient;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.common.compress.GzipCompressor;
+import io.opengemini.client.common.compress.SnappyCompressor;
+import io.opengemini.client.common.compress.ZstdCompressor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -101,10 +106,10 @@ public class OpenGeminiClient extends BaseAsyncClient {
                 .orElse(null)).thenApply(Pong::new);
     }
 
-    private <T> @NotNull CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
+    private @NotNull <T> CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             try {
-                T resp = JacksonService.toObject(response.body(), type);
+                T resp = processResponseBody(response, type);
                 return CompletableFuture.completedFuture(resp);
             } catch (IOException e) {
                 CompletableFuture<T> future = new CompletableFuture<>();
@@ -119,6 +124,42 @@ public class OpenGeminiClient extends BaseAsyncClient {
             future.completeExceptionally(openGeminiException);
             return future;
         }
+    }
+
+    private <T> T processResponseBody(HttpResponse response, Class<T> type) throws IOException {
+        String contentType = response.headers().get("Content-Type") != null
+                ? response.headers().get("Content-Type").get(0) : null;
+        String contentEncoding = response.headers().get("Content-Encoding") != null
+                ? response.headers().get("Content-Encoding").get(0) : null;
+        byte[] body = processCompression(contentEncoding, response.body(), type);
+
+       return processContentType(contentType, body, type);
+    }
+
+    private <T>  byte[] processCompression(String compressMethod, byte[] body,  Class<T> type) throws IOException {
+        byte[] decompressedBody = null;
+        if (CompressMethod.GZIP.getValue().equals(compressMethod)) {
+             GzipCompressor compressor = new GzipCompressor();
+            decompressedBody = compressor.decompress(body);
+        } else if (CompressMethod.SNAPPY.getValue().equals(compressMethod)) {
+            SnappyCompressor compressor = new SnappyCompressor();
+            decompressedBody = compressor.decompress(body);
+
+        } else if (CompressMethod.ZSTD.getValue().equals(compressMethod)) {
+            ZstdCompressor compressor = new ZstdCompressor();
+            decompressedBody = compressor.decompress(body);
+        }
+
+        return decompressedBody != null ? decompressedBody : body;
+    }
+
+    private <T> T processContentType(String contentType, byte[] body,  Class<T> type) throws IOException {
+        if (ContentType.JSON.getValue().equals(contentType)) {
+            return JacksonService.toObject(body, type);
+        } else if (ContentType.MSGPACK.getValue().equals(contentType)) {
+            throw new IOException("Unsupported content type: " + contentType);
+        }
+        return JacksonService.toObject(body, type);
     }
 
     public CompletableFuture<HttpResponse> get(String url) {
