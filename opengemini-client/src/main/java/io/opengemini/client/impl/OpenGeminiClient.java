@@ -34,9 +34,9 @@ import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
