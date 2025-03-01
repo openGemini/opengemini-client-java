@@ -25,6 +25,7 @@ import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
@@ -33,6 +34,7 @@ import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -128,6 +130,17 @@ public class OpenGeminiClient extends BaseAsyncClient {
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
                            headers);
+    }
+
+    /**
+     * Execute a write call with java GRPC Client.
+     *
+     * @param database the name of the database.
+     * @param points   the points to write.
+     */
+    @Override
+    protected CompletableFuture<Void> executeWriteByGrpc(String database, List<Point> points) {
+        return null;
     }
 
     @Override
