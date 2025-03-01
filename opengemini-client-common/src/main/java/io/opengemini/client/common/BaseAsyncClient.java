@@ -154,6 +154,14 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
         return executeWrite(database, retentionPolicy, body);
     }
 
+    @Override
+    public CompletableFuture<Void> writeByGrpc(String database, List<Point> points) {
+        if (points.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWriteByGrpc(database, points);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -187,6 +195,14 @@ public abstract class BaseAsyncClient extends BaseClient implements OpenGeminiAs
                                                             String retentionPolicy,
                                                             String lineProtocol);
 
+    /**
+     * The implementation class needs to implement this method to execute a write operation via an RPC call.
+     *
+     * @param database the name of the database.
+     * @param points   the points to write.
+     */
+    protected abstract CompletableFuture<Void> executeWriteByGrpc(String database,
+                                                                  List<Point> points);
     /**
      * The implementation class needs to implement this method to execute a ping call.
      */
