@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.opengemini.client.impl;
 
 import io.github.openfacade.http.BasicAuthRequestFilter;
@@ -46,6 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class OpenGeminiClient extends BaseAsyncClient {
+
     protected final Configuration conf;
 
     private final HttpClient client;
@@ -88,9 +88,9 @@ public class OpenGeminiClient extends BaseAsyncClient {
     /**
      * Execute a write call with java HttpClient.
      *
-     * @param database        the name of the database.
+     * @param database the name of the database.
      * @param retentionPolicy the name of the retention policy.
-     * @param lineProtocol    the line protocol string to write.
+     * @param lineProtocol the line protocol string to write.
      */
     @Override
     protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
@@ -109,7 +109,8 @@ public class OpenGeminiClient extends BaseAsyncClient {
                 .orElse(null)).thenApply(Pong::new);
     }
 
-    private @NotNull <T> CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
+    private @NotNull
+    <T> CompletableFuture<T> convertResponse(HttpResponse response, Class<T> type) {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             try {
                 T resp = processResponseBody(response, type);
@@ -136,26 +137,32 @@ public class OpenGeminiClient extends BaseAsyncClient {
                 ? response.headers().get("Content-Encoding").get(0) : null;
         byte[] body = processCompression(contentEncoding, response.body(), type);
 
-       return processContentType(contentType, body, type);
+        return processContentType(contentType, body, type);
     }
 
     private <T> byte[] processCompression(String compressMethod, byte[] body, Class<T> type) throws IOException {
         byte[] decompressedBody = null;
         if (CompressMethod.GZIP.getValue().equals(compressMethod)) {
-            GzipCompressor compressor = (GzipCompressor) compressorCache.computeIfAbsent(CompressMethod.GZIP.getValue(), k -> new GzipCompressor());
+            GzipCompressor compressor = (GzipCompressor) compressorCache.computeIfAbsent(
+                    CompressMethod.GZIP.getValue(),
+                    k -> new GzipCompressor());
             decompressedBody = compressor.decompress(body);
         } else if (CompressMethod.SNAPPY.getValue().equals(compressMethod)) {
-            SnappyCompressor compressor = (SnappyCompressor) compressorCache.computeIfAbsent(CompressMethod.SNAPPY.getValue(), k -> new SnappyCompressor());
+            SnappyCompressor compressor = (SnappyCompressor) compressorCache.computeIfAbsent(
+                    CompressMethod.SNAPPY.getValue(),
+                    k -> new SnappyCompressor());
             decompressedBody = compressor.decompress(body);
         } else if (CompressMethod.ZSTD.getValue().equals(compressMethod)) {
-            ZstdCompressor compressor = (ZstdCompressor) compressorCache.computeIfAbsent(CompressMethod.ZSTD.getValue(), k -> new ZstdCompressor());
+            ZstdCompressor compressor = (ZstdCompressor) compressorCache.computeIfAbsent(
+                    CompressMethod.ZSTD.getValue(),
+                    k -> new ZstdCompressor());
             decompressedBody = compressor.decompress(body);
         }
 
         return decompressedBody != null ? decompressedBody : body;
     }
 
-    private <T> T processContentType(String contentType, byte[] body,  Class<T> type) throws IOException {
+    private <T> T processContentType(String contentType, byte[] body, Class<T> type) throws IOException {
         if (ContentType.JSON.getValue().equals(contentType)) {
             return JacksonService.toObject(body, type);
         } else if (ContentType.MSGPACK.getValue().equals(contentType)) {
@@ -170,7 +177,7 @@ public class OpenGeminiClient extends BaseAsyncClient {
 
     public CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
-                           headers);
+                headers);
     }
 
     @Override
