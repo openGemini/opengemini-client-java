@@ -69,12 +69,12 @@ class OpenGeminiClientTest extends TestBase {
                     .connectTimeout(Duration.ofSeconds(3))
                     .timeout(Duration.ofSeconds(3))
                     .build();
-            Configuration configuration
-                    = Configuration.builder()
-                            .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
-                            .httpConfig(httpConfig)
-                            .gzipEnabled(false)
-                            .build();
+            Configuration configuration = Configuration
+                    .builder()
+                    .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                    .httpConfig(httpConfig)
+                    .gzipEnabled(false)
+                    .build();
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
         List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.SNAPPY, CompressMethod.GZIP,
