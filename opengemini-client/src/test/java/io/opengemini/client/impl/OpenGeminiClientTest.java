@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.opengemini.client.impl;
 
 import io.github.openfacade.http.HttpClientConfig;
@@ -54,6 +53,7 @@ import java.util.concurrent.ExecutionException;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OpenGeminiClientTest extends TestBase {
+
     private final List<OpenGeminiClient> clients = new ArrayList<>();
 
     protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
@@ -69,19 +69,19 @@ class OpenGeminiClientTest extends TestBase {
                     .connectTimeout(Duration.ofSeconds(3))
                     .timeout(Duration.ofSeconds(3))
                     .build();
-            Configuration configuration =
-                Configuration.builder()
-                             .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
-                             .httpConfig(httpConfig)
-                             .gzipEnabled(false)
-                             .build();
+            Configuration configuration
+                    = Configuration.builder()
+                            .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                            .httpConfig(httpConfig)
+                            .gzipEnabled(false)
+                            .build();
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
         List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.SNAPPY, CompressMethod.GZIP,
                 CompressMethod.ZSTD);
         for (CompressMethod compressMethod : compressMethods) {
             HttpClientConfig httpConfig = new HttpClientConfig.Builder()
-                    .engine(HttpClientEngine.AsyncHttpClient)
+                    .engine(HttpClientEngine.Async)
                     .connectTimeout(Duration.ofSeconds(3))
                     .timeout(Duration.ofSeconds(3))
                     .build();
