@@ -14,35 +14,13 @@
  * limitations under the License.
  */
 
-package io.opengemini.client.api;
+package io.opengemini.client.common.compress;
 
-import io.github.openfacade.http.HttpClientConfig;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public interface Compressor {
 
-import java.util.List;
+        byte[] compress(byte[] data);
 
-@Setter
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Configuration {
-    List<Address> addresses;
+        byte[] decompress(byte[] data);
 
-    AuthConfig authConfig;
-
-    BatchConfig batchConfig;
-
-    ContentType contentType;
-
-    CompressMethod compressMethod;
-
-   // deprecated, will use compressMethod and contentType
-    boolean gzipEnabled;
-
-    HttpClientConfig httpConfig;
+        String getName();
 }

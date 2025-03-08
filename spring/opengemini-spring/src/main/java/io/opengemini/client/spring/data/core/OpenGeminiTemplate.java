@@ -120,7 +120,7 @@ public class OpenGeminiTemplate implements OpenGeminiOperations {
     }
 
     @SuppressWarnings("unchecked")
-    private @NotNull <T> MeasurementOperations<T> getMeasurementOperations(MeasurementOperationsCacheKey key) {
+    private  @NotNull <T> MeasurementOperations<T> getMeasurementOperations(MeasurementOperationsCacheKey key) {
         return (MeasurementOperations<T>) msOperationsMap.computeIfAbsent(key, (k) -> {
             OpenGeminiSerializer<T> serializer = (OpenGeminiSerializer<T>) serializerFactory.getSerializer(
                     k.getClazz());

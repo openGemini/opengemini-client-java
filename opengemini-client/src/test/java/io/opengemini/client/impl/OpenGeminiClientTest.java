@@ -21,6 +21,7 @@ import io.github.openfacade.http.HttpClientEngine;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
+import io.opengemini.client.api.CompressMethod;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
@@ -74,6 +75,21 @@ class OpenGeminiClientTest extends TestBase {
                              .httpConfig(httpConfig)
                              .gzipEnabled(false)
                              .build();
+            clients.add(OpenGeminiClientFactory.create(configuration));
+        }
+        List<CompressMethod> compressMethods = Arrays.asList(CompressMethod.SNAPPY, CompressMethod.GZIP,
+                CompressMethod.ZSTD);
+        for (CompressMethod compressMethod : compressMethods) {
+            HttpClientConfig httpConfig = new HttpClientConfig.Builder()
+                    .engine(HttpClientEngine.AsyncHttpClient)
+                    .connectTimeout(Duration.ofSeconds(3))
+                    .timeout(Duration.ofSeconds(3))
+                    .build();
+            Configuration configuration = Configuration.builder()
+                    .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                    .httpConfig(httpConfig)
+                    .compressMethod(compressMethod)
+                    .build();
             clients.add(OpenGeminiClientFactory.create(configuration));
         }
         return clients;
@@ -375,8 +391,10 @@ class OpenGeminiClientTest extends TestBase {
 
         // todo jdk doesn't throw ExecutionException
         Exception exception = Assertions.assertThrows(Exception.class, createRpFuture::get);
-        if (exception instanceof ExecutionException exp) {
-            if (exp.getCause() instanceof OpenGeminiException e) {
+        if (exception instanceof ExecutionException) {
+            ExecutionException exp = (ExecutionException) exception;
+            if (exp.getCause() instanceof OpenGeminiException) {
+                OpenGeminiException e = (OpenGeminiException) exp.getCause();
                 Assertions.assertTrue(
                         e.getMessage().contains("syntax error: unexpected IDENT, expecting DURATIONVAL"));
             }
@@ -416,7 +434,6 @@ class OpenGeminiClientTest extends TestBase {
         testPoint.setFields(fields);
         return testPoint;
     }
-
 
     @ParameterizedTest
     @MethodSource("clientList")
