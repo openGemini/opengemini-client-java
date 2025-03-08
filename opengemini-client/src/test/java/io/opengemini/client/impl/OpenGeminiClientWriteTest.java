@@ -15,21 +15,6 @@
  */
 package io.opengemini.client.impl;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientEngine;
 import io.opengemini.client.api.Address;
@@ -41,6 +26,20 @@ import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
 import io.opengemini.client.api.RpConfig;
 import io.opengemini.client.api.Series;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OpenGeminiClientWriteTest extends TestBase {
