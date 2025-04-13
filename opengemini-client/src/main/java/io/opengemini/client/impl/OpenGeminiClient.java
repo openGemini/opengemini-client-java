@@ -24,21 +24,30 @@ import io.github.openfacade.http.HttpResponse;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
 import io.opengemini.client.api.Query;
 import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.common.BaseAsyncClient;
+import io.opengemini.client.api.RetentionPolicy;
+import io.opengemini.client.api.RpConfig;
+import io.opengemini.client.common.BaseClient;
+import io.opengemini.client.common.CommandFactory;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
+import io.opengemini.client.common.ResultMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
-public class OpenGeminiClient extends BaseAsyncClient {
+public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClient {
     protected final Configuration conf;
 
     private final HttpClient client;
@@ -56,11 +65,136 @@ public class OpenGeminiClient extends BaseAsyncClient {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> createDatabase(String database) {
+        String command = CommandFactory.createDatabase(database);
+        Query query = new Query(command);
+        return executePostQuery(query).thenApply(rsp -> null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> dropDatabase(String database) {
+        String command = CommandFactory.dropDatabase(database);
+        Query query = new Query(command);
+        return executePostQuery(query).thenApply(rsp -> null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<List<String>> showDatabases() {
+        String command = CommandFactory.showDatabases();
+        Query query = new Query(command);
+        return executeQuery(query).thenApply(ResultMapper::toDatabases);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> createRetentionPolicy(String database, RpConfig rpConfig, boolean isDefault) {
+        String command = CommandFactory.createRetentionPolicy(database, rpConfig, isDefault);
+        Query query = new Query(command);
+        return executePostQuery(query).thenApply(rsp -> null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<List<RetentionPolicy>> showRetentionPolicies(String database) {
+        if (StringUtils.isBlank(database)) {
+            return null;
+        }
+
+        String command = CommandFactory.showRetentionPolicies(database);
+        Query query = new Query(command);
+        query.setDatabase(database);
+        return executeQuery(query).thenApply(ResultMapper::toRetentionPolicies);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> dropRetentionPolicy(String database, String retentionPolicy) {
+        String command = CommandFactory.dropRetentionPolicy(database, retentionPolicy);
+        Query query = new Query(command);
+        return executePostQuery(query).thenApply(rsp -> null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<QueryResult> query(Query query) {
+        return executeQuery(query);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> write(String database, Point point) {
+        return write(database, null, point);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> write(String database, List<Point> points) {
+        return write(database, null, points);
+    }
+
+    @Override
+    public CompletableFuture<Void> write(String database, String retentionPolicy, Point point) {
+        String body = point.lineProtocol();
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, retentionPolicy, body);
+    }
+
+    @Override
+    public CompletableFuture<Void> write(String database, String retentionPolicy, List<Point> points) {
+        if (points.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        StringJoiner sj = new StringJoiner("\n");
+        for (Point point : points) {
+            String lineProtocol = point.lineProtocol();
+            if (StringUtils.isEmpty(lineProtocol)) {
+                continue;
+            }
+            sj.add(lineProtocol);
+        }
+        String body = sj.toString();
+        if (StringUtils.isEmpty(body)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeWrite(database, retentionPolicy, body);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Pong> ping() {
+        return executePing();
+    }
+
+    /**
      * Execute a GET query call with java HttpClient.
      *
      * @param query the query to execute.
      */
-    @Override
     protected CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return get(queryUrl).thenCompose(response -> convertResponse(response, QueryResult.class));
@@ -71,7 +205,6 @@ public class OpenGeminiClient extends BaseAsyncClient {
      *
      * @param query the query to execute.
      */
-    @Override
     protected CompletableFuture<QueryResult> executePostQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return post(queryUrl, null).thenCompose(response -> convertResponse(response, QueryResult.class));
@@ -84,7 +217,6 @@ public class OpenGeminiClient extends BaseAsyncClient {
      * @param retentionPolicy the name of the retention policy.
      * @param lineProtocol    the line protocol string to write.
      */
-    @Override
     protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
         String writeUrl = getWriteUrl(database, retentionPolicy);
         return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
@@ -93,7 +225,6 @@ public class OpenGeminiClient extends BaseAsyncClient {
     /**
      * Execute a ping call with java HttpClient.
      */
-    @Override
     protected CompletableFuture<Pong> executePing() {
         String pingUrl = getPingUrl();
         return get(pingUrl).thenApply(response -> Optional.ofNullable(response.headers().get(HeaderConst.VERSION))
@@ -121,11 +252,11 @@ public class OpenGeminiClient extends BaseAsyncClient {
         }
     }
 
-    public CompletableFuture<HttpResponse> get(String url) {
+    private CompletableFuture<HttpResponse> get(String url) {
         return client.get(buildUriWithPrefix(url), headers);
     }
 
-    public CompletableFuture<HttpResponse> post(String url, String body) {
+    private CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
                            headers);
     }
