@@ -20,6 +20,7 @@ import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientEngine;
 import io.opengemini.client.api.Address;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Query;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class OpenGeminiClientWriteTest extends TestBase {
+class OpenGeminiAsyncClientWriteTest extends TestBase{
     private final List<OpenGeminiClient> clients = new ArrayList<>();
 
     protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
@@ -64,7 +64,7 @@ class OpenGeminiClientWriteTest extends TestBase {
                              .httpConfig(httpConfig)
                              .gzipEnabled(false)
                              .build();
-            clients.add(OpenGeminiClientFactory.create(configuration));
+            clients.add((OpenGeminiClient) OpenGeminiClientFactory.create(configuration));
         }
         return clients;
     }
@@ -213,10 +213,10 @@ class OpenGeminiClientWriteTest extends TestBase {
 
     @AfterAll
     void closeClients() {
-        for (OpenGeminiClient client : clients) {
+        for (OpenGeminiAsyncClient client : clients) {
             try {
                 client.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // ignore exception
             }
         }

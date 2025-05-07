@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 openGemini Authors
+ * Copyright 2025 openGemini Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenGeminiClientFactoryTest {
+public class OpenGeminiSyncClientFactoryTest implements FactoryTestCase {
 
     private static Configuration configuration;
 
@@ -48,7 +48,7 @@ public class OpenGeminiClientFactoryTest {
     public void testGetClientWithNullAddresses() {
         configuration.setAddresses(null);
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("must have at least one address", actualException.getMessage());
     }
@@ -58,7 +58,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setAddresses(new ArrayList<>());
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("must have at least one address", actualException.getMessage());
     }
@@ -71,7 +71,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setAuthConfig(authConfig);
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("invalid auth config due to empty token", actualException.getMessage());
     }
@@ -85,7 +85,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setAuthConfig(authConfig);
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("invalid auth config due to empty username", actualException.getMessage());
     }
@@ -99,7 +99,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setAuthConfig(authConfig);
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("invalid auth config due to empty password", actualException.getMessage());
     }
@@ -112,7 +112,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setBatchConfig(batchConfig);
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("batch enabled, batch interval must be great than 0", actualException.getMessage());
     }
@@ -126,7 +126,7 @@ public class OpenGeminiClientFactoryTest {
         configuration.setBatchConfig(batchConfig);
 
         Throwable actualException = Assertions.assertThrows(OpenGeminiException.class, () -> {
-            OpenGeminiClientFactory.create(configuration);
+            OpenGeminiClientFactory.createSyncClient(configuration);
         });
         Assertions.assertEquals("batch enabled, batch size must be great than 0", actualException.getMessage());
     }

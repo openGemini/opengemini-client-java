@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 openGemini Authors
+ * Copyright 2025 openGemini Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,29 @@ import io.opengemini.client.api.Address;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class OpenGeminiWrongAddressTest {
-    private final List<OpenGeminiClient> clients = new ArrayList<>();
+class OpenGeminiSyncClientWrongAddressTest {
+    private final List<OpenGeminiSyncClientImpl> clients = new ArrayList<>();
 
-    protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
+    protected List<OpenGeminiSyncClientImpl> clientList() throws OpenGeminiException {
         List<HttpClientEngine> engines = new ArrayList<>();
         engines.add(HttpClientEngine.Async);
         engines.add(HttpClientEngine.Java);
         engines.add(HttpClientEngine.Java8);
         engines.add(HttpClientEngine.OkHttp);
-        List<OpenGeminiClient> clients = new ArrayList<>();
+        List<OpenGeminiSyncClientImpl> clients = new ArrayList<>();
         for (HttpClientEngine engine : engines) {
             HttpClientConfig httpConfig = new HttpClientConfig.Builder()
                     .engine(engine)
@@ -57,25 +54,24 @@ class OpenGeminiWrongAddressTest {
             Configuration configuration = Configuration.builder()
                     .addresses(Collections.singletonList(new Address("127.0.0.1", 28086)))
                     .httpConfig(httpConfig).gzipEnabled(false).build();
-            clients.add(OpenGeminiClientFactory.create(configuration));
+            clients.add((OpenGeminiSyncClientImpl)OpenGeminiClientFactory.create(configuration));
         }
         return clients;
     }
 
     @ParameterizedTest
     @MethodSource("clientList")
-    void queryWithWrongAddress(OpenGeminiClient client) {
+    void queryWithWrongAddress(OpenGeminiSyncClientImpl client) {
         Query showDatabasesQuery = new Query("SHOW DATABASES");
-        CompletableFuture<QueryResult> rstFuture = client.query(showDatabasesQuery);
-        Assertions.assertThrows(ExecutionException.class, rstFuture::get);
+        Assertions.assertThrows(ExecutionException.class, () -> client.query(showDatabasesQuery));
     }
 
     @AfterAll
     void closeClients() {
-        for (OpenGeminiClient client : clients) {
+        for (OpenGeminiSyncClientImpl client : clients) {
             try {
                 client.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // ignore exception
             }
         }
