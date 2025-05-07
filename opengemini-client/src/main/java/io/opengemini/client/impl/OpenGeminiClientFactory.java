@@ -20,11 +20,14 @@ import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.OpenGeminiSyncClient;
+import io.opengemini.client.api.OpenGeminiSyncClientImpl;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenGeminiClientFactory {
-    public static OpenGeminiClient create(@NotNull Configuration configuration) throws OpenGeminiException {
+    public static OpenGeminiAsyncClient create(@NotNull Configuration configuration) throws OpenGeminiException {
         if (configuration.getAddresses() == null || configuration.getAddresses().isEmpty()) {
             throw new OpenGeminiException("must have at least one address");
         }
@@ -53,5 +56,11 @@ public class OpenGeminiClientFactory {
             }
         }
         return new OpenGeminiClient(configuration);
+    }
+
+    public static OpenGeminiSyncClient createSyncClient(@NotNull Configuration configuration)
+        throws OpenGeminiException {
+        OpenGeminiAsyncClient openGeminiSyncClient = create(configuration);
+        return new OpenGeminiSyncClientImpl(openGeminiSyncClient, configuration);
     }
 }
