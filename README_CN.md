@@ -1,6 +1,7 @@
 # opengemini-client-java
 
 ![License](https://img.shields.io/badge/开源许可证-Apache2.0-green)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11009/badge)](https://www.bestpractices.dev/projects/11009)
 ![language](https://img.shields.io/badge/语言-Java-blue.svg)
 [![version](https://img.shields.io/github/v/tag/opengemini/opengemini-client-java?label=%e5%8f%91%e8%a1%8c%e7%89%88%e6%9c%ac&color=blue)](https://github.com/opengemini/opengemini-client-java/releases)
 
