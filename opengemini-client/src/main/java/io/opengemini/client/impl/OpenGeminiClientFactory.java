@@ -20,11 +20,24 @@ import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.api.OpenGeminiSyncClient;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenGeminiClientFactory {
-    public static OpenGeminiClient create(@NotNull Configuration configuration) throws OpenGeminiException {
+    public static OpenGeminiAsyncClient create(@NotNull Configuration configuration) throws OpenGeminiException {
+        validateConf(configuration);
+        return new OpenGeminiClient(configuration);
+    }
+
+    public static OpenGeminiSyncClient createSyncClient(@NotNull Configuration configuration)
+        throws OpenGeminiException {
+        validateConf(configuration);
+        return new OpenGeminiSyncClientImpl(configuration);
+    }
+
+    private static void validateConf(@NotNull Configuration configuration) throws OpenGeminiException {
         if (configuration.getAddresses() == null || configuration.getAddresses().isEmpty()) {
             throw new OpenGeminiException("must have at least one address");
         }
@@ -52,6 +65,5 @@ public class OpenGeminiClientFactory {
                 throw new OpenGeminiException("batch enabled, batch size must be great than 0");
             }
         }
-        return new OpenGeminiClient(configuration);
     }
 }
