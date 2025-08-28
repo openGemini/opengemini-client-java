@@ -21,33 +21,33 @@ import io.github.openfacade.http.HttpClient;
 import io.github.openfacade.http.HttpClientConfig;
 import io.github.openfacade.http.HttpClientFactory;
 import io.github.openfacade.http.HttpResponse;
-import io.opengemini.client.api.AuthConfig;
-import io.opengemini.client.api.AuthType;
-import io.opengemini.client.api.Configuration;
-import io.opengemini.client.api.OpenGeminiAsyncClient;
-import io.opengemini.client.api.OpenGeminiException;
-import io.opengemini.client.api.Point;
-import io.opengemini.client.api.Pong;
-import io.opengemini.client.api.Query;
-import io.opengemini.client.api.QueryResult;
-import io.opengemini.client.api.RetentionPolicy;
-import io.opengemini.client.api.RpConfig;
+import io.opengemini.client.api.*;
 import io.opengemini.client.common.BaseClient;
 import io.opengemini.client.common.CommandFactory;
 import io.opengemini.client.common.HeaderConst;
 import io.opengemini.client.common.JacksonService;
 import io.opengemini.client.common.ResultMapper;
+import io.opengemini.client.interceptor.Interceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClient {
+    private final List<Interceptor> interceptors = new ArrayList<>();
+
+    /**
+     * Add interceptors to the client.
+     */
+    public void addInterceptors(Interceptor... interceptors) {
+        Collections.addAll(this.interceptors, interceptors);
+    }
+
+
+
     protected final Configuration conf;
 
     private final HttpClient client;
@@ -57,6 +57,10 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
         this.conf = conf;
         AuthConfig authConfig = conf.getAuthConfig();
         HttpClientConfig httpConfig = conf.getHttpConfig();
+        if (httpConfig == null) {
+            httpConfig = new HttpClientConfig.Builder().build();
+            conf.setHttpConfig(httpConfig);
+        }
         if (authConfig != null && authConfig.getAuthType().equals(AuthType.PASSWORD)) {
             httpConfig.addRequestFilter(
                     new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
@@ -159,7 +163,7 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
         if (StringUtils.isEmpty(body)) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWrite(database, retentionPolicy, body);
+        return executeWrite(database, retentionPolicy, body );
     }
 
     @Override
@@ -195,9 +199,27 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
      *
      * @param query the query to execute.
      */
-    protected CompletableFuture<QueryResult> executeQuery(Query query) {
+    public CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-        return get(queryUrl).thenCompose(response -> convertResponse(response, QueryResult.class));
+
+        // 执行所有queryBefore拦截器
+        CompletableFuture<Void> beforeFutures = CompletableFuture.allOf(
+                interceptors.stream()
+                        .map(interceptor -> interceptor.queryBefore(query))
+                        .toArray(CompletableFuture[]::new)
+        );
+
+        return beforeFutures.thenCompose(voidResult -> {
+            return executeHttpQuery(query).thenCompose(response -> {
+                // 执行所有queryAfter拦截器
+                CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
+                        interceptors.stream()
+                                .map(interceptor -> interceptor.queryAfter(query, response))
+                                .toArray(CompletableFuture[]::new)
+                );
+                return afterFutures.thenCompose(voidResult2 -> convertResponse(response, QueryResult.class));
+            });
+        });
     }
 
     /**
@@ -217,9 +239,33 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
      * @param retentionPolicy the name of the retention policy.
      * @param lineProtocol    the line protocol string to write.
      */
-    protected CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
+    public CompletableFuture<Void> executeWrite(String database, String retentionPolicy, String lineProtocol) {
         String writeUrl = getWriteUrl(database, retentionPolicy);
-        return post(writeUrl, lineProtocol).thenCompose(response -> convertResponse(response, Void.class));
+        Write write = new Write(
+                database,
+                retentionPolicy,
+                "default_measurement", // Default measurement name
+                lineProtocol,
+                "ns" // Default precision
+        );
+
+        // Execute all writeBefore interceptors
+        CompletableFuture<Void> beforeFutures = CompletableFuture.allOf(
+                interceptors.stream()
+                        .map(interceptor -> interceptor.writeBefore(write))
+                        .toArray(CompletableFuture[]::new)
+        );
+
+        return beforeFutures.thenCompose(voidResult -> {
+            return executeHttpWrite(write).thenCompose(response -> { // response 是 io.github.openfacade.http.HttpResponse
+                CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
+                        interceptors.stream()
+                                .map(interceptor -> interceptor.writeAfter(write, response)) // 传递正确的类型
+                                .toArray(CompletableFuture[]::new)
+                );
+                return afterFutures.thenCompose(voidResult2 -> convertResponse(response, Void.class));
+            });
+        });
     }
 
     /**
@@ -258,7 +304,7 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
 
     private CompletableFuture<HttpResponse> post(String url, String body) {
         return client.post(buildUriWithPrefix(url), body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
-                           headers);
+                headers);
     }
 
     @Override
@@ -269,5 +315,21 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
     @Override
     public String toString() {
         return "OpenGeminiClient{" + "httpEngine=" + conf.getHttpConfig().engine() + '}';
+    }
+
+    /**
+     * 执行 HTTP 查询请求
+     */
+    private CompletableFuture<HttpResponse> executeHttpQuery(Query query) {
+        String queryUrl = getQueryUrl(query);
+        return get(queryUrl);
+    }
+
+    /**
+     * 执行 HTTP 写入请求
+     */
+    private CompletableFuture<HttpResponse> executeHttpWrite(Write write) {
+        String writeUrl = getWriteUrl(write.getDatabase(), write.getRetentionPolicy());
+        return post(writeUrl, write.getLineProtocol());
     }
 }

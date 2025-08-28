@@ -112,6 +112,39 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- OpenTelemetry 核心依赖 -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.28.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+            <version>1.28.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-jaeger</artifactId>
+            <version>1.28.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>1.32.0</version>
+        </dependency>
+
+        <!-- HTTP 客户端 -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-semconv</artifactId>
+            <version>1.28.0-alpha</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -193,6 +226,7 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>${maven-protobuf-maven-plugin}</version>
                 <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
                     <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}
                     </protocArtifact>
                 </configuration>
@@ -206,6 +240,7 @@
                         </goals>
                         <configuration>
                             <pluginId>grpc-java</pluginId>
+                            <!--suppress UnresolvedMavenProperty -->
                             <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
                             </pluginArtifact>
                         </configuration>
@@ -219,6 +254,7 @@
                         </goals>
                         <configuration>
                             <pluginId>grpc-vertx</pluginId>
+                            <!--suppress UnresolvedMavenProperty -->
                             <pluginArtifact>
                                 io.vertx:vertx-grpc-protoc-plugin:${vertx.version}:exe:${os.detected.classifier}
                             </pluginArtifact>
@@ -306,6 +342,7 @@
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>
+                    <!--suppress UnresolvedMavenProperty -->
                     <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
                 </configuration>
                 <dependencies>
@@ -353,7 +390,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
+<!--                    <tokenAuth>true</tokenAuth>-->
                 </configuration>
             </plugin>
         </plugins>
@@ -413,6 +450,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
                             <passphraseServerId>${gpg.passphrase}</passphraseServerId>
                             <gpgArguments>
                                 <arg>--pinentry-mode</arg>

@@ -16,54 +16,29 @@
 
 package io.opengemini.client.api;
 
-import io.opentelemetry.api.trace.Span;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@AllArgsConstructor
 @Getter
 @Setter
-public class Query {
-    /*
-     * the query command
-     */
-    private String command;
-
-    /*
-     * the database name of the query command using
-     */
+public class Write {
     private String database;
-
-    /*
-     * the rp name of the query command using
-     */
     private String retentionPolicy;
-
-    /*
-     * the precision of the time in query result
-     */
-    private Precision precision;
+    private String measurement;
+    private String lineProtocol;
+    private String precision;
 
     private Map<String, Object> attributes = new HashMap<>();
 
-    public Query(String command) {
-        this.command = command;
-    }
-
-    public Query(String command, String database, String retentionPolicy) {
-        this.command = command;
+    public Write(String database, String retentionPolicy, String measurement,
+                 String lineProtocol, String precision) {
         this.database = database;
         this.retentionPolicy = retentionPolicy;
-    }
-
-    public Query(String command, String database, String retentionPolicy, Precision precision) {
-        this.command = command;
-        this.database = database;
-        this.retentionPolicy = retentionPolicy;
+        this.measurement = measurement;
+        this.lineProtocol = lineProtocol;
         this.precision = precision;
     }
 

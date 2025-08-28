@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -39,6 +40,36 @@ public class Point {
     private long time;
     private Map<String, String> tags;
     private Map<String, Object> fields;
+
+    public Point() {
+        this.fields = new HashMap<>();
+        this.tags = new HashMap<>();
+    }
+
+    public Point measurement(String measurement) {
+        this.measurement = measurement;
+        return this;
+    }
+
+    public Point addTag(String key, String value) {
+        if (key != null && value != null) {
+            this.tags.put(key, value);
+        }
+        return this;
+    }
+
+    public Point addField(String key, Object value) {
+        if (key != null && value != null) {
+            this.fields.put(key, value);
+        }
+        return this;
+    }
+
+    public Point time(long time, Precision precision) {
+        this.time = time;
+        this.precision = precision;
+        return this;
+    }
 
     /**
      * Calculate the line protocol string for this point
