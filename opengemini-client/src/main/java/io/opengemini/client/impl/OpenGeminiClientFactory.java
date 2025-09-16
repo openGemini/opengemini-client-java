@@ -21,7 +21,11 @@ import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.BatchConfig;
 import io.opengemini.client.api.Configuration;
 import io.opengemini.client.api.OpenGeminiException;
+import io.opengemini.client.interceptor.Interceptor;
+import io.opengemini.client.interceptor.OtelInterceptor;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class OpenGeminiClientFactory {
     public static OpenGeminiClient create(@NotNull Configuration configuration) throws OpenGeminiException {
@@ -53,5 +57,14 @@ public class OpenGeminiClientFactory {
             }
         }
         return new OpenGeminiClient(configuration);
+    }
+
+    public static OpenGeminiClient createClientWithInterceptors(Configuration config) throws OpenGeminiException {
+        OpenGeminiClient client = create(config);
+        List<Interceptor> interceptors = List.of(
+                new OtelInterceptor()
+        );
+        client.addInterceptors(interceptors.toArray(new Interceptor[0]));
+        return client;
     }
 }
