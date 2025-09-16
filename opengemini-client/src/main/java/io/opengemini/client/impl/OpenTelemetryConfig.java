@@ -30,7 +30,6 @@ import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
  * Configuration for OpenTelemetry tracing.
  */
 public class OpenTelemetryConfig {
-
     private static volatile OpenTelemetry openTelemetry;
     private static volatile Tracer tracer;
 

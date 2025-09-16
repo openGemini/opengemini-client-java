@@ -16,7 +16,6 @@
 
 package io.opengemini.client.api;
 
-import io.opentelemetry.api.trace.Span;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

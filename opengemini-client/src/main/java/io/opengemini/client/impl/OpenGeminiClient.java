@@ -38,18 +38,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClient {
     private final List<Interceptor> interceptors = new ArrayList<>();
-
-    /**
-     * Add interceptors to the client.
-     */
-    public void addInterceptors(Interceptor... interceptors) {
-        Collections.addAll(this.interceptors, interceptors);
-    }
-
-
-
     protected final Configuration conf;
-
     private final HttpClient client;
 
     public OpenGeminiClient(@NotNull Configuration conf) {
@@ -66,6 +55,10 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
                     new BasicAuthRequestFilter(authConfig.getUsername(), String.valueOf(authConfig.getPassword())));
         }
         this.client = HttpClientFactory.createHttpClient(httpConfig);
+    }
+
+    public void addInterceptors(Interceptor... interceptors) {
+        Collections.addAll(this.interceptors, interceptors);
     }
 
     /**
@@ -163,7 +156,7 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
         if (StringUtils.isEmpty(body)) {
             return CompletableFuture.completedFuture(null);
         }
-        return executeWrite(database, retentionPolicy, body );
+        return executeWrite(database, retentionPolicy, body);
     }
 
     @Override
@@ -201,25 +194,20 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
      */
     public CompletableFuture<QueryResult> executeQuery(Query query) {
         String queryUrl = getQueryUrl(query);
-
-        // 执行所有queryBefore拦截器
         CompletableFuture<Void> beforeFutures = CompletableFuture.allOf(
                 interceptors.stream()
                         .map(interceptor -> interceptor.queryBefore(query))
                         .toArray(CompletableFuture[]::new)
         );
 
-        return beforeFutures.thenCompose(voidResult -> {
-            return executeHttpQuery(query).thenCompose(response -> {
-                // 执行所有queryAfter拦截器
-                CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
-                        interceptors.stream()
-                                .map(interceptor -> interceptor.queryAfter(query, response))
-                                .toArray(CompletableFuture[]::new)
-                );
-                return afterFutures.thenCompose(voidResult2 -> convertResponse(response, QueryResult.class));
-            });
-        });
+        return beforeFutures.thenCompose(voidResult -> executeHttpQuery(query).thenCompose(response -> {
+            CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
+                    interceptors.stream()
+                            .map(interceptor -> interceptor.queryAfter(query, response))
+                            .toArray(CompletableFuture[]::new)
+            );
+            return afterFutures.thenCompose(voidResult2 -> convertResponse(response, QueryResult.class));
+        }));
     }
 
     /**
@@ -244,28 +232,28 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
         Write write = new Write(
                 database,
                 retentionPolicy,
-                "default_measurement", // Default measurement name
+                "default_measurement",
                 lineProtocol,
-                "ns" // Default precision
+                "ns"
         );
 
-        // Execute all writeBefore interceptors
         CompletableFuture<Void> beforeFutures = CompletableFuture.allOf(
                 interceptors.stream()
                         .map(interceptor -> interceptor.writeBefore(write))
                         .toArray(CompletableFuture[]::new)
         );
 
-        return beforeFutures.thenCompose(voidResult -> {
-            return executeHttpWrite(write).thenCompose(response -> { // response 是 io.github.openfacade.http.HttpResponse
-                CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
-                        interceptors.stream()
-                                .map(interceptor -> interceptor.writeAfter(write, response)) // 传递正确的类型
-                                .toArray(CompletableFuture[]::new)
-                );
-                return afterFutures.thenCompose(voidResult2 -> convertResponse(response, Void.class));
-            });
-        });
+        return beforeFutures.thenCompose(voidResult ->
+                executeHttpWrite(write).thenCompose(response -> {
+                    CompletableFuture<Void> afterFutures = CompletableFuture.allOf(
+                            interceptors.stream()
+                                    .map(interceptor -> interceptor.writeAfter(write, response))
+                                    .toArray(CompletableFuture[]::new)
+                    );
+                    return afterFutures.thenCompose(voidResult2 ->
+                            convertResponse(response, Void.class));
+                })
+        );
     }
 
     /**
@@ -317,17 +305,11 @@ public class OpenGeminiClient extends BaseClient implements OpenGeminiAsyncClien
         return "OpenGeminiClient{" + "httpEngine=" + conf.getHttpConfig().engine() + '}';
     }
 
-    /**
-     * 执行 HTTP 查询请求
-     */
     private CompletableFuture<HttpResponse> executeHttpQuery(Query query) {
         String queryUrl = getQueryUrl(query);
         return get(queryUrl);
     }
 
-    /**
-     * 执行 HTTP 写入请求
-     */
     private CompletableFuture<HttpResponse> executeHttpWrite(Write write) {
         String writeUrl = getWriteUrl(write.getDatabase(), write.getRetentionPolicy());
         return post(writeUrl, write.getLineProtocol());
