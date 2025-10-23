@@ -112,6 +112,38 @@ public class Main {
 }
 ```
 
+### Tracing with OpenTelemetry
+
+To enable distributed tracing with OpenTelemetry in opengemini-client-java:
+
+1.Add dependencies:
+
+```xml
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-api</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-exporter-jaeger-grpc</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+```
+
+2.Configure tracer and register interceptor:
+
+```java
+/// Configure Tracer
+JaegerGrpcSpanExporter exporter = JaegerGrpcSpanExporter.builder().setEndpoint("http://localhost:14250").build();
+SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(BatchSpanProcessor.builder(exporter).build()).build();
+OpenTelemetry openTelemetry = OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
+Tracer tracer = openTelemetry.getTracer("opengemini-client-java");
+
+// Register Interceptor
+OtelInterceptor otelInterceptor = new OtelInterceptor();
+```
+
 ## Contribution
 
 Welcome to [join us](CONTRIBUTION.md)

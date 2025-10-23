@@ -111,6 +111,39 @@ public class Main {
     }
 }
 ```
+
+### 使用OpenTelemetry进行链路追踪
+
+在opengemini-client-java中启用OpenTelemetry分布式追踪：
+
+1.添加依赖（确保版本兼容）：
+
+```xml
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-api</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-exporter-jaeger-grpc</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+```
+
+2.配置追踪器并注册拦截器：
+
+```java
+// Configure Tracer
+JaegerGrpcSpanExporter exporter = JaegerGrpcSpanExporter.builder().setEndpoint("http://localhost:14250").build();
+SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(BatchSpanProcessor.builder(exporter).build()).build();
+OpenTelemetry openTelemetry = OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
+Tracer tracer = openTelemetry.getTracer("opengemini-client-java");
+
+// Register Interceptor
+OtelInterceptor otelInterceptor = new OtelInterceptor();
+```
+
 ## 贡献
 
 欢迎[加入我们](CONTRIBUTION_CN.md)
