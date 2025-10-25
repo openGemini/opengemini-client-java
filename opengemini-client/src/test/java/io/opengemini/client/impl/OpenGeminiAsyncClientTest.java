@@ -22,6 +22,7 @@ import io.opengemini.client.api.Address;
 import io.opengemini.client.api.AuthConfig;
 import io.opengemini.client.api.AuthType;
 import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.OpenGeminiAsyncClient;
 import io.opengemini.client.api.OpenGeminiException;
 import io.opengemini.client.api.Point;
 import io.opengemini.client.api.Pong;
@@ -52,7 +53,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class OpenGeminiClientTest extends TestBase {
+class OpenGeminiAsyncClientTest extends TestBase {
     private final List<OpenGeminiClient> clients = new ArrayList<>();
 
     protected List<OpenGeminiClient> clientList() throws OpenGeminiException {
@@ -74,12 +75,12 @@ class OpenGeminiClientTest extends TestBase {
                              .httpConfig(httpConfig)
                              .gzipEnabled(false)
                              .build();
-            clients.add(OpenGeminiClientFactory.create(configuration));
+            clients.add((OpenGeminiClient) OpenGeminiClientFactory.create(configuration));
         }
         return clients;
     }
 
-    private OpenGeminiClient openGeminiClient;
+    private OpenGeminiClient openGeminiAsyncClient;
 
     @BeforeEach
     void setUp() {
@@ -93,27 +94,27 @@ class OpenGeminiClientTest extends TestBase {
                 .authConfig(new AuthConfig(AuthType.PASSWORD, "test", "testPwd123@".toCharArray(), null))
                 .gzipEnabled(false)
                 .build();
-        this.openGeminiClient = new OpenGeminiClient(configuration);
+        this.openGeminiAsyncClient = new OpenGeminiClient(configuration);
     }
 
     @Test
     void testDatabase() throws Exception {
         String databaseTestName = "testDatabase_0001";
-        CompletableFuture<Void> createdb = openGeminiClient.createDatabase(databaseTestName);
+        CompletableFuture<Void> createdb = openGeminiAsyncClient.createDatabase(databaseTestName);
         createdb.get();
 
-        CompletableFuture<List<String>> rstFuture = openGeminiClient.showDatabases();
+        CompletableFuture<List<String>> rstFuture = openGeminiAsyncClient.showDatabases();
         List<String> rst = rstFuture.get();
         Assertions.assertTrue(rst.contains(databaseTestName));
 
-        CompletableFuture<Void> dropdb = openGeminiClient.dropDatabase(databaseTestName);
+        CompletableFuture<Void> dropdb = openGeminiAsyncClient.dropDatabase(databaseTestName);
         dropdb.get();
     }
 
     @Test
     void testShowField() throws Exception {
         String databaseTestName = "database_test_0001";
-        CompletableFuture<Void> createdb = openGeminiClient.createDatabase(databaseTestName);
+        CompletableFuture<Void> createdb = openGeminiAsyncClient.createDatabase(databaseTestName);
         createdb.get();
 
         String measureTestName = "measure_test";
@@ -121,13 +122,13 @@ class OpenGeminiClientTest extends TestBase {
         Query createMeasurementQuery = new Query(("CREATE MEASUREMENT %s (tag1 TAG,tag2 TAG,tag3 TAG, "
                 + "field1 INT64 FIELD, field2 BOOL, field3 STRING, field4 FLOAT64)")
                 .formatted(measureTestName), databaseTestName, rpTestName);
-        CompletableFuture<QueryResult> rstFuture = openGeminiClient.query(createMeasurementQuery);
+        CompletableFuture<QueryResult> rstFuture = openGeminiAsyncClient.query(createMeasurementQuery);
         QueryResult rst = rstFuture.get();
         Assertions.assertEquals(1, rst.getResults().size());
 
         Query showFieldQuery = new Query("SHOW TAG KEYS FROM %s limit 3 OFFSET 0".formatted(measureTestName),
                 databaseTestName, rpTestName);
-        CompletableFuture<QueryResult> showRstFuture = openGeminiClient.query(showFieldQuery);
+        CompletableFuture<QueryResult> showRstFuture = openGeminiAsyncClient.query(showFieldQuery);
         QueryResult showRst = showRstFuture.get();
         Assertions.assertEquals(1, showRst.getResults().size());
         Series series = showRst.getResults().get(0).getSeries().get(0);
@@ -136,7 +137,7 @@ class OpenGeminiClientTest extends TestBase {
         Assertions.assertEquals(series.getValues(), List.of(
                 List.of("tag1"), List.of("tag2"), List.of("tag3")));
 
-        CompletableFuture<Void> dropdb = openGeminiClient.dropDatabase(databaseTestName);
+        CompletableFuture<Void> dropdb = openGeminiAsyncClient.dropDatabase(databaseTestName);
         dropdb.get();
     }
 
@@ -165,7 +166,7 @@ class OpenGeminiClientTest extends TestBase {
         rps.add(new RpConfig(testRpNameBase + 3, "365d", "", ""));
 
         String database = "testRpDatabase0001";
-        CompletableFuture<Void> createdb = openGeminiClient.createDatabase(database);
+        CompletableFuture<Void> createdb = openGeminiAsyncClient.createDatabase(database);
         createdb.get();
 
         for (int i = 0; i < rps.size(); i++) {
@@ -173,20 +174,20 @@ class OpenGeminiClientTest extends TestBase {
             if (i == 4) {
                 isDefaultRp = Boolean.TRUE;
             }
-            CompletableFuture<Void> createRsp = openGeminiClient.createRetentionPolicy(
+            CompletableFuture<Void> createRsp = openGeminiAsyncClient.createRetentionPolicy(
                     database, rps.get(i), isDefaultRp);
             createRsp.get();
             Thread.sleep(2000);
 
-            CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiClient.showRetentionPolicies(database);
+            CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiAsyncClient.showRetentionPolicies(database);
             List<RetentionPolicy> rsp = showRpRsp.get();
-            CompletableFuture<Void> dropRsp = openGeminiClient.dropRetentionPolicy(database, rps.get(i).getName());
+            CompletableFuture<Void> dropRsp = openGeminiAsyncClient.dropRetentionPolicy(database, rps.get(i).getName());
             dropRsp.get();
             String testRpName = testRpNameBase + i;
             Assertions.assertTrue(rsp.stream().anyMatch(x -> x.getName().equals(testRpName)));
         }
 
-        CompletableFuture<Void> dropdb = openGeminiClient.dropDatabase(database);
+        CompletableFuture<Void> dropdb = openGeminiAsyncClient.dropDatabase(database);
         dropdb.get();
     }
 
@@ -197,10 +198,10 @@ class OpenGeminiClientTest extends TestBase {
         RpConfig rp = new RpConfig(testRpName + 0, "d3d", "", "");
 
         String database = "testRpDatabase0002";
-        CompletableFuture<Void> createdb = openGeminiClient.createDatabase(database);
+        CompletableFuture<Void> createdb = openGeminiAsyncClient.createDatabase(database);
         createdb.get();
 
-        CompletableFuture<Void> createRsp = openGeminiClient.createRetentionPolicy(
+        CompletableFuture<Void> createRsp = openGeminiAsyncClient.createRetentionPolicy(
                 database, rp, Boolean.FALSE);
 
         ExecutionException e = Assertions.assertThrows(ExecutionException.class, createRsp::get);
@@ -210,33 +211,33 @@ class OpenGeminiClientTest extends TestBase {
 
         Thread.sleep(2000);
 
-        CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiClient.showRetentionPolicies(database);
+        CompletableFuture<List<RetentionPolicy>> showRpRsp = openGeminiAsyncClient.showRetentionPolicies(database);
         List<RetentionPolicy> rsp = showRpRsp.get();
-        CompletableFuture<Void> dropRsp = openGeminiClient.dropRetentionPolicy(database, rp.getName());
+        CompletableFuture<Void> dropRsp = openGeminiAsyncClient.dropRetentionPolicy(database, rp.getName());
         dropRsp.get();
         for (RetentionPolicy retentionPolicy : rsp) {
             Assertions.assertFalse(retentionPolicy.getName().contains(testRpName + 0));
         }
 
-        openGeminiClient.dropDatabase(database).get();
+        openGeminiAsyncClient.dropDatabase(database).get();
     }
 
     @SneakyThrows
     @Test
     void testQueryPrecision() {
         String databaseName = "query_precision_0001";
-        CompletableFuture<Void> createdb = openGeminiClient.createDatabase(databaseName);
+        CompletableFuture<Void> createdb = openGeminiAsyncClient.createDatabase(databaseName);
         createdb.get();
 
         String measurementName = "query_precision_ms_0001";
         Point testPoint = generalTestPoint(measurementName, 1, 1);
 
-        CompletableFuture<Void> writeRsp = openGeminiClient.write(databaseName, testPoint);
+        CompletableFuture<Void> writeRsp = openGeminiAsyncClient.write(databaseName, testPoint);
         writeRsp.get();
         Thread.sleep(3000);
 
         Query selectQuery = new Query("select * from " + measurementName, databaseName, "");
-        CompletableFuture<QueryResult> rst = openGeminiClient.query(selectQuery);
+        CompletableFuture<QueryResult> rst = openGeminiAsyncClient.query(selectQuery);
         QueryResult queryResult = rst.get();
 
         Series x = queryResult.getResults().get(0).getSeries().get(0);
@@ -246,7 +247,7 @@ class OpenGeminiClientTest extends TestBase {
         Assertions.assertTrue(timeValueStr.startsWith("20") && timeValueStr.endsWith("Z"));
 
         selectQuery = new Query("select * from " + measurementName, databaseName, "", Precision.PRECISIONNANOSECOND);
-        rst = openGeminiClient.query(selectQuery);
+        rst = openGeminiAsyncClient.query(selectQuery);
         queryResult = rst.get();
 
         x = queryResult.getResults().get(0).getSeries().get(0);
@@ -255,7 +256,7 @@ class OpenGeminiClientTest extends TestBase {
         long timeValueDouble = (Long) timeValue;
         Assertions.assertTrue(timeValueDouble > 1724778721457052741L);
 
-        CompletableFuture<Void> dropdb = openGeminiClient.dropDatabase(databaseName);
+        CompletableFuture<Void> dropdb = openGeminiAsyncClient.dropDatabase(databaseName);
         dropdb.get();
     }
 
@@ -461,10 +462,10 @@ class OpenGeminiClientTest extends TestBase {
 
     @AfterAll
     void closeClients() {
-        for (OpenGeminiClient client : clients) {
+        for (OpenGeminiAsyncClient client : clients) {
             try {
                 client.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // ignore exception
             }
         }

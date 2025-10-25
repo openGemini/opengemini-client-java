@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 openGemini Authors
+ * Copyright 2025 openGemini Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,28 @@
 
 package io.opengemini.client.impl;
 
-import io.github.openfacade.http.HttpClientEngine;
+import org.junit.jupiter.api.Test;
 
-class TestBase {
-    protected HttpClientEngine httpEngine(OpenGeminiClient client) {
-        return client.conf.getHttpConfig().engine();
-    }
+public interface FactoryTestCase {
 
-    protected HttpClientEngine httpEngine(OpenGeminiSyncClientImpl client) {
-        return client.conf.getHttpConfig().engine();
-    }
+    @Test
+    void testGetClientWithNullAddresses();
+
+    @Test
+    void testGetClientWithEmptyAddresses();
+
+    @Test
+    void testGetClientWithEmptyToken();
+
+    @Test
+    void testGetClientWithEmptyUserName();
+
+    @Test
+    void testGetClientWithNullPassword();
+
+    @Test
+    void testGetClientWithInvalidBatchInterval();
+
+    @Test
+    void testGetClientWithInvalidBatchSize();
 }
