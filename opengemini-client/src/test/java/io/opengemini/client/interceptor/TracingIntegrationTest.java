@@ -26,7 +26,7 @@ import io.opengemini.client.impl.OpenGeminiClient;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +52,14 @@ public class TracingIntegrationTest {
 
     private OpenGeminiClient openGeminiClient;
 
+    private String databaseName = "jaeger_storage";
+
+    private String rpName = "trace";
+
+    private String measurementName = "opengemini-client-java";
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws ExecutionException, InterruptedException {
         HttpClientConfig httpConfig = new HttpClientConfig.Builder()
                 .connectTimeout(Duration.ofSeconds(3))
                 .timeout(Duration.ofSeconds(3))
@@ -68,6 +75,8 @@ public class TracingIntegrationTest {
 
         otelInterceptor.setTracer(getTestTracer());
         openGeminiClient.addInterceptors(otelInterceptor);
+
+        cleanTrace();
     }
 
     @AfterEach
@@ -79,12 +88,13 @@ public class TracingIntegrationTest {
     private Tracer getTestTracer() {
         OpenTelemetry openTelemetry;
         try {
-            JaegerGrpcSpanExporter jaegerExporter = JaegerGrpcSpanExporter.builder()
-                    .setEndpoint("http://localhost:14250")
+            OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
+                    .setEndpoint("http://127.0.0.1:18086")
+                    .addHeader("Authentication", "")
                     .build();
 
-            BatchSpanProcessor spanProcessor = BatchSpanProcessor.builder(jaegerExporter)
-                    .setScheduleDelay(100, java.util.concurrent.TimeUnit.MILLISECONDS)
+            BatchSpanProcessor spanProcessor = BatchSpanProcessor.builder(otlpGrpcSpanExporter)
+                    .setScheduleDelay(100, TimeUnit.MILLISECONDS)
                     .build();
 
             SdkTracerProvider tracerProvider = SdkTracerProvider.builder()
@@ -100,49 +110,71 @@ public class TracingIntegrationTest {
 
             return openTelemetry.getTracer("opengemini-client-java");
         } catch (Exception e) {
-            // Fallback to no-op implementation
             openTelemetry = OpenTelemetry.noop();
             return openTelemetry.getTracer("opengemini-client-java");
         }
 
     }
 
-    @Test
-    void testDatabaseCreation() {
-        Assertions.assertDoesNotThrow(() -> {
-            Query createDbQuery = new Query("CREATE DATABASE test_db");
-            openGeminiClient.query(createDbQuery).get(10, TimeUnit.SECONDS);
-        }, "Database creation should not throw an exception");
+    private void cleanTrace() throws ExecutionException, InterruptedException {
+        Query dropMeasurement = new Query("DROP MEASUREMENT \"%s\"".formatted(measurementName), databaseName, rpName);
+        openGeminiClient.query(dropMeasurement).get();
+    }
+
+    private void checkLastTraceCommand(String command) throws ExecutionException, InterruptedException {
+        String queryTraceCommand = "SELECT command FROM \"%s\"".formatted(measurementName);
+        Query checkTraceQuery = new Query(queryTraceCommand, databaseName, rpName);
+        QueryResult checkRst = openGeminiClient.query(checkTraceQuery).get();
+        List<List<Object>> queryValues = checkRst.getResults().get(0).getSeries().get(0).getValues();
+        int recordNum = queryValues.size();
+        Assertions.assertEquals(command, queryValues.get(recordNum - 1).get(1));
     }
 
     @Test
-    void testQueryOperation() {
+    void testDatabaseCreation() throws ExecutionException, InterruptedException {
+        String command = "CREATE DATABASE test_db";
+        Assertions.assertDoesNotThrow(() -> {
+            Query createDbQuery = new Query(command);
+            openGeminiClient.query(createDbQuery).get(10, TimeUnit.SECONDS);
+        }, "Database creation should not throw an exception");
+
+        Thread.sleep(3000);
+        checkLastTraceCommand(command);
+    }
+
+    @Test
+    void testQueryOperation() throws InterruptedException, ExecutionException {
         Configuration config = new Configuration();
-        config.setAddresses(java.util.Collections.singletonList(new Address("localhost", 8086)));
+        config.setAddresses(Collections.singletonList(new Address("localhost", 8086)));
         if (config.getHttpConfig() == null) {
             config.setHttpConfig(new HttpClientConfig.Builder().build());
         }
 
+        String command = "SHOW DATABASES";
         Assertions.assertDoesNotThrow(() -> {
             Query createDbQuery = new Query("CREATE DATABASE test_db");
             openGeminiClient.query(createDbQuery).get(10, TimeUnit.SECONDS);
 
-            Query showDbQuery = new Query("SHOW DATABASES");
+            Query showDbQuery = new Query(command);
             QueryResult result = openGeminiClient.query(showDbQuery).get(10, TimeUnit.SECONDS);
             Assertions.assertNotNull(result, "Query result should not be null");
         }, "Query operation should not throw an exception");
+
+        Thread.sleep(3000);
+        checkLastTraceCommand(command);
     }
 
     @Test
-    void testWriteOperation() throws InterruptedException {
+    void testWriteOperation() throws InterruptedException, ExecutionException {
         Configuration config = new Configuration();
-        config.setAddresses(java.util.Collections.singletonList(
+        config.setAddresses(Collections.singletonList(
                 new Address("localhost", 8086)));
 
         if (config.getHttpConfig() == null) {
             config.setHttpConfig(new HttpClientConfig.Builder().build());
         }
 
+        String lineProtocol = "temperature,location=room1 value=25.5";
         Assertions.assertDoesNotThrow(() -> {
             Query createDbQuery = new Query("CREATE DATABASE test_db");
             openGeminiClient.query(createDbQuery).get(10, TimeUnit.SECONDS);
@@ -150,7 +182,7 @@ public class TracingIntegrationTest {
             Write write = new Write(
                     "test_db",
                     "autogen",
-                    "temperature,location=room1 value=25.5 " + System.currentTimeMillis(),
+                    lineProtocol,
                     "ns"
             );
 
@@ -161,6 +193,9 @@ public class TracingIntegrationTest {
             ).get(10, TimeUnit.SECONDS);
 
         }, "Write operation should not throw an exception");
+
+        Thread.sleep(3000);
+        checkLastTraceCommand(lineProtocol);
     }
 
     @Test
@@ -169,6 +204,7 @@ public class TracingIntegrationTest {
         CompletableFuture<Void> createdb = openGeminiClient.createDatabase(databaseTestName);
         createdb.get();
 
+        String command = "SELECT * FROM tracing_measurement";
         Assertions.assertDoesNotThrow(() -> {
 
             Write write = new Write(
@@ -184,9 +220,12 @@ public class TracingIntegrationTest {
                     write.getLineProtocol()
             ).get(10, TimeUnit.SECONDS);
 
-            Query query = new Query("SELECT * FROM tracing_measurement");
+            Query query = new Query(command);
             openGeminiClient.query(query).get(10, TimeUnit.SECONDS);
 
         }, "Tracing integration should not throw an exception");
+
+        Thread.sleep(3000);
+        checkLastTraceCommand(command);
     }
 }

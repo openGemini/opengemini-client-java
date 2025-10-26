@@ -33,7 +33,13 @@ jobs:
           distribution: 'temurin'
       - name: setup OpenGemini
         uses: hezhangjian/setup-opengemini-action@main
-      - name: unit tests
-        run: mvn -B clean test
+      - name: wait opengemini started
+        run: sleep 5
+      - name: setup go-env
+        uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
       - name: setup ts-trace
         run: go install github.com/openGemini/observability/trace/cmd/ts-trace@latest && ts-trace &
+      - name: unit tests
+        run: mvn -B clean test
