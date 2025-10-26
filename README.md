@@ -112,6 +112,74 @@ public class Main {
 }
 ```
 
+### Tracing with OpenTelemetry
+
+To enable distributed tracing with OpenTelemetry in opengemini-client-java:
+
+1.Add dependencies:
+
+```xml
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-api</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-exporter-jaeger-grpc</artifactId>
+    <version>${opentelemetry.version}</version>
+</dependency>
+```
+
+2.Configure tracer and register interceptor:
+
+```java
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.semconv.ResourceAttributes;
+import io.opengemini.client.api.Configuration;
+import io.opengemini.client.api.Address;
+import io.opengemini.client.interceptor.OtelInterceptor;
+import java.util.Collections;
+
+public class TracingExample {
+    public static void main(String[] args) {
+        // Create OpenGemini client
+        Configuration configuration = Configuration.builder()
+                .addresses(Collections.singletonList(new Address("127.0.0.1", 8086)))
+                .build();
+        OpenGeminiClient openGeminiClient = new OpenGeminiClient(configuration);
+
+        // Configure OpenTelemetry tracer
+        JaegerGrpcSpanExporter exporter = JaegerGrpcSpanExporter.builder()
+                .setEndpoint("http://localhost:14250")
+                .build();
+
+        SdkTracerProvider tracerProvider = SdkTracerProvider.builder()
+                .addSpanProcessor(BatchSpanProcessor.builder(exporter).build())
+                .setResource(Resource.create(
+                        Attributes.of(ResourceAttributes.SERVICE_NAME, "opengemini-client-java")
+                ))
+                .build();
+
+        Tracer tracer = OpenTelemetrySdk.builder()
+                .setTracerProvider(tracerProvider)
+                .build()
+                .getTracer("opengemini-client-java");
+
+        // Register interceptor
+        OtelInterceptor otelInterceptor = new OtelInterceptor();
+        otelInterceptor.setTracer(tracer);
+        openGeminiClient.addInterceptors(otelInterceptor);
+    }
+}
+```
 ## Contribution
 
 Welcome to [join us](CONTRIBUTION.md)
